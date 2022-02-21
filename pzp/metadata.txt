@@ -1,0 +1,9 @@
+[general]
+name=pzp
+description=Plugin Piani Zone di Pericolo canton Ticino
+about=About this minimal plugin
+version=0.1
+qgisMinimumVersion=3.0
+author=OPENGIS.ch
+email=info@opengis.ch
+repository=URL to the code repository
