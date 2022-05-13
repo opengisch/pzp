@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/file.png</file>
+    </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/check.png</file>
+    </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/danger.png</file>
+    </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/gear.png</file>
+    </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/settings.png</file>
+    </qresource>
+</RCC>

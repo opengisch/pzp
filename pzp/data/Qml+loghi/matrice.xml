@@ -1,0 +1,13 @@
+<substitutions version="1.0">
+    <replacement wholeWord="1" caseSensitive="0" replace="0" match="1000"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="9" match="1001"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="8" match="1002"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="7" match="1003"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="6" match="1004"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="5" match="1005"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="4" match="1006"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="3" match="1007"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="2" match="1008"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="1" match="1009"/>
+    <replacement wholeWord="1" caseSensitive="0" replace="-10" match="1010"/>
+</substitutions>
