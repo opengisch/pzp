@@ -1,16 +1,19 @@
 import os
 
-from qgis.core import QgsProject
+from qgis.core import QgsApplication, QgsProject
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
 from pzp import utils
+from pzp.processing_provider.provider import Provider
+from pzp.ui.resources import *  # noqa
 
 
 class PZP:
     def __init__(self, iface):
         self.iface = iface
         self.toolbar = None
+        self.provider = None
 
     def initGui(self):
         self.toolbar = self.iface.addToolBar("PZP")
@@ -36,6 +39,11 @@ class PZP:
         self.toolbar.addAction(
             self.create_action("settings.png", "Impostazioni", self.do_open_settings)
         )
+        self.initProcessing()
+
+    def initProcessing(self):
+        self.provider = Provider()
+        QgsApplication.processingRegistry().addProvider(self.provider)
 
     def create_action(self, icon, name, callback):
         action = QAction(
@@ -51,6 +59,7 @@ class PZP:
             del action
 
         del self.toolbar
+        QgsApplication.processingRegistry().removeProvider(self.provider)
 
     def do_start_project(self):
         project = QgsProject.instance()

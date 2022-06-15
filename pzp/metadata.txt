@@ -7,3 +7,4 @@ qgisMinimumVersion=3.0
 author=OPENGIS.ch
 email=info@opengis.ch
 repository=https://github.com/opengisch/pzp
+hasProcessingProvider=yes
