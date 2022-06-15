@@ -1,19 +1,19 @@
-
 from functools import wraps
+
 from qgis.core import Qgis, QgsMessageLog, QgsProject
 from qgis.utils import iface
 
 
 def push_info(message):
-    _get_iface().messageBar().pushInfo('pzp', message)
+    _get_iface().messageBar().pushInfo("pzp", message)
 
 
 def push_warning(message):
-    _get_iface().messageBar().pushMessage('pzp', message, Qgis.Warning, 0)
+    _get_iface().messageBar().pushMessage("pzp", message, Qgis.Warning, 0)
 
 
 def push_error(message):
-    _get_iface().messageBar().pushMessage('pzp', message, Qgis.Critical, 0)
+    _get_iface().messageBar().pushMessage("pzp", message, Qgis.Critical, 0)
 
 
 def _get_iface():
@@ -22,19 +22,20 @@ def _get_iface():
         return iface
     else:
         from qgis.testing.mocked import get_iface
+
         return get_iface()
 
 
 def log_info(message):
-    QgsMessageLog.logMessage(message, 'pzp', Qgis.Info)
+    QgsMessageLog.logMessage(message, "pzp", Qgis.Info)
 
 
 def log_warning(message):
-    QgsMessageLog.logMessage(message, 'pzp', Qgis.Warning)
+    QgsMessageLog.logMessage(message, "pzp", Qgis.Warning)
 
 
 def log_error(message):
-    QgsMessageLog.logMessage(message, 'pzp', Qgis.Critical)
+    QgsMessageLog.logMessage(message, "pzp", Qgis.Critical)
 
 
 def write_project_metadata(keyword, value):
@@ -63,10 +64,15 @@ def check_project():
 
             if pzp_project_version:
                 if pzp_project_version in [0, 1]:
-                    return func(*args[:-1], **kwargs)  # TODO: Why there is a False as last argument?
+                    return func(
+                        *args[:-1], **kwargs
+                    )  # TODO: Why there is a False as last argument?
 
-            push_error(f"Il progetto corrente non è compatibile con questa versione del plugin:")
+            push_error(
+                f"Il progetto corrente non è compatibile con questa versione del plugin:"
+            )
             return
 
         return wrapper
+
     return decorate
