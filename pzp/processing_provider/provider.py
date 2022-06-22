@@ -6,6 +6,7 @@ from pzp.processing_provider.danger_zones import DangerZones
 class Provider(QgsProcessingProvider):
     def loadAlgorithms(self, *args, **kwargs):
         self.addAlgorithm(DangerZones())
+        # self.addAlgorithm(ManualTuning())
 
     def id(self, *args, **kwargs):
         return "pzp"

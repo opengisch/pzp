@@ -14,6 +14,8 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import QVariant
 
+from pzp import domains
+
 
 class DangerZones(QgsProcessingAlgorithm):
 
@@ -23,17 +25,6 @@ class DangerZones(QgsProcessingAlgorithm):
     INTENSITY_FIELD = "INTENSITY_FIELD"
     PROCESS_TYPE = "PROCESS_TYPE"
     OUTPUT = "OUTPUT"
-    PROCESS_TYPES = [
-        ("Alluvionamento corso d'acqua minore", 1110),
-        ("Alluvionamento corso d'acqua principale", 1120),
-        ("Flusso detrito", 1200),
-        ("Ruscellamento superficiale", 1400),
-        ("Scivolamento spontaneo", 2001),
-        ("Colata detritica di versante", 2002),
-        ("Caduta sassi o blocchi", 3000),
-        ("Valanga radente", 4100),
-        ("Valanga polverosa", 4200),
-    ]
 
     def createInstance(self):
         return DangerZones()
@@ -91,12 +82,12 @@ class DangerZones(QgsProcessingAlgorithm):
             QgsProcessingParameterEnum(
                 name=self.PROCESS_TYPE,
                 description="Tipo di processo",
-                options=[x[0] for x in self.PROCESS_TYPES],
+                options=domains.PROCESS_TYPES.values(),
             )
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Gradi di pericolo")
         )
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -108,7 +99,13 @@ class DangerZones(QgsProcessingAlgorithm):
             )
 
         fields = QgsFields()
-        fields.append(QgsField("pericolo", QVariant.String))
+        fields.append(QgsField("Processo", QVariant.Int))
+        fields.append(
+            QgsField("Grado di pericolo", QVariant.Int)
+        )  # Result of the matrix (DANGER_LEVEL)
+        fields.append(
+            QgsField("Tipo di pericolo", QVariant.Int)
+        )  # What is showed on the map (DANGER_TYPE)
 
         (sink, dest_id) = self.parameterAsSink(
             parameters,
@@ -137,14 +134,19 @@ class DangerZones(QgsProcessingAlgorithm):
             context,
         )[0]
 
-        process_type = self.parameterAsEnum(
+        process_type_idx = self.parameterAsEnum(
             parameters,
             self.PROCESS_TYPE,
             context,
         )
 
+        process_type_id, process_type = list(domains.PROCESS_TYPES.items())[
+            process_type_idx
+        ]
+
         # Send some information to the user
-        feedback.pushInfo("CRS is {}".format(source.sourceCrs().authid()))
+        feedback.pushInfo(f"CRS is {source.sourceCrs().authid()}")
+        feedback.pushInfo(f"Process type is {process_type} ({process_type_id})")
 
         if sink is None:
             raise QgsProcessingException(self.invalidSinkError(parameters, self.OUTPUT))
@@ -176,26 +178,29 @@ class DangerZones(QgsProcessingAlgorithm):
             probability = feature.attribute(probability_field)
             process = feature.attribute(process_field)
 
-            # Check if feature is for the right processo otherwise continue
-            if not process == self.PROCESS_TYPES[process_type][1]:
+            # Check if feature is for the right process otherwise continue
+            if not process == process_type_id:
                 continue
 
+            # Compare with the already added features
             for i, new_feature in enumerate(new_features):
                 if feature.geometry().equals(new_feature.geometry()):
-                    danger = self._get_danger(process, intensity, probability)
-                    if danger > new_feature.attribute(0):
+                    danger_level, danger_type = self._get_danger(
+                        process, intensity, probability
+                    )
+                    if danger_level < new_feature.attribute(1):
                         new_feature = QgsFeature()
                         new_feature.setGeometry(feature.geometry())
-                        new_feature.setAttributes([danger])
-                        new_features.append(new_feature)
+                        new_feature.setAttributes([process, danger_level, danger_type])
                         new_features[i] = new_feature
                     break
             else:
                 new_feature = QgsFeature()
                 new_feature.setGeometry(feature.geometry())
-                new_feature.setAttributes(
-                    [self._get_danger(process, intensity, probability)]
+                danger_level, danger_type = self._get_danger(
+                    process, intensity, probability
                 )
+                new_feature.setAttributes([process, danger_level, danger_type])
                 new_features.append(new_feature)
 
             feedback.setProgress(int(current * total))
@@ -204,29 +209,62 @@ class DangerZones(QgsProcessingAlgorithm):
         return {self.OUTPUT: dest_id}
 
     def _get_danger(self, process, intensity, probability):
+        """Return danger level and danger type"""
+
+        prefer_lower = True
 
         # TODO: validate data based on the process type
-        matrix = {  # {probability: {intensity: danger}}
-            1000: {
-                1002: -10,
-                1003: -10,
-                1004: -10,
-            },
-            1001: {
-                1002: 1,
-                1003: 4,
-                1004: 7,
-            },
-            1002: {
-                1002: 2,
-                1003: 5,
-                1004: 8,
-            },
-            1003: {
-                1002: 3,
-                1003: 6,
-                1004: 9,
-            },
-        }
 
-        return matrix[probability][intensity]
+        if process in [1110, 1120]:
+            matrix = {  # {probability: {intensity: (danger_level, danger_type)}}
+                1000: {
+                    1002: (1010, 1001),
+                    1003: (1010, 1001),
+                    1004: (1010, 1001),
+                },
+                1001: {
+                    1002: (1009, 1002),
+                    1003: (1006, 1003),
+                    1004: (1003, 1004),
+                },
+                1002: {
+                    1002: (1008, 1002),
+                    1003: (1005, 1003),
+                    1004: (1002, 1004),
+                },
+                1003: {
+                    1002: (1007, 1003),
+                    1003: (1004, 1003),
+                    1004: (1001, 1004),
+                },
+            }
+            danger = matrix[probability][intensity]
+        elif process in [1200]:
+            matrix = {  # {probability: {intensity: (danger_level, danger_type)}}
+                1000: {
+                    1002: (1010, 1001),
+                    1003: (1010, 1001),
+                    1004: (1010, 1001),
+                },
+                1001: {
+                    1002: (1009, 1002),
+                    1003: (1006, 1002),
+                    1004: (1003, 1004),
+                },
+                1002: {
+                    1002: (1008, 1002),
+                    1003: (1005, 1003),
+                    1004: (1002, 1004),
+                },
+                1003: {
+                    1002: (1007, 1003),
+                    1003: (1004, 1003),
+                    1004: (1001, 1004),
+                },
+            }
+            if not prefer_lower:
+                matrix[1001][1003] = (1006, 1003)
+            danger = matrix[probability][intensity]
+        else:
+            danger = None
+        return danger
