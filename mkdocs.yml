@@ -1,0 +1,11 @@
+site_name: PZP
+theme:
+  name: material
+  language: it
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+repo_url: https://github.com/opengisch/pzp
