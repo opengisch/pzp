@@ -2,9 +2,10 @@
 name=pzp
 description=Plugin Piani Zone di Pericolo canton Ticino
 about=Plugin per la digitalizzazione e il calcolo delle zone di pericolo del Canton Ticino.
-version=0.1
+version=0.0.1
 qgisMinimumVersion=3.0
 author=OPENGIS.ch
 email=info@opengis.ch
 repository=https://github.com/opengisch/pzp
+tracker=https://github.com/opengisch/pzp/issues
 hasProcessingProvider=yes
