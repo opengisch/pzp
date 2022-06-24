@@ -1,4 +1,5 @@
 import os
+import webbrowser
 
 from qgis import processing
 from qgis.core import QgsApplication, QgsProject
@@ -38,6 +39,7 @@ class PZP:
                 "danger.png", "Calcola zone di pericolo", self.do_calculate_zones
             )
         )
+        self.toolbar.addAction(self.create_action("help.png", "Aiuto", self.do_help))
         self.initProcessing()
         self.options_factory = PluginOptionsFactory()
         self.options_factory.setTitle("PZP")
@@ -105,6 +107,9 @@ class PZP:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
             layer.loadNamedStyle(qml_file_path)
+
+    def do_help(self):
+        webbrowser.open("https://opengisch.github.io/pzp/")
 
 
 class PluginOptionsFactory(QgsOptionsWidgetFactory):
