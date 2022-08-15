@@ -1,6 +1,8 @@
 import os
 import shutil
+from datetime import datetime
 
+import qgis
 from qgis import processing
 from qgis.core import (
     QgsCoordinateReferenceSystem,
@@ -37,10 +39,19 @@ def create_project(name, working_dir, process):
     shutil.copy(empty_gpkg_file_path, gpkg_path)
 
     add_layers(gpkg_path)
+
+    # Read the version of the plugin
+    version = qgis.utils.plugins_metadata_parser["pzp"].get("general", "version")
+    utils.write_project_metadata("project_version", version)
+    utils.write_project_metadata("created_at", str(datetime.now()))
+    process_type_id, process_type = list(domains.PROCESS_TYPES.items())[process]
+    utils.write_project_metadata("process_type_id", str(process_type_id))
+    utils.write_project_metadata("process_type", process_type)
+
     QgsProject.instance().write(project_path)
 
     # TODO: different layers depending on process
-    # TODO: metadata
+    # TODO: layers metadata
 
 
 def add_layers(gpkg_path):
@@ -137,7 +148,7 @@ def add_layers(gpkg_path):
 
 
 def old_add_layers():
-    utils.write_project_metadata("project_version", "0")  # TODO: project version
+    pass
 
 
 def create_layer(name, path="Polygon"):
