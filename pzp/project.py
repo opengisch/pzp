@@ -113,6 +113,7 @@ def add_layers(gpkg_path):
     group_intensity_filtered = create_group(
         "Intensità (con filtri x visualizzazione scenari)", group
     )
+    group_intensity_filtered.setExpanded(True)
 
     gpkg_layer = load_gpkg_layer(layer.name(), gpkg_path)
     gpkg_layer.setSubsetString("\"periodo_ritorno\"='30'")
@@ -120,6 +121,9 @@ def add_layers(gpkg_path):
     gpkg_layer.setName("HQ 030")
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
+    layer_node = group.findLayer(gpkg_layer.id())
+    layer_node.setExpanded(False)
+    layer_node.setItemVisibilityChecked(False)
 
     gpkg_layer = load_gpkg_layer(layer.name(), gpkg_path)
     gpkg_layer.setSubsetString("\"periodo_ritorno\"='100'")
@@ -127,6 +131,9 @@ def add_layers(gpkg_path):
     gpkg_layer.setName("HQ 100")
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
+    layer_node = group.findLayer(gpkg_layer.id())
+    layer_node.setExpanded(False)
+    layer_node.setItemVisibilityChecked(False)
 
     gpkg_layer = load_gpkg_layer(layer.name(), gpkg_path)
     gpkg_layer.setSubsetString("\"periodo_ritorno\"='300'")
@@ -134,6 +141,9 @@ def add_layers(gpkg_path):
     gpkg_layer.setName("HQ 300")
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
+    layer_node = group.findLayer(gpkg_layer.id())
+    layer_node.setExpanded(False)
+    layer_node.setItemVisibilityChecked(False)
 
     gpkg_layer = load_gpkg_layer(layer.name(), gpkg_path)
     gpkg_layer.setSubsetString("\"periodo_ritorno\"='99999'")
@@ -141,6 +151,9 @@ def add_layers(gpkg_path):
     gpkg_layer.setName("HQ >300")
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
+    layer_node = group.findLayer(gpkg_layer.id())
+    layer_node.setExpanded(False)
+    layer_node.setItemVisibilityChecked(False)
 
     # Raster layers
     load_qlr_layer("dati_base", group)
