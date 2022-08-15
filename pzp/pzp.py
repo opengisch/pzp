@@ -10,6 +10,7 @@ from qgis.PyQt.QtWidgets import QAction, QHBoxLayout
 from pzp import domains, project, utils
 from pzp.processing_provider.provider import Provider
 from pzp.ui.calculation_dialog import CalculationDialog
+from pzp.ui.create_project_dialog import CreateProjectDialog
 from pzp.ui.resources import *  # noqa
 
 
@@ -26,7 +27,7 @@ class PZP:
 
         self.toolbar.addAction(
             self.create_action(
-                "file.png", "Inizia nuovo progetto", self.do_start_project
+                "file.png", "Inizia nuovo progetto", self.do_create_project
             )
         )
         self.toolbar.addAction(
@@ -66,11 +67,23 @@ class PZP:
         QgsApplication.processingRegistry().removeProvider(self.provider)
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
 
-    def do_start_project(self):
-        # project = QgsProject.instance()
-        # dir_path = os.path.dirname(os.path.realpath(__file__))
-        # project.read(os.path.join(dir_path, "data", "PN_MandatoPZP_UCA_MN95+WMS.qgz"))
-        project.add_layers()
+    def do_create_project(self):
+
+        dlg = CreateProjectDialog(self.iface)
+
+        # TODO: validate all inputs
+        # self.validators = Validators()
+        # projectNameValidator = ProjectNameValidator(allow_empty=False)
+
+        # fileValidator = FileValidator(pattern='*', allow_empty=False)
+        # self.xtf_file_line_edit.setValidator(fileValidator)
+
+        if dlg.exec_():
+            project.create_project(
+                dlg.name.text(),
+                dlg.directory.filePath(),
+                dlg.process_cbox.currentIndex(),
+            )
 
     @utils.check_project()
     def do_check_geometries(self):
