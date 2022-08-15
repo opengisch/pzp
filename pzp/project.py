@@ -131,9 +131,9 @@ def add_layers(gpkg_path):
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
 
-    group_geodati = create_group("Geodati", group)
-    load_qlr_layer("carte_nazionali_colori", group_geodati)
-    load_qlr_layer("carte_nazionali_grigio", group_geodati)
+    # Raster layers
+    load_qlr_layer("dati_base", group)
+    load_qlr_layer("mappe_base", group)
 
 
 def old_add_layers():
