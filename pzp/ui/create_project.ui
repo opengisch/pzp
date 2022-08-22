@@ -7,13 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>417</width>
-    <height>131</height>
+    <height>152</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Attenzione...</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="3">
@@ -71,6 +78,10 @@
    <header>qgsfilewidget.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>name</tabstop>
+  <tabstop>process_cbox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

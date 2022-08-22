@@ -1,7 +1,18 @@
 import os
 from functools import wraps
 
-from qgis.core import Qgis, QgsMessageLog, QgsProject
+from qgis import processing
+from qgis.core import (
+    Qgis,
+    QgsCoordinateReferenceSystem,
+    QgsEditorWidgetSetup,
+    QgsField,
+    QgsLayerDefinition,
+    QgsMessageLog,
+    QgsProject,
+    QgsVectorLayer,
+)
+from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.uic import loadUiType
 from qgis.utils import iface
 
@@ -65,7 +76,9 @@ def check_project():
             pzp_project_version = read_project_metadata("project_version")
 
             if pzp_project_version:
-                if pzp_project_version in ["0", "1"]:  # TODO: actual version number
+                if pzp_project_version in [
+                    "0.0.2",
+                ]:  # TODO: actual version number
                     return func(
                         *args[:-1], **kwargs
                     )  # TODO: Why there is a False as last argument?
@@ -91,3 +104,71 @@ def get_ui_class(ui_file):
         os.path.join(os.path.dirname(__file__), "ui", ui_file)
     )
     return loadUiType(ui_file_path)[0]
+
+
+def add_field_to_layer(layer, name, alias="", variant=QVariant.Int):
+    field = QgsField(name, variant)
+    field.setAlias(alias)
+    pr = layer.dataProvider()
+    pr.addAttributes([field])
+    layer.updateFields()
+
+
+def set_value_map_to_field(layer, field_name, domain_map):
+
+    index = layer.fields().indexOf(field_name)
+    setup = QgsEditorWidgetSetup(
+        "ValueMap",
+        {"map": {y: x for x, y in domain_map.items()}},
+    )
+    layer.setEditorWidgetSetup(index, setup)
+
+
+def set_qml_style(layer, qml_name):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    qml_file_path = os.path.join(current_dir, "qml", f"{qml_name}.qml")
+    layer.loadNamedStyle(qml_file_path)
+
+
+def create_layer(name, path="Polygon"):
+    layer = QgsVectorLayer(
+        path=path,
+        baseName=name,
+        providerLib="memory",
+    )
+    layer.setCrs(QgsCoordinateReferenceSystem("EPSG:2056"))
+    return layer
+
+
+def load_qlr_layer(qlr_name, group):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_name}.qlr")
+    QgsLayerDefinition().loadLayerDefinition(
+        qlr_file_path, QgsProject.instance(), group
+    )
+
+
+def create_group(name, root=None):
+    if not root:
+        root = QgsProject.instance().layerTreeRoot()
+    group = root.addGroup(name)
+
+    return group
+
+
+def add_layer_to_gpkg(layer, gpkg_path):
+    params = {
+        "LAYERS": [layer],
+        "OUTPUT": gpkg_path,
+        "OVERWRITE": False,  # Important!
+        "SAVE_STYLES": True,
+        "SAVE_METADATA": True,
+        "SELECTED_FEATURES_ONLY": False,
+    }
+    processing.run("native:package", params)
+
+
+def load_gpkg_layer(layer_name, gpkg_path):
+    source_path = f"{gpkg_path}|layername={layer_name}"
+    layer = QgsVectorLayer(source_path, layer_name, "ogr")
+    return layer

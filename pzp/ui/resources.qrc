@@ -17,4 +17,10 @@
     <qresource prefix="/plugins/pzp/" >
         <file>../icons/help.png</file>
     </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/green_check.png</file>
+    </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/red_cross.png</file>
+    </qresource>
 </RCC>

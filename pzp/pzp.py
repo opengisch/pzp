@@ -1,15 +1,19 @@
 import os
 import webbrowser
+from datetime import datetime
 
 from qgis import processing
 from qgis.core import QgsApplication, QgsProject
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QHBoxLayout
 
 from pzp import domains, project, utils
 from pzp.processing_provider.provider import Provider
+from pzp.ui.ambiguity_dialog import AmbiguityDialog
 from pzp.ui.calculation_dialog import CalculationDialog
+from pzp.ui.check_dock import CheckResultsDock
 from pzp.ui.create_project_dialog import CreateProjectDialog
 from pzp.ui.resources import *  # noqa
 
@@ -87,13 +91,18 @@ class PZP:
 
     @utils.check_project()
     def do_check_geometries(self):
-        pass
+        self.checks_dock = CheckResultsDock(self.iface)
 
-    @utils.check_project()
+        self.checks_dock.setObjectName("CheckResultsDock")
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.checks_dock)
+        self.checks_dock.setVisible(True)
+        self.checks_dock.show()
+
+    # @utils.check_project()
     def do_calculate_zones(self):
         # TODO: check the layers and the fields needed are present
-        # TODO: run algo
-        # TODO: apply valuemap and styles
+
+        # TODO: run the algo for the process defined in the project instead of asking
 
         dlg = CalculationDialog(self.iface)
         for process in domains.PROCESS_TYPES.items():
@@ -104,22 +113,48 @@ class PZP:
             result = processing.run(
                 "pzp:danger_zones",
                 {
-                    "INPUT": "Intensità",
-                    "PROCESS_FIELD": "Processo",
-                    "PROBABILITY_FIELD": "Probabilità",
-                    "INTENSITY_FIELD": "Intensità",
+                    "INPUT": "Intensità completa",
+                    "PROCESS_FIELD": "proc_parz",
+                    "PROBABILITY_FIELD": "periodo_ritorno",
+                    "INTENSITY_FIELD": "classe_intensita",
                     "PROCESS_TYPE": dlg.process_cbox.currentIndex(),
                     "OUTPUT": "TEMPORARY_OUTPUT",
                 },
             )
 
             layer = result["OUTPUT"]
-            layer.setName(f"Pericolo {selected_process[1]}")
-            QgsProject.instance().addMapLayer(layer, True)
+            layer.setName(f"Pericolo {selected_process[1]} {datetime.now()}")
+            root = QgsProject.instance().layerTreeRoot()
+
+            tree_layer = root.findLayer(
+                QgsProject.instance().mapLayersByName("Intensità completa")[0]
+            )
+            layer_parent = tree_layer.parent()
+
+            QgsProject.instance().addMapLayer(layer, False)
+            layer_parent.insertLayer(0, layer)
+            # layer_parent.addLayer(layer)
 
             current_dir = os.path.dirname(os.path.abspath(__file__))
             qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
             layer.loadNamedStyle(qml_file_path)
+
+            # TODO: disambiguity dialog
+            dlg = AmbiguityDialog(self.iface)
+            ambiguous_features = []
+
+            for feature in layer.getFeatures():
+                # TODO: depending on the matrix of the process!!
+                if feature["Tipo di pericolo"] in [1004]:
+                    print("AMBIGUO")
+                    ambiguous_features.append(feature)
+
+            if dlg.exec_():
+                pass
+
+        # Cycle all features in danger layer
+        # by process, create a list of the ambiguous ones with featureid
+        # populate list where to select the danger_type
 
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")
