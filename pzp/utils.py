@@ -140,7 +140,10 @@ def create_layer(name, path="Polygon"):
     return layer
 
 
-def load_qlr_layer(qlr_name, group):
+def load_qlr_layer(qlr_name, group=None):
+    if not group:
+        group = QgsProject.instance().layerTreeRoot()
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_name}.qlr")
     QgsLayerDefinition().loadLayerDefinition(

@@ -7,14 +7,14 @@ from qgis.core import QgsApplication, QgsProject
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QHBoxLayout
+from qgis.PyQt.QtWidgets import QAction, QHBoxLayout, QMenu, QToolButton
 
-from pzp import domains, project, utils
+from pzp import domains, utils
 from pzp.processing_provider.provider import Provider
+from pzp.ui.add_process import AddProcessDialog
 from pzp.ui.ambiguity_dialog import AmbiguityDialog
 from pzp.ui.calculation_dialog import CalculationDialog
 from pzp.ui.check_dock import CheckResultsDock
-from pzp.ui.create_project_dialog import CreateProjectDialog
 from pzp.ui.resources import *  # noqa
 
 
@@ -31,9 +31,26 @@ class PZP:
 
         self.toolbar.addAction(
             self.create_action(
-                "file.png", "Inizia nuovo progetto", self.do_create_project
+                "landslide.png", "Aggiungi processo", self.do_add_process
             )
         )
+
+        geodata_menu = QMenu()
+        add_basemaps_action = self.create_action(
+            "world.png", "Aggiungi mappe base", self.do_add_basemaps
+        )
+
+        geodata_menu.addAction(add_basemaps_action)
+        geodata_menu.addAction(
+            self.create_action("ruler.png", "Aggiungi dati base", self.do_add_base_data)
+        )
+
+        toolButton = QToolButton()
+        toolButton.setDefaultAction(add_basemaps_action)
+        toolButton.setMenu(geodata_menu)
+        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        self.toolbar.addWidget(toolButton)
+
         self.toolbar.addAction(
             self.create_action(
                 "check.png", "Verifica geometrie", self.do_check_geometries
@@ -71,23 +88,15 @@ class PZP:
         QgsApplication.processingRegistry().removeProvider(self.provider)
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
 
-    def do_create_project(self):
+    def do_add_process(self):
+        dlg = AddProcessDialog(self.iface)
+        dlg.exec_()
 
-        dlg = CreateProjectDialog(self.iface)
+    def do_add_basemaps(self):
+        utils.load_qlr_layer("mappe_base")
 
-        # TODO: validate all inputs
-        # self.validators = Validators()
-        # projectNameValidator = ProjectNameValidator(allow_empty=False)
-
-        # fileValidator = FileValidator(pattern='*', allow_empty=False)
-        # self.xtf_file_line_edit.setValidator(fileValidator)
-
-        if dlg.exec_():
-            project.create_project(
-                dlg.name.text(),
-                dlg.directory.filePath(),
-                dlg.process_cbox.currentIndex(),
-            )
+    def do_add_base_data(self):
+        utils.load_qlr_layer("dati_base")
 
     @utils.check_project()
     def do_check_geometries(self):
