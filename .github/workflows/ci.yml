@@ -1,19 +1,18 @@
 name: ci
 on:
-  push:
-    branches:
-      - deploy
+  release:
+    types: published
 
 jobs:
-  # mkdocs:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-python@v2
-  #       with:
-  #         python-version: 3.x
-  #     - run: pip install mkdocs-material
-  #     - run: mkdocs gh-deploy --force
+  mkdocs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs-material
+      - run: mkdocs gh-deploy --force
 
   deploy:
     runs-on: ubuntu-latest
@@ -38,11 +37,6 @@ jobs:
           ls -lh
           cat plugins.xml
 
-      # - name: Add artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: plugin
-      #     path: ${{ format('{0}.{1}.{2}', 'pzp', github.ref_name , 'zip') }}
       - name: Download remote plugins.xml file
         run: curl http://download.opengis.ch/repos/ticino/plugins.xml -o plugins_remote.xml
 
@@ -58,12 +52,13 @@ jobs:
             merger.xml_output_parser()
             merger.merge()
 
-      - name: test
+      - name: Rename plugins output
         run: |
           ls -lh
-          cat plugins_remote.xml
+          mv plugins_remote.xml plugins.xml
+          cat plugins.xml
 
-      - name: Deploy to server
+      - name: Deploy plugin
         uses: ilCollez/ssh-scp-deploy@v1.1.0
         with:
           host: ${{ secrets.REMOTE_HOST }}
@@ -71,8 +66,14 @@ jobs:
           password: ${{ secrets.REMOTE_PASSWORD }}
           files: |
             ${{ format('{0}.{1}.{2}', 'pzp', github.ref_name , 'zip') }}
-          remote-path: "/home/opengis_download/download.opengis.ch/repos/ticino/pzp/"
+          remote-path: "/home/opengis_download/download.opengis.ch/repos/ticino/plugins/pzp/"
 
-# /home/opengis_download/download.opengis.ch/repos/ticino
-# plugins.xml
-# /pzp/pzp...zip
+      - name: Deploy plugins.xml
+        uses: ilCollez/ssh-scp-deploy@v1.1.0
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          files: |
+            plugins.xml
+          remote-path: "/home/opengis_download/download.opengis.ch/repos/ticino/"
