@@ -44,10 +44,11 @@ jobs:
 
       - name: Merge plugins.xml
         run: |
-          qgis-plugin-repo merge plugins.xml all_plugins.xml
-          qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml all_plugins.xml
           ls -lh
-          cat plugins.xml
+          qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml all_plugins.xml
+          cat all_plugins.xml
+          qgis-plugin-repo merge plugins.xml all_plugins.xml
+          ls -lh
 
 
 # /home/opengis_download/download.opengis.ch/repos/ticino
