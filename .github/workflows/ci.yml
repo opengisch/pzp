@@ -52,7 +52,7 @@ jobs:
       - name: Merge plugins.xml
         run: |
           ls -lh
-          qgis-plugin-repo merge plugins.xml http://download.opengis.ch/repos/ticino/plugins.xml
+          qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml plugins.xml
           cat plugins.xml
           ls -lh
 
