@@ -33,8 +33,15 @@ jobs:
       - name: Install qgis-plugin-ci
         run: pip3 install qgis-plugin-ci
 
-      - name: Deploy plugin
+      - name: Install qgis-plugin-repo
+        run: pip3 install qgis-plugin-repo
+
+      - name: Package plugin
         run: |
           qgis-plugin-ci package 1.1.1 -u http://download.opengis.ch/repos/ticino/
           ls -lh
           cat plugins.xml
+
+      - name: Merge plugins.xml
+        run: |
+          qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml plugins.xml
