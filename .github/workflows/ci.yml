@@ -19,6 +19,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: >
+         echo ${{ github.event.client_payload.name }}
+         echo ${{ github.event.client_payload.version }}
+         echo ${{ github.event.client_payload.url }}
+
       - uses: actions/checkout@v2
 
       - name: Set up Python 3.8
@@ -38,19 +43,19 @@ jobs:
           ls -lh
           cat plugins.xml
 
-      - name: Add artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: plugin
-          path: ${{ format('{0}.{1}.{2}', 'pzp', github.ref_name , 'zip') }}
+      # - name: Add artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: plugin
+      #     path: ${{ format('{0}.{1}.{2}', 'pzp', github.ref_name , 'zip') }}
 
-      # - name: Merge plugins.xml
-      #   run: |
-      #     ls -lh
-      #     qgis-plugin-repo merge file:///home/runner/work/pzp/pzp/plugins.xml all_plugins.xml
-      #     qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml all_plugins.xml
-      #     cat all_plugins.xml
-      #     ls -lh
+      - name: Merge plugins.xml
+        run: |
+          ls -lh
+          qgis-plugin-repo merge file:///home/runner/work/pzp/pzp/plugins.xml all_plugins.xml
+          qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml all_plugins.xml
+          cat all_plugins.xml
+          ls -lh
 
 
 # /home/opengis_download/download.opengis.ch/repos/ticino
