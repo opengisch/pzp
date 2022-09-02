@@ -23,12 +23,12 @@ def push_info(message):
     _get_iface().messageBar().pushInfo("pzp", message)
 
 
-def push_warning(message):
-    _get_iface().messageBar().pushMessage("pzp", message, Qgis.Warning, 0)
+def push_warning(message, time=0):
+    _get_iface().messageBar().pushMessage("pzp", message, Qgis.Warning, time)
 
 
-def push_error(message):
-    _get_iface().messageBar().pushMessage("pzp", message, Qgis.Critical, 0)
+def push_error(message, time=0):
+    _get_iface().messageBar().pushMessage("pzp", message, Qgis.Critical, time)
 
 
 def _get_iface():

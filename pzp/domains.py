@@ -8,9 +8,9 @@ PROCESS_TYPES = OrderedDict(
         1400: "Ruscellamento superficiale",
         2001: "Scivolamento spontaneo",
         2002: "Colata detritica di versante",
-        3000: "Caduta sassi o blocchi",
-        4100: "Valanga radente",
-        4200: "Valanga polverosa",
+        # 3000: "Caduta sassi o blocchi",
+        # 4100: "Valanga radente",
+        # 4200: "Valanga polverosa",
     }
 )
 

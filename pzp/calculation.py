@@ -1,8 +1,7 @@
 import os
 
 from qgis import processing
-from qgis.core import QgsLayerTreeGroup, QgsProject
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox
+from qgis.core import QgsExpressionContextUtils, QgsProject
 
 from pzp import domains, utils
 
@@ -11,42 +10,67 @@ FORM_CLASS = utils.get_ui_class("calculation.ui")
 # TODO: check for needed layers and show only groups with correct layers
 
 
-class CalculationDialog(QDialog, FORM_CLASS):
-    def __init__(self, iface, parent=None):
-        QDialog.__init__(self, parent)
-        self.setupUi(self)
-        self.buttonBox.accepted.disconnect()
-        self.buttonBox.clicked.connect(self.button_box_clicked)
+# class CalculationDialog(QDialog, FORM_CLASS):
+#     def __init__(self, iface, group, parent=None):
+#         QDialog.__init__(self, parent)
+# self.setupUi(self)
+# self.buttonBox.accepted.disconnect()
+# self.buttonBox.clicked.connect(self.button_box_clicked)
 
-        for process in domains.PROCESS_TYPES.items():
-            self.process_cbox.addItem(process[1], process[0])
+# for process in domains.PROCESS_TYPES.items():
+#     self.process_cbox.addItem(process[1], process[0])
 
-        root = QgsProject.instance().layerTreeRoot()
-        if isinstance(root, QgsLayerTreeGroup):
-            for group in root.findGroups(recursive=True):
-                self.group_cbox.addItem(group.name(), group)
+# root = QgsProject.instance().layerTreeRoot()
+# if isinstance(root, QgsLayerTreeGroup):
+#     for group in root.findGroups(recursive=True):
+#         self.group_cbox.addItem(group.name(), group)
 
-    def button_box_clicked(self, button):
-        if self.buttonBox.buttonRole(button) == QDialogButtonBox.AcceptRole:
-            process_type = self.process_cbox.currentData()
-            calculate(process_type, None)
-            self.close()
-        else:
-            self.close()
+# def button_box_clicked(self, button):
+#     if self.buttonBox.buttonRole(button) == QDialogButtonBox.AcceptRole:
+#         process_type = self.process_cbox.currentData()
+#         calculate(process_type, None)
+#         self.close()
+#     else:
+#         self.close()
 
 
-def calculate(process_type, group):
+class CalculationDialog:
+    def __init__(self, iface, group, parent=None):
+        self.group = group
+
+    def exec_(self):
+        guess_params(self.group)
+
+
+def guess_params(group):
+    # process and layers
+    layer_nodes = group.findLayers()
+    layer_intensity = None
+    process_type = None
+
+    for layer_node in layer_nodes:
+        if layer_node.name() == "Intensità completa":
+            layer_intensity = layer_node.layer()
+            process_type = int(
+                QgsExpressionContextUtils.layerScope(layer_intensity).variable(
+                    "pzp_process"
+                )
+            )
+
+            calculate(process_type, layer_intensity)
+
+
+def calculate(process_type, layer_intensity):
 
     # TODO: find group and layers
 
     # Processing algorithm wants the index of the process type in the combobox
     process_type_idx = list(domains.PROCESS_TYPES).index(process_type)
 
-    QgsProject.instance().mapLayersByName("Intensità completa")[0]
     result = processing.run(
         "pzp:danger_zones",
         {
-            "INPUT": "Intensità completa",
+            "INPUT": layer_intensity.id(),
             "PROCESS_FIELD": "proc_parz",
             "PROBABILITY_FIELD": "periodo_ritorno",
             "INTENSITY_FIELD": "classe_intensita",

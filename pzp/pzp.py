@@ -1,6 +1,6 @@
 import webbrowser
 
-from qgis.core import QgsApplication
+from qgis.core import QgsApplication, QgsLayerTreeGroup
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
@@ -103,8 +103,14 @@ class PZP:
         self.checks_dock.show()
 
     def do_calculate_zones(self):
-        dlg = CalculationDialog(self.iface)
-        dlg.exec_()
+        # Get selected group
+        current_node = self.iface.layerTreeView().currentNode()
+        if isinstance(current_node, QgsLayerTreeGroup):
+            # TODO: Check we have all the layers in the group
+            dlg = CalculationDialog(self.iface, current_node)
+            dlg.exec_()
+        else:
+            utils.push_error("Selezionare il gruppo che contiene il processo", 3)
 
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")
