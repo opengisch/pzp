@@ -5,8 +5,8 @@ on:
       - master
       - main
       - ci
-#  release:
-#    types: published
+  release:
+    types: published
 
 jobs:
   mkdocs:
