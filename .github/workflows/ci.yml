@@ -48,6 +48,8 @@ jobs:
       #   with:
       #     name: plugin
       #     path: ${{ format('{0}.{1}.{2}', 'pzp', github.ref_name , 'zip') }}
+      - name: Download remote plugins.xml file
+        run: curl http://download.opengis.ch/repos/ticino/plugins.xml -o plugins_remote.xml
 
       # I use directly the python code in qgis-plugin-repo because something in the cli is broken for local files
       - name: Merge plugins.xml
@@ -56,11 +58,7 @@ jobs:
           script: |
             from qgis_plugin_repo.merger import Merger
             from pathlib import Path
-            merger = Merger(Path("all_plugins.xml"), Path("plugins.xml"))
-            merger.xml_input_parser()
-            merger.xml_output_parser()
-            merger.merge()
-            merger = Merger(Path("all_plugins.xml"), "http://download.opengis.ch/repos/ticino/plugins.xml")
+            merger = Merger(Path("plugins_remote.xml"), Path("plugins.xml"))
             merger.xml_input_parser()
             merger.xml_output_parser()
             merger.merge()
@@ -68,7 +66,7 @@ jobs:
       - name: test
         run: |
           ls -lh
-          cat all_plugins.xml
+          cat plugins.xml
 
 # /home/opengis_download/download.opengis.ch/repos/ticino
 # plugins.xml
