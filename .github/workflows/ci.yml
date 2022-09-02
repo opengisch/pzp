@@ -37,21 +37,43 @@ jobs:
           ls -lh
           cat plugins.xml
 
-      # - name: Add artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: plugin
-      #     path: ${{ format('{0}.{1}.{2}', 'pzp.', github.ref , '.zip') }}
+      - name: Download remote plugins.xml file
+        run: curl http://download.opengis.ch/repos/ticino/plugins.xml -o plugins_remote.xml
 
-      # - name: Merge plugins.xml
-      #   run: |
-      #     ls -lh
-      #     qgis-plugin-repo merge file:///home/runner/work/pzp/pzp/plugins.xml all_plugins.xml
-      #     qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml all_plugins.xml
-      #     cat all_plugins.xml
-      #     ls -lh
+      # I use directly the python code in qgis-plugin-repo because something in the cli is broken for local files
+      - name: Merge plugins.xml
+        uses: jannekem/run-python-script-action@v1
+        with:
+          script: |
+            from qgis_plugin_repo.merger import Merger
+            from pathlib import Path
+            merger = Merger(Path("plugins_remote.xml"), Path("plugins.xml"))
+            merger.xml_input_parser()
+            merger.xml_output_parser()
+            merger.merge()
 
+      - name: Rename plugins output
+        run: |
+          ls -lh
+          mv plugins_remote.xml plugins.xml
+          cat plugins.xml
 
-# /home/opengis_download/download.opengis.ch/repos/ticino
-# plugins.xml
-# /pzp/pzp...zip
+      - name: Deploy plugin
+        uses: ilCollez/ssh-scp-deploy@v1.1.0
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          files: |
+            ${{ format('{0}.{1}.{2}', 'pzp', github.ref_name , 'zip') }}
+          remote-path: "/home/opengis_download/download.opengis.ch/repos/ticino/plugins/pzp/"
+
+      - name: Deploy plugins.xml
+        uses: ilCollez/ssh-scp-deploy@v1.1.0
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          files: |
+            plugins.xml
+          remote-path: "/home/opengis_download/download.opengis.ch/repos/ticino/"
