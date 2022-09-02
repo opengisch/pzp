@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from qgis.core import QgsProject
+from qgis.core import QgsExpressionContextUtils, QgsProject
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox
 
@@ -38,6 +38,7 @@ def add_process(process_type, gpkg_directory_path):
 
     # TODO: docstring process_type is the process code
     # TODO: manage different process_types
+    # TODO: set_layer_metadata (or variable?) and use process the set default
 
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
     gpkg_path = os.path.join(
@@ -52,6 +53,9 @@ def add_process(process_type, gpkg_directory_path):
     group = utils.create_group(group_name, root)
 
     layer = utils.create_layer("Area di studio")
+    QgsExpressionContextUtils.setLayerVariable(layer, "pzp_layer", "area")
+    QgsExpressionContextUtils.setLayerVariable(layer, "pzp_process", "process_type")
+
     utils.add_field_to_layer(layer, "fid", "No. identificativo", QVariant.LongLong)
     utils.add_field_to_layer(
         layer, "commento", "Osservazione o ev. commento", QVariant.String
