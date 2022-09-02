@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: plugin
-          path: ${{ format('{0}.{1}.{2}', 'pzp.', GITHUB_REF , '.zip') }}
+          path: ${{ format('{0}.{1}.{2}', 'pzp.', github.ref , '.zip') }}
 
       # - name: Merge plugins.xml
       #   run: |
