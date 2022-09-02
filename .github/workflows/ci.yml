@@ -56,7 +56,10 @@ jobs:
           script: |
             from qgis_plugin_repo.merger import Merger
             from pathlib import Path
-            merger = Merger(Path("plugins_in.xml"), Path("plugins_out.xml"))
+            merger = Merger(Path("all_plugins.xml"), Path("plugins.xml"))
+            merger.xml_input_parser()
+            merger.xml_output_parser()
+            merger.merge()
             merger = Merger(Path("plugins.xml"), "http://download.opengis.ch/repos/ticino/plugins.xml")
             merger.xml_input_parser()
             merger.xml_output_parser()
