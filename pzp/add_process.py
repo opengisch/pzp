@@ -54,7 +54,7 @@ def add_process(process_type, gpkg_directory_path):
 
     layer = utils.create_layer("Area di studio")
     QgsExpressionContextUtils.setLayerVariable(layer, "pzp_layer", "area")
-    QgsExpressionContextUtils.setLayerVariable(layer, "pzp_process", "process_type")
+    QgsExpressionContextUtils.setLayerVariable(layer, "pzp_process", process_type)
 
     utils.add_field_to_layer(layer, "fid", "No. identificativo", QVariant.LongLong)
     utils.add_field_to_layer(
@@ -75,6 +75,9 @@ def add_process(process_type, gpkg_directory_path):
     group.addLayer(gpkg_layer)
 
     layer = utils.create_layer("Intensità completa")
+    QgsExpressionContextUtils.setLayerVariable(layer, "pzp_layer", "intensity")
+    QgsExpressionContextUtils.setLayerVariable(layer, "pzp_process", process_type)
+
     utils.add_field_to_layer(layer, "fid", "No. identificativo", QVariant.LongLong)
     utils.add_field_to_layer(
         layer, "commento", "Osservazione o ev. commento", QVariant.String
@@ -85,15 +88,12 @@ def add_process(process_type, gpkg_directory_path):
         "Periodo di ritorno (es. 30, 100, 300, 99999)",
         QVariant.Int,
     )
-    utils.set_value_map_to_field(layer, "periodo_ritorno", domains.EVENT_PROBABILITIES)
     utils.add_field_to_layer(
         layer, "classe_intensita", "Intensità/impatto del processo", QVariant.Int
     )
-    utils.set_value_map_to_field(layer, "classe_intensita", domains.INTENSITIES)
     utils.add_field_to_layer(
         layer, "proc_parz", "Processo rappresentato TI", QVariant.Int
     )
-    utils.set_value_map_to_field(layer, "proc_parz", domains.PROCESS_TYPES)
     utils.add_field_to_layer(
         layer, "fonte_proc", "Fonte del processo (es. nome riale)", QVariant.String
     )
@@ -110,6 +110,12 @@ def add_process(process_type, gpkg_directory_path):
     )
 
     utils.set_qml_style(layer, "intensity")
+    utils.set_value_map_to_field(layer, "periodo_ritorno", domains.EVENT_PROBABILITIES)
+    utils.set_value_map_to_field(layer, "classe_intensita", domains.INTENSITIES)
+    utils.set_value_map_to_field(layer, "proc_parz", domains.PROCESS_TYPES)
+    utils.set_default_value_to_field(layer, "proc_parz", "@pzp_process")
+    utils.set_not_null_constraint_to_field(layer, "fonte_proc")
+
     utils.add_layer_to_gpkg(layer, gpkg_path)
     gpkg_layer = utils.load_gpkg_layer(layer.name(), gpkg_path)
     project.addMapLayer(gpkg_layer, False)

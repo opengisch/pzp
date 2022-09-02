@@ -5,8 +5,10 @@ from qgis import processing
 from qgis.core import (
     Qgis,
     QgsCoordinateReferenceSystem,
+    QgsDefaultValue,
     QgsEditorWidgetSetup,
     QgsField,
+    QgsFieldConstraints,
     QgsLayerDefinition,
     QgsMessageLog,
     QgsProject,
@@ -122,6 +124,23 @@ def set_value_map_to_field(layer, field_name, domain_map):
         {"map": {y: x for x, y in domain_map.items()}},
     )
     layer.setEditorWidgetSetup(index, setup)
+
+
+def set_default_value_to_field(layer, field_name, expression):
+    index = layer.fields().indexOf(field_name)
+    default_value = QgsDefaultValue()
+    default_value.setExpression(expression)
+    layer.setDefaultValueDefinition(index, default_value)
+
+
+def set_not_null_constraint_to_field(layer, field_name, enforce=True):
+    index = layer.fields().indexOf(field_name)
+
+    constraint = QgsFieldConstraints.ConstraintNotNull
+    strength = QgsFieldConstraints.ConstraintStrengthHard
+    if not enforce:
+        strength = QgsFieldConstraints.ConstraintStrengthSoft
+    layer.setFieldConstraint(index, constraint, strength)
 
 
 def set_qml_style(layer, qml_name):
