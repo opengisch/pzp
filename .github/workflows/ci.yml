@@ -1,10 +1,5 @@
 name: ci
 on:
-  push:
-    branches:
-      - master
-      - main
-      - ci
   release:
     types: published
 
