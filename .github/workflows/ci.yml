@@ -42,13 +42,19 @@ jobs:
           ls -lh
           cat plugins.xml
 
-      - name: Merge plugins.xml
-        run: |
-          ls -lh
-          qgis-plugin-repo merge file:///home/runner/work/pzp/pzp/plugins.xml all_plugins.xml
-          qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml all_plugins.xml
-          cat all_plugins.xml
-          ls -lh
+      - name: Add artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: plugin
+          path: pzp.${GITHUB_REF/refs\/tags\//}.zip
+
+      # - name: Merge plugins.xml
+      #   run: |
+      #     ls -lh
+      #     qgis-plugin-repo merge file:///home/runner/work/pzp/pzp/plugins.xml all_plugins.xml
+      #     qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml all_plugins.xml
+      #     cat all_plugins.xml
+      #     ls -lh
 
 
 # /home/opengis_download/download.opengis.ch/repos/ticino
