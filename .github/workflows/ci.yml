@@ -4,8 +4,12 @@ on:
     branches:
       - master
       - main
+      - ci
+#  release:
+#    types: published
+
 jobs:
-  deploy:
+  mkdocs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,3 +18,25 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material
       - run: mkdocs gh-deploy --force
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install qgis-plugin-ci
+        run: pip3 install qgis-plugin-ci
+
+      - name: Deploy plugin
+        run: >-
+          qgis-plugin-ci
+          package 1.1.1
+          -u http://download.opengis.ch/repos/ticino/
+          ls -lh
+          cat metadata.txt
