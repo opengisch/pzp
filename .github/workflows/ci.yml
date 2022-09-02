@@ -38,15 +38,15 @@ jobs:
 
       - name: Package plugin
         run: |
-          qgis-plugin-ci package 1.1.1 -u http://download.opengis.ch/repos/ticino/
+          qgis-plugin-ci package ${GITHUB_REF/refs\/tags\//} -u http://download.opengis.ch/repos/ticino/
           ls -lh
           cat plugins.xml
 
-      - name: Add artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: plugin
-          path: ${{ format('{0}.{1}.{2}', 'pzp.', github.ref , '.zip') }}
+      # - name: Add artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: plugin
+      #     path: ${{ format('{0}.{1}.{2}', 'pzp.', github.ref , '.zip') }}
 
       # - name: Merge plugins.xml
       #   run: |
