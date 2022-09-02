@@ -5,15 +5,15 @@ on:
       - deploy
 
 jobs:
-  mkdocs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-      - run: pip install mkdocs-material
-      - run: mkdocs gh-deploy --force
+  # mkdocs:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: 3.x
+  #     - run: pip install mkdocs-material
+  #     - run: mkdocs gh-deploy --force
 
   deploy:
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: plugin
-          path: ${{ format('{0}.{1}.{2}', 'pzp.', github.ref_name , '.zip') }}
+          path: ${{ format('{0}.{1}.{2}', 'pzp', github.ref_name , 'zip') }}
 
       # - name: Merge plugins.xml
       #   run: |
