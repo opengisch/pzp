@@ -1,16 +1,16 @@
-import os
 import webbrowser
 
-from qgis import processing
-from qgis.core import QgsApplication, QgsProject
+from qgis.core import QgsApplication, QgsLayerTreeGroup
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QHBoxLayout
+from qgis.PyQt.QtWidgets import QAction, QHBoxLayout, QMenu, QToolButton
 
-from pzp import domains, project, utils
+from pzp import utils
+from pzp.add_process import AddProcessDialog
+from pzp.calculation import CalculationDialog
+from pzp.check_dock import CheckResultsDock
 from pzp.processing_provider.provider import Provider
-from pzp.ui.calculation_dialog import CalculationDialog
-from pzp.ui.create_project_dialog import CreateProjectDialog
 from pzp.ui.resources import *  # noqa
 
 
@@ -27,9 +27,26 @@ class PZP:
 
         self.toolbar.addAction(
             self.create_action(
-                "file.png", "Inizia nuovo progetto", self.do_create_project
+                "landslide.png", "Aggiungi processo", self.do_add_process
             )
         )
+
+        geodata_menu = QMenu()
+        add_basemaps_action = self.create_action(
+            "world.png", "Aggiungi mappe base", self.do_add_basemaps
+        )
+
+        geodata_menu.addAction(add_basemaps_action)
+        geodata_menu.addAction(
+            self.create_action("ruler.png", "Aggiungi dati base", self.do_add_base_data)
+        )
+
+        toolButton = QToolButton()
+        toolButton.setDefaultAction(add_basemaps_action)
+        toolButton.setMenu(geodata_menu)
+        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        self.toolbar.addWidget(toolButton)
+
         self.toolbar.addAction(
             self.create_action(
                 "check.png", "Verifica geometrie", self.do_check_geometries
@@ -67,59 +84,33 @@ class PZP:
         QgsApplication.processingRegistry().removeProvider(self.provider)
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
 
-    def do_create_project(self):
+    def do_add_process(self):
+        dlg = AddProcessDialog(self.iface)
+        dlg.exec_()
 
-        dlg = CreateProjectDialog(self.iface)
+    def do_add_basemaps(self):
+        utils.load_qlr_layer("mappe_base")
 
-        # TODO: validate all inputs
-        # self.validators = Validators()
-        # projectNameValidator = ProjectNameValidator(allow_empty=False)
+    def do_add_base_data(self):
+        utils.load_qlr_layer("dati_base")
 
-        # fileValidator = FileValidator(pattern='*', allow_empty=False)
-        # self.xtf_file_line_edit.setValidator(fileValidator)
-
-        if dlg.exec_():
-            project.create_project(
-                dlg.name.text(),
-                dlg.directory.filePath(),
-                dlg.process_cbox.currentIndex(),
-            )
-
-    @utils.check_project()
     def do_check_geometries(self):
-        pass
+        self.checks_dock = CheckResultsDock(self.iface)
 
-    @utils.check_project()
+        self.checks_dock.setObjectName("CheckResultsDock")
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.checks_dock)
+        self.checks_dock.setVisible(True)
+        self.checks_dock.show()
+
     def do_calculate_zones(self):
-        # TODO: check the layers and the fields needed are present
-        # TODO: run algo
-        # TODO: apply valuemap and styles
-
-        dlg = CalculationDialog(self.iface)
-        for process in domains.PROCESS_TYPES.items():
-            dlg.process_cbox.addItem(process[1], process)
-
-        if dlg.exec_():
-            selected_process = dlg.process_cbox.currentData()
-            result = processing.run(
-                "pzp:danger_zones",
-                {
-                    "INPUT": "Intensità",
-                    "PROCESS_FIELD": "Processo",
-                    "PROBABILITY_FIELD": "Probabilità",
-                    "INTENSITY_FIELD": "Intensità",
-                    "PROCESS_TYPE": dlg.process_cbox.currentIndex(),
-                    "OUTPUT": "TEMPORARY_OUTPUT",
-                },
-            )
-
-            layer = result["OUTPUT"]
-            layer.setName(f"Pericolo {selected_process[1]}")
-            QgsProject.instance().addMapLayer(layer, True)
-
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
-            layer.loadNamedStyle(qml_file_path)
+        # Get selected group
+        current_node = self.iface.layerTreeView().currentNode()
+        if isinstance(current_node, QgsLayerTreeGroup):
+            # TODO: Check we have all the layers in the group
+            dlg = CalculationDialog(self.iface, current_node)
+            dlg.exec_()
+        else:
+            utils.push_error("Selezionare il gruppo che contiene il processo", 3)
 
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")

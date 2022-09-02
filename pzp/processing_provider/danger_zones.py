@@ -185,6 +185,9 @@ class DangerZones(QgsProcessingAlgorithm):
             # Compare with the already added features
             for i, new_feature in enumerate(new_features):
                 if feature.geometry().equals(new_feature.geometry()):
+                    feedback.pushInfo(
+                        f"Process: {process}, intensity: {intensity}, probability: {probability}"
+                    )
                     danger_level, danger_type = self._get_danger(
                         process, intensity, probability
                     )
@@ -197,6 +200,9 @@ class DangerZones(QgsProcessingAlgorithm):
             else:
                 new_feature = QgsFeature()
                 new_feature.setGeometry(feature.geometry())
+                feedback.pushInfo(
+                    f"Process: {process}, intensity: {intensity}, probability: {probability}"
+                )
                 danger_level, danger_type = self._get_danger(
                     process, intensity, probability
                 )
@@ -204,6 +210,9 @@ class DangerZones(QgsProcessingAlgorithm):
                 new_features.append(new_feature)
 
             feedback.setProgress(int(current * total))
+
+        for f in new_features:
+            feedback.pushInfo(f"New feature {f.geometry()}")
 
         sink.addFeatures(new_features, QgsFeatureSink.FastInsert)
         return {self.OUTPUT: dest_id}
