@@ -34,9 +34,7 @@ jobs:
         run: pip3 install qgis-plugin-ci
 
       - name: Deploy plugin
-        run: >-
-          qgis-plugin-ci
-          package 1.1.1
-          -u http://download.opengis.ch/repos/ticino/
+        run: |
+          qgis-plugin-ci package 1.1.1 -u http://download.opengis.ch/repos/ticino/
           ls -lh
           cat metadata.txt
