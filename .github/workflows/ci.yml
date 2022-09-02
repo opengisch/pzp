@@ -33,7 +33,7 @@ jobs:
 
       - name: Package plugin
         run: |
-          qgis-plugin-ci package $GITHUB_REF_NAME -u http://download.opengis.ch/repos/ticino/
+          qgis-plugin-ci package $GITHUB_REF_NAME -u http://download.opengis.ch/repos/ticino/plugins/pzp/
           ls -lh
           cat plugins.xml
 
