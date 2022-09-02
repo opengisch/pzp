@@ -4,8 +4,12 @@ on:
     branches:
       - master
       - main
+      - ci
+#  release:
+#    types: published
+
 jobs:
-  deploy:
+  mkdocs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,3 +18,45 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material
       - run: mkdocs gh-deploy --force
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install qgis-plugin-ci
+        run: pip3 install qgis-plugin-ci
+
+      - name: Install qgis-plugin-repo
+        run: pip3 install qgis-plugin-repo
+
+      - name: Package plugin
+        run: |
+          qgis-plugin-ci package $GITHUB_REF_NAME -u http://download.opengis.ch/repos/ticino/
+          ls -lh
+          cat plugins.xml
+
+      # - name: Add artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: plugin
+      #     path: ${{ format('{0}.{1}.{2}', 'pzp.', github.ref , '.zip') }}
+
+      # - name: Merge plugins.xml
+      #   run: |
+      #     ls -lh
+      #     qgis-plugin-repo merge file:///home/runner/work/pzp/pzp/plugins.xml all_plugins.xml
+      #     qgis-plugin-repo merge http://download.opengis.ch/repos/ticino/plugins.xml all_plugins.xml
+      #     cat all_plugins.xml
+      #     ls -lh
+
+
+# /home/opengis_download/download.opengis.ch/repos/ticino
+# plugins.xml
+# /pzp/pzp...zip
