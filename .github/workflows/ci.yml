@@ -60,7 +60,7 @@ jobs:
             merger.xml_input_parser()
             merger.xml_output_parser()
             merger.merge()
-            merger = Merger(Path("plugins.xml"), "http://download.opengis.ch/repos/ticino/plugins.xml")
+            merger = Merger(Path("all_plugins.xml"), "http://download.opengis.ch/repos/ticino/plugins.xml")
             merger.xml_input_parser()
             merger.xml_output_parser()
             merger.merge()
@@ -68,7 +68,7 @@ jobs:
       - name: test
         run: |
           ls -lh
-          cat plugins.xml
+          cat all_plugins.xml
 
 # /home/opengis_download/download.opengis.ch/repos/ticino
 # plugins.xml
