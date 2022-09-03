@@ -143,6 +143,11 @@ def set_not_null_constraint_to_field(layer, field_name, enforce=True):
     layer.setFieldConstraint(index, constraint, strength)
 
 
+def set_expression_constraint_to_field(layer, field_name, expression, description=""):
+    index = layer.fields().indexOf(field_name)
+    layer.setConstraintExpression(index, expression, description)
+
+
 def set_qml_style(layer, qml_name):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qml_file_path = os.path.join(current_dir, "qml", f"{qml_name}.qml")
