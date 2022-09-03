@@ -387,16 +387,9 @@
   <legend showLabelLegend="0" type="default-vector"/>
   <fieldConfiguration>
     <field name="fid">
-      <editWidget type="Range">
+      <editWidget type="Hidden">
         <config>
-          <Option type="Map">
-            <Option value="true" name="AllowNull" type="bool"/>
-            <Option value="2147483646" name="Max" type="double"/>
-            <Option value="-2147483648" name="Min" type="double"/>
-            <Option value="0" name="Precision" type="int"/>
-            <Option value="1" name="Step" type="double"/>
-            <Option value="SpinBox" name="Style" type="QString"/>
-          </Option>
+          <Option/>
         </config>
       </editWidget>
     </field>
@@ -411,15 +404,15 @@
       </editWidget>
     </field>
     <field name="periodo_ritorno">
-      <editWidget type="ValueMap">
+      <editWidget type="Range">
         <config>
           <Option type="Map">
-            <Option name="map" type="Map">
-              <Option value="1003" name="Alta" type="int"/>
-              <Option value="1001" name="Bassa" type="int"/>
-              <Option value="1002" name="Media" type="int"/>
-              <Option value="1000" name="Molto bassa" type="int"/>
-            </Option>
+            <Option value="false" name="AllowNull" type="bool"/>
+            <Option value="10000" name="Max" type="int"/>
+            <Option value="0" name="Min" type="int"/>
+            <Option value="0" name="Precision" type="int"/>
+            <Option value="1" name="Step" type="int"/>
+            <Option value="SpinBox" name="Style" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -428,12 +421,22 @@
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
-            <Option name="map" type="Map">
-              <Option value="1002" name="Debole" type="int"/>
-              <Option value="1004" name="Forte" type="int"/>
-              <Option value="1001" name="Impatto presente" type="int"/>
-              <Option value="1003" name="Medio" type="int"/>
-              <Option value="1000" name="Nessun impatto" type="int"/>
+            <Option name="map" type="List">
+              <Option type="Map">
+                <Option value="1002" name="Debole" type="QString"/>
+              </Option>
+              <Option type="Map">
+                <Option value="1004" name="Forte" type="QString"/>
+              </Option>
+              <Option type="Map">
+                <Option value="1001" name="Impatto presente" type="QString"/>
+              </Option>
+              <Option type="Map">
+                <Option value="1003" name="Medio" type="QString"/>
+              </Option>
+              <Option type="Map">
+                <Option value="1000" name="Nessun impatto" type="QString"/>
+              </Option>
             </Option>
           </Option>
         </config>
@@ -451,9 +454,6 @@
                 <Option value="1120" name="Alluvionamento corso d'acqua principale" type="QString"/>
               </Option>
               <Option type="Map">
-                <Option value="3000" name="Caduta sassi o blocchi" type="QString"/>
-              </Option>
-              <Option type="Map">
                 <Option value="2002" name="Colata detritica di versante" type="QString"/>
               </Option>
               <Option type="Map">
@@ -464,12 +464,6 @@
               </Option>
               <Option type="Map">
                 <Option value="2001" name="Scivolamento spontaneo" type="QString"/>
-              </Option>
-              <Option type="Map">
-                <Option value="4200" name="Valanga polverosa" type="QString"/>
-              </Option>
-              <Option type="Map">
-                <Option value="4100" name="Valanga radente" type="QString"/>
               </Option>
             </Option>
           </Option>
@@ -639,11 +633,6 @@ def my_form_open(dialog, layer, feature):
       <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
         <labelFont underline="0" description="Sans Serif,9,-1,5,50,0,0,0,0,0" style="" bold="0" italic="0" strikethrough="0"/>
       </labelStyle>
-      <attributeEditorField showLabel="1" index="0" name="fid">
-        <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
-          <labelFont underline="0" description="Sans Serif,9,-1,5,50,0,0,0,0,0" style="" bold="0" italic="0" strikethrough="0"/>
-        </labelStyle>
-      </attributeEditorField>
       <attributeEditorField showLabel="1" index="-1" name="area">
         <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
           <labelFont underline="0" description="Sans Serif,9,-1,5,50,0,0,0,0,0" style="" bold="0" italic="0" strikethrough="0"/>
