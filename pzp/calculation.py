@@ -72,7 +72,7 @@ def calculate(process_type, layer_intensity):
         {
             "INPUT": layer_intensity.id(),
             "PROCESS_FIELD": "proc_parz",
-            "PROBABILITY_FIELD": "periodo_ritorno",
+            "PERIOD_FIELD": "periodo_ritorno",
             "INTENSITY_FIELD": "classe_intensita",
             "PROCESS_TYPE": process_type_idx,
             "OUTPUT": "TEMPORARY_OUTPUT",

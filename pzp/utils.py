@@ -143,6 +143,16 @@ def set_not_null_constraint_to_field(layer, field_name, enforce=True):
     layer.setFieldConstraint(index, constraint, strength)
 
 
+def set_unique_constraint_to_field(layer, field_name, enforce=True):
+    index = layer.fields().indexOf(field_name)
+
+    constraint = QgsFieldConstraints.ConstraintUnique
+    strength = QgsFieldConstraints.ConstraintStrengthHard
+    if not enforce:
+        strength = QgsFieldConstraints.ConstraintStrengthSoft
+    layer.setFieldConstraint(index, constraint, strength)
+
+
 def set_expression_constraint_to_field(layer, field_name, expression, description=""):
     index = layer.fields().indexOf(field_name)
     layer.setConstraintExpression(index, expression, description)
@@ -199,3 +209,22 @@ def load_gpkg_layer(layer_name, gpkg_path):
     source_path = f"{gpkg_path}|layername={layer_name}"
     layer = QgsVectorLayer(source_path, layer_name, "ogr")
     return layer
+
+
+def set_value_relation_field(layer, field_name, other_layer, key_field, value_field):
+    widget = QgsEditorWidgetSetup(
+        "ValueRelation",
+        {
+            "AllowMulti": False,
+            "AllowNull": False,
+            "FilterExpression": "",
+            "Key": key_field,
+            "Layer": other_layer.id(),
+            "OrderByValue": False,
+            "UseCompleter": False,
+            "Value": value_field,
+        },
+    )
+
+    index = layer.fields().indexOf(field_name)
+    layer.setEditorWidgetSetup(index, widget)

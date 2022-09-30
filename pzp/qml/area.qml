@@ -170,10 +170,7 @@
     <field name="fid">
       <editWidget type="TextEdit">
         <config>
-          <Option type="Map">
-            <Option value="false" name="IsMultiline" type="bool"/>
-            <Option value="false" name="UseHtml" type="bool"/>
-          </Option>
+          <Option/>
         </config>
       </editWidget>
     </field>
@@ -253,11 +250,6 @@ def my_form_open(dialog, layer, feature):
     <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
       <labelFont underline="0" description="Sans Serif,9,-1,5,50,0,0,0,0,0" style="" bold="0" italic="0" strikethrough="0"/>
     </labelStyle>
-    <attributeEditorField showLabel="1" index="1" name="commento">
-      <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
-        <labelFont underline="0" description="Sans Serif,9,-1,5,50,0,0,0,0,0" style="" bold="0" italic="0" strikethrough="0"/>
-      </labelStyle>
-    </attributeEditorField>
     <attributeEditorField showLabel="1" index="2" name="proc_parz">
       <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
         <labelFont underline="0" description="Sans Serif,9,-1,5,50,0,0,0,0,0" style="" bold="0" italic="0" strikethrough="0"/>
@@ -268,12 +260,17 @@ def my_form_open(dialog, layer, feature):
         <labelFont underline="0" description="Sans Serif,9,-1,5,50,0,0,0,0,0" style="" bold="0" italic="0" strikethrough="0"/>
       </labelStyle>
     </attributeEditorField>
+    <attributeEditorField showLabel="1" index="1" name="commento">
+      <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+        <labelFont underline="0" description="Sans Serif,9,-1,5,50,0,0,0,0,0" style="" bold="0" italic="0" strikethrough="0"/>
+      </labelStyle>
+    </attributeEditorField>
   </attributeEditorForm>
   <editable>
     <field name="commento" editable="1"/>
     <field name="fid" editable="1"/>
     <field name="fonte_proc" editable="1"/>
-    <field name="proc_parz" editable="1"/>
+    <field name="proc_parz" editable="0"/>
   </editable>
   <labelOnTop>
     <field labelOnTop="0" name="commento"/>
