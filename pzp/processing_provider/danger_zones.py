@@ -21,7 +21,7 @@ class DangerZones(QgsProcessingAlgorithm):
 
     INPUT = "INPUT"
     PROCESS_FIELD = "PROCESS_FIELD"
-    PROBABILITY_FIELD = "PROBABILITY_FIELD"
+    PERIOD_FIELD = "PERIOD_FIELD"
     INTENSITY_FIELD = "INTENSITY_FIELD"
     PROCESS_TYPE = "PROCESS_TYPE"
     OUTPUT = "OUTPUT"
@@ -62,8 +62,8 @@ class DangerZones(QgsProcessingAlgorithm):
 
         self.addParameter(
             QgsProcessingParameterField(
-                name=self.PROBABILITY_FIELD,
-                description="Campo contenente la probabilità",
+                name=self.PERIOD_FIELD,
+                description="Campo contenente il periodo di ritorno",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric,
             )
@@ -128,9 +128,9 @@ class DangerZones(QgsProcessingAlgorithm):
             context,
         )[0]
 
-        probability_field = self.parameterAsFields(
+        period_field = self.parameterAsFields(
             parameters,
-            self.PROBABILITY_FIELD,
+            self.PERIOD_FIELD,
             context,
         )[0]
 
@@ -175,7 +175,7 @@ class DangerZones(QgsProcessingAlgorithm):
                 break
 
             intensity = feature.attribute(intensity_field)
-            probability = feature.attribute(probability_field)
+            period = feature.attribute(period_field)
             process = feature.attribute(process_field)
 
             # Check if feature is for the right process otherwise continue
@@ -186,10 +186,10 @@ class DangerZones(QgsProcessingAlgorithm):
             for i, new_feature in enumerate(new_features):
                 if feature.geometry().equals(new_feature.geometry()):
                     feedback.pushInfo(
-                        f"Process: {process}, intensity: {intensity}, probability: {probability}"
+                        f"Process: {process}, intensity: {intensity}, return period: {period}"
                     )
                     danger_level, danger_type = self._get_danger(
-                        process, intensity, probability
+                        process, intensity, period
                     )
                     if danger_level < new_feature.attribute(1):
                         new_feature = QgsFeature()
@@ -201,11 +201,9 @@ class DangerZones(QgsProcessingAlgorithm):
                 new_feature = QgsFeature()
                 new_feature.setGeometry(feature.geometry())
                 feedback.pushInfo(
-                    f"Process: {process}, intensity: {intensity}, probability: {probability}"
+                    f"Process: {process}, intensity: {intensity}, return period: {period}"
                 )
-                danger_level, danger_type = self._get_danger(
-                    process, intensity, probability
-                )
+                danger_level, danger_type = self._get_danger(process, intensity, period)
                 new_feature.setAttributes([process, danger_level, danger_type])
                 new_features.append(new_feature)
 
@@ -217,7 +215,7 @@ class DangerZones(QgsProcessingAlgorithm):
         sink.addFeatures(new_features, QgsFeatureSink.FastInsert)
         return {self.OUTPUT: dest_id}
 
-    def _get_danger(self, process, intensity, probability):
+    def _get_danger(self, process, intensity, period):
         """Return danger level and danger type"""
 
         prefer_lower = True
@@ -225,7 +223,7 @@ class DangerZones(QgsProcessingAlgorithm):
         # TODO: validate data based on the process type
 
         if process in [1110, 1120]:
-            matrix = {  # {probability: {intensity: (danger_level, danger_type)}}
+            matrix = {  # {period: {intensity: (danger_level, danger_type)}}
                 1000: {
                     1002: (1010, 1001),
                     1003: (1010, 1001),
@@ -247,7 +245,7 @@ class DangerZones(QgsProcessingAlgorithm):
                     1004: (1001, 1004),
                 },
             }
-            danger = matrix[probability][intensity]
+            danger = matrix[period][intensity]
         elif process in [1200]:
             matrix = {  # {probability: {intensity: (danger_level, danger_type)}}
                 1000: {
@@ -273,7 +271,32 @@ class DangerZones(QgsProcessingAlgorithm):
             }
             if not prefer_lower:
                 matrix[1001][1003] = (1006, 1003)
-            danger = matrix[probability][intensity]
+            danger = matrix[period][intensity]
         else:
             danger = None
         return danger
+
+    def _get_danger_matrix_1(self, intensity, period):
+        if period <= 30:
+            pass
+        elif period <= 100:
+            pass
+        elif period <= 300:
+            pass
+        else:
+            pass
+
+    def _get_danger_matrix_2(self, intensity, period):
+        pass
+
+    def _get_danger_matrix_3(self, intensity, period):
+        pass
+
+    def _get_danger_matrix_4(self, intensity, period):
+        pass
+
+    def _get_danger_matrix_5(self, intensity, period):
+        pass
+
+    def _get_danger_matrix_6(self, intensity, period):
+        pass

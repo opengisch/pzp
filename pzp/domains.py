@@ -31,6 +31,7 @@ EVENT_PROBABILITIES = OrderedDict(
     }
 )
 
+
 INTENSITIES = OrderedDict(
     {
         1000: "Nessun impatto",
@@ -66,3 +67,7 @@ DANGER_LEVELS = OrderedDict(
         1010: -10,
     }
 )
+
+
+# TODO: refactor domains with enums
+# TODO: put matrices here
