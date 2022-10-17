@@ -1,29 +1,21 @@
 from qgis import processing
 from qgis.core import (
-    QgsFeature,
-    QgsFeatureSink,
     QgsField,
     QgsFields,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
-    QgsProcessingParameterEnum,
-    QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
+    QgsProcessingParameterVectorDestination,
 )
 from qgis.PyQt.QtCore import QVariant
-
-from pzp import domains
 
 
 class DangerZones(QgsProcessingAlgorithm):
 
     INPUT = "INPUT"
-    PROCESS_FIELD = "PROCESS_FIELD"
-    PERIOD_FIELD = "PERIOD_FIELD"
-    INTENSITY_FIELD = "INTENSITY_FIELD"
-    PROCESS_TYPE = "PROCESS_TYPE"
+    DANGER_FIELD = "DANGER_FIELD"
     OUTPUT = "OUTPUT"
 
     def createInstance(self):
@@ -47,47 +39,21 @@ class DangerZones(QgsProcessingAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
-                self.INPUT, "Input layer", [QgsProcessing.TypeVectorAnyGeometry]
+                self.INPUT, "Input layer", [QgsProcessing.TypeVectorPolygon]
             )
         )
 
         self.addParameter(
             QgsProcessingParameterField(
-                name=self.PROCESS_FIELD,
-                description="Campo contenente il processo",
+                name=self.DANGER_FIELD,
+                description="Campo contenente il grado di pericolo",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric,
             )
         )
 
         self.addParameter(
-            QgsProcessingParameterField(
-                name=self.PERIOD_FIELD,
-                description="Campo contenente il periodo di ritorno",
-                parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterField(
-                name=self.INTENSITY_FIELD,
-                description="Campo contenente l'intensità",
-                parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterEnum(
-                name=self.PROCESS_TYPE,
-                description="Tipo di processo",
-                options=domains.PROCESS_TYPES.values(),
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Gradi di pericolo")
+            QgsProcessingParameterVectorDestination(self.OUTPUT, "Zone di pericolo")
         )
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -99,204 +65,128 @@ class DangerZones(QgsProcessingAlgorithm):
             )
 
         fields = QgsFields()
-        fields.append(QgsField("Processo", QVariant.Int))
-        fields.append(
-            QgsField("Grado di pericolo", QVariant.Int)
-        )  # Result of the matrix (DANGER_LEVEL)
-        fields.append(
-            QgsField("Tipo di pericolo", QVariant.Int)
-        )  # What is showed on the map (DANGER_TYPE)
+        fields.append(QgsField("Grado di pericolo", QVariant.Int))
 
-        (sink, dest_id) = self.parameterAsSink(
+        danger_field = self.parameterAsFields(
             parameters,
-            self.OUTPUT,
-            context,
-            fields,
-            source.wkbType(),
-            source.sourceCrs(),
-        )
-
-        process_field = self.parameterAsFields(
-            parameters,
-            self.PROCESS_FIELD,
+            self.DANGER_FIELD,
             context,
         )[0]
 
-        intensity_field = self.parameterAsFields(
-            parameters,
-            self.INTENSITY_FIELD,
-            context,
-        )[0]
+        # # Send some information to the user
+        # feedback.pushInfo(f"CRS is {source.sourceCrs().authid()}")
 
-        period_field = self.parameterAsFields(
-            parameters,
-            self.PERIOD_FIELD,
-            context,
-        )[0]
-
-        process_type_idx = self.parameterAsEnum(
-            parameters,
-            self.PROCESS_TYPE,
-            context,
-        )
-
-        process_type_id, process_type = list(domains.PROCESS_TYPES.items())[
-            process_type_idx
-        ]
-
-        # Send some information to the user
-        feedback.pushInfo(f"CRS is {source.sourceCrs().authid()}")
-        feedback.pushInfo(f"Process type is {process_type} ({process_type_id})")
-
-        if sink is None:
-            raise QgsProcessingException(self.invalidSinkError(parameters, self.OUTPUT))
+        # if sink is None:
+        #    raise QgsProcessingException(self.invalidSinkError(parameters, self.OUTPUT))
 
         # Compute the number of steps to display within the progress bar and
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
+        # total = 100.0 / source.featureCount() if source.featureCount() else 0
 
-        # TODO: The union should happen only on features with the correct process type
-        # by selecting the correct ones and then run the algo only on them
-        union = processing.run(
-            "native:union",
+        final_layer = None
+
+        used_grades = set()
+
+        for feature in source.getFeatures():
+            # name = feature["name"]
+            used_grades.add(feature[danger_field])
+
+        used_grades = sorted(used_grades, reverse=True)
+
+        feedback.pushInfo(f"Used grades {used_grades}")
+
+        for grado in used_grades:
+            feedback.pushInfo(f'"{danger_field}" = {grado}')
+            result = processing.run(
+                "native:extractbyexpression",
+                {
+                    "INPUT": parameters[self.INPUT],
+                    "EXPRESSION": f'"{danger_field}" = {grado}',
+                    "OUTPUT": "memory:",
+                },
+                context=context,
+                feedback=feedback,
+                is_child_algorithm=True,
+            )
+            result = processing.run(
+                "native:dissolve",
+                {
+                    "INPUT": result["OUTPUT"],
+                    "FIELD": f"{danger_field}",
+                    "SEPARATE_DISJOINT": True,
+                    "OUTPUT": "memory:",
+                },
+                context=context,
+                feedback=feedback,
+                is_child_algorithm=True,
+            )
+
+            if grado == max(used_grades):
+                final_layer = result["OUTPUT"]
+            else:
+                result = processing.run(
+                    "native:difference",
+                    {
+                        "INPUT": result["OUTPUT"],
+                        "OVERLAY": final_layer,
+                        "OUTPUT": "memory:",
+                    },
+                    context=context,
+                    feedback=feedback,
+                    is_child_algorithm=True,
+                )
+                result = processing.run(
+                    "native:mergevectorlayers",
+                    {
+                        "LAYERS": [result["OUTPUT"], final_layer],
+                        "OUTPUT": "memory:",
+                    },
+                    context=context,
+                    feedback=feedback,
+                    is_child_algorithm=True,
+                )
+                final_layer = result["OUTPUT"]
+
+        # Apply very small negative buffer to remove artifacts
+        result = processing.run(
+            "native:buffer",
             {
-                "INPUT": self.parameterAsString(parameters, self.INPUT, context),
-                "OVERLAY": None,
-                "OVERLAY_FIELDS_PREFIX": "",
-                "OUTPUT": "TEMPORARY_OUTPUT",
+                "INPUT": final_layer,
+                "DISTANCE": -0.0000001,
+                "OUTPUT": "memory:",
             },
             context=context,
             feedback=feedback,
-        )["OUTPUT"]
+            is_child_algorithm=True,
+        )
+        # Snap to layer
+        result = processing.run(
+            "native:snapgeometries",
+            {
+                "INPUT": result["OUTPUT"],
+                "REFERENCE_LAYER": result["OUTPUT"],
+                "DISTANCE": -0.0000001,
+                "TOLERANCE": 1,
+                "BEHAVIOR": 0,
+                "OUTPUT": "memory:",
+            },
+            context=context,
+            feedback=feedback,
+            is_child_algorithm=True,
+        )
+        # Snap to grid
+        result = processing.run(
+            "native:snappointstogrid",
+            {
+                "INPUT": result["OUTPUT"],
+                "HSPACING": 0.001,
+                "MSPACING": 0,
+                "VSPACING": 0.001,
+                "ZSPACING": 0,
+                "OUTPUT": parameters[self.OUTPUT],
+            },
+            context=context,
+            feedback=feedback,
+            is_child_algorithm=True,
+        )
 
-        new_features = []
-
-        for current, feature in enumerate(union.getFeatures()):
-            if feedback.isCanceled():
-                break
-
-            intensity = feature.attribute(intensity_field)
-            period = feature.attribute(period_field)
-            process = feature.attribute(process_field)
-
-            # Check if feature is for the right process otherwise continue
-            if not process == process_type_id:
-                continue
-
-            # Compare with the already added features
-            for i, new_feature in enumerate(new_features):
-                if feature.geometry().equals(new_feature.geometry()):
-                    feedback.pushInfo(
-                        f"Process: {process}, intensity: {intensity}, return period: {period}"
-                    )
-                    danger_level, danger_type = self._get_danger(
-                        process, intensity, period
-                    )
-                    if danger_level < new_feature.attribute(1):
-                        new_feature = QgsFeature()
-                        new_feature.setGeometry(feature.geometry())
-                        new_feature.setAttributes([process, danger_level, danger_type])
-                        new_features[i] = new_feature
-                    break
-            else:
-                new_feature = QgsFeature()
-                new_feature.setGeometry(feature.geometry())
-                feedback.pushInfo(
-                    f"Process: {process}, intensity: {intensity}, return period: {period}"
-                )
-                danger_level, danger_type = self._get_danger(process, intensity, period)
-                new_feature.setAttributes([process, danger_level, danger_type])
-                new_features.append(new_feature)
-
-            feedback.setProgress(int(current * total))
-
-        for f in new_features:
-            feedback.pushInfo(f"New feature {f.geometry()}")
-
-        sink.addFeatures(new_features, QgsFeatureSink.FastInsert)
-        return {self.OUTPUT: dest_id}
-
-    def _get_danger(self, process, intensity, period):
-        """Return danger level and danger type"""
-
-        prefer_lower = True
-
-        # TODO: validate data based on the process type
-
-        if process in [1110, 1120]:
-            matrix = {  # {period: {intensity: (danger_level, danger_type)}}
-                1000: {
-                    1002: (1010, 1001),
-                    1003: (1010, 1001),
-                    1004: (1010, 1001),
-                },
-                1001: {
-                    1002: (1009, 1002),
-                    1003: (1006, 1003),
-                    1004: (1003, 1004),
-                },
-                1002: {
-                    1002: (1008, 1002),
-                    1003: (1005, 1003),
-                    1004: (1002, 1004),
-                },
-                1003: {
-                    1002: (1007, 1003),
-                    1003: (1004, 1003),
-                    1004: (1001, 1004),
-                },
-            }
-            danger = matrix[period][intensity]
-        elif process in [1200]:
-            matrix = {  # {probability: {intensity: (danger_level, danger_type)}}
-                1000: {
-                    1002: (1010, 1001),
-                    1003: (1010, 1001),
-                    1004: (1010, 1001),
-                },
-                1001: {
-                    1002: (1009, 1002),
-                    1003: (1006, 1002),
-                    1004: (1003, 1004),
-                },
-                1002: {
-                    1002: (1008, 1002),
-                    1003: (1005, 1003),
-                    1004: (1002, 1004),
-                },
-                1003: {
-                    1002: (1007, 1003),
-                    1003: (1004, 1003),
-                    1004: (1001, 1004),
-                },
-            }
-            if not prefer_lower:
-                matrix[1001][1003] = (1006, 1003)
-            danger = matrix[period][intensity]
-        else:
-            danger = None
-        return danger
-
-    def _get_danger_matrix_1(self, intensity, period):
-        if period <= 30:
-            pass
-        elif period <= 100:
-            pass
-        elif period <= 300:
-            pass
-        else:
-            pass
-
-    def _get_danger_matrix_2(self, intensity, period):
-        pass
-
-    def _get_danger_matrix_3(self, intensity, period):
-        pass
-
-    def _get_danger_matrix_4(self, intensity, period):
-        pass
-
-    def _get_danger_matrix_5(self, intensity, period):
-        pass
-
-    def _get_danger_matrix_6(self, intensity, period):
-        pass
+        return {self.OUTPUT: result["OUTPUT"]}

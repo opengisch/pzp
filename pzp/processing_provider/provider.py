@@ -1,12 +1,13 @@
 from qgis.core import QgsProcessingProvider
 
+from pzp.processing_provider.apply_matrix import ApplyMatrix
 from pzp.processing_provider.danger_zones import DangerZones
 
 
 class Provider(QgsProcessingProvider):
     def loadAlgorithms(self, *args, **kwargs):
         self.addAlgorithm(DangerZones())
-        # self.addAlgorithm(ManualTuning())
+        self.addAlgorithm(ApplyMatrix())
 
     def id(self, *args, **kwargs):
         return "pzp"
