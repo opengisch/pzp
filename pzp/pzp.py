@@ -1,6 +1,6 @@
 import webbrowser
 
-from qgis.core import QgsApplication, QgsLayerTreeGroup
+from qgis.core import QgsLayerTreeGroup
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
@@ -10,7 +10,6 @@ from pzp import utils
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationDialog
 from pzp.check_dock import CheckResultsDock
-from pzp.processing_provider.provider import Provider
 from pzp.ui.resources import *  # noqa
 
 
@@ -18,7 +17,6 @@ class PZP:
     def __init__(self, iface):
         self.iface = iface
         self.toolbar = None
-        self.provider = None
 
     def initGui(self):
         self.toolbar = self.iface.addToolBar("PZP")
@@ -58,14 +56,9 @@ class PZP:
             )
         )
         self.toolbar.addAction(self.create_action("help.png", "Aiuto", self.do_help))
-        self.initProcessing()
         self.options_factory = PluginOptionsFactory()
         self.options_factory.setTitle("PZP")
         self.iface.registerOptionsWidgetFactory(self.options_factory)
-
-    def initProcessing(self):
-        self.provider = Provider()
-        QgsApplication.processingRegistry().addProvider(self.provider)
 
     def create_action(self, icon, name, callback):
         action = QAction(
@@ -81,7 +74,6 @@ class PZP:
             del action
 
         del self.toolbar
-        QgsApplication.processingRegistry().removeProvider(self.provider)
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
 
     def do_add_process(self):
