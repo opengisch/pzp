@@ -45,14 +45,14 @@ class PZP:
         toolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
+        # self.toolbar.addAction(
+        #     self.create_action(
+        #         "check.png", "Verifica geometrie", self.do_check_geometries
+        #     )
+        # )
         self.toolbar.addAction(
             self.create_action(
-                "check.png", "Verifica geometrie", self.do_check_geometries
-            )
-        )
-        self.toolbar.addAction(
-            self.create_action(
-                "danger.png", "Calcola zone di pericolo", self.do_calculate_zones
+                "process.png", "Calcola zone di pericolo", self.do_calculate_zones
             )
         )
         self.toolbar.addAction(self.create_action("help.png", "Aiuto", self.do_help))

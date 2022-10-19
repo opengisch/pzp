@@ -32,4 +32,7 @@
     <qresource prefix="/plugins/pzp/" >
         <file>../icons/landslide.png</file>
     </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/process.png</file>
+    </qresource>
 </RCC>

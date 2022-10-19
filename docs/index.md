@@ -7,7 +7,7 @@ Questa è la documentazione del plugin per QGIS per la creazione dei Piani delle
 Aggiungere un nuovo repository dei plugin in QGIS:
 
 ```
-http://download.opengis.ch/repos/ticino/plugins.xml
+https://download.opengis.ch/repos/ticino/plugins.xml
 ```
 
 Installare il plugin `pzp`
@@ -18,8 +18,12 @@ Installare il plugin `pzp`
 
 ## Funzionalità
 
-Bla bla bla
+### Creazione progetto QGIS per poter digitalizzare le mappe con le intensità
 
-## Domande frequenti
+### Generazione delle mappe con le zone di pericolo
 
-Bla bla bla
+## Riferimenti
+
+### Matrici del pericolo utilizzate
+
+![Alluvionamento](./assets/matrice_alluvionamento.png)
