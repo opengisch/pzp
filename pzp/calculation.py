@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from qgis import processing
@@ -6,32 +7,6 @@ from qgis.core import QgsExpressionContextUtils, QgsProject
 from pzp import domains, utils
 
 FORM_CLASS = utils.get_ui_class("calculation.ui")
-
-# TODO: check for needed layers and show only groups with correct layers
-
-
-# class CalculationDialog(QDialog, FORM_CLASS):
-#     def __init__(self, iface, group, parent=None):
-#         QDialog.__init__(self, parent)
-# self.setupUi(self)
-# self.buttonBox.accepted.disconnect()
-# self.buttonBox.clicked.connect(self.button_box_clicked)
-
-# for process in domains.PROCESS_TYPES.items():
-#     self.process_cbox.addItem(process[1], process[0])
-
-# root = QgsProject.instance().layerTreeRoot()
-# if isinstance(root, QgsLayerTreeGroup):
-#     for group in root.findGroups(recursive=True):
-#         self.group_cbox.addItem(group.name(), group)
-
-# def button_box_clicked(self, button):
-#     if self.buttonBox.buttonRole(button) == QDialogButtonBox.AcceptRole:
-#         process_type = self.process_cbox.currentData()
-#         calculate(process_type, None)
-#         self.close()
-#     else:
-#         self.close()
 
 
 class CalculationDialog:
@@ -56,31 +31,52 @@ def guess_params(group):
                     "pzp_process"
                 )
             )
-
             calculate(process_type, layer_intensity)
 
 
 def calculate(process_type, layer_intensity):
 
-    # TODO: find group and layers
+    result = processing.run(
+        "native:extractbyexpression",
+        {
+            "INPUT": layer_intensity.id(),
+            "EXPRESSION": f'"proc_parz" = {process_type}',
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
 
-    # Processing algorithm wants the index of the process type in the combobox
-    process_type_idx = list(domains.PROCESS_TYPES).index(process_type)
+    result = processing.run(
+        "native:fixgeometries",
+        {
+            "INPUT": result["OUTPUT"],
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
+
+    result = processing.run(
+        "pzp:apply_matrix",
+        {
+            "INPUT": result["OUTPUT"],
+            "PERIOD_FIELD": "periodo_ritorno",
+            "INTENSITY_FIELD": "classe_intensita",
+            "MATRIX": domains.MATRICES[process_type],
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
 
     result = processing.run(
         "pzp:danger_zones",
         {
-            "INPUT": layer_intensity.id(),
-            "PROCESS_FIELD": "proc_parz",
-            "PERIOD_FIELD": "periodo_ritorno",
-            "INTENSITY_FIELD": "classe_intensita",
-            "PROCESS_TYPE": process_type_idx,
+            "INPUT": result["OUTPUT"],
+            "DANGER_FIELD": "grado_pericolo",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
 
     layer = result["OUTPUT"]
-    layer.setName(f"Pericolo ...")
+    layer.setName(
+        f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+    )
     root = QgsProject.instance().layerTreeRoot()
 
     tree_layer = root.findLayer(

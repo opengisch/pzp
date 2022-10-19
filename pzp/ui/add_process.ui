@@ -17,7 +17,8 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Spiegazioni</string>
+       <string>Selezionare una directory dove salvare i dati e un processo.
+Verrà creato un gruppo di layer per quel processo nel progetto corrente.</string>
      </property>
     </widget>
    </item>
