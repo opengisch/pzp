@@ -26,10 +26,10 @@ jobs:
           python-version: 3.8
 
       - name: Install qgis-plugin-ci
-        run: pip3 install qgis-plugin-ci
+        run: pip3 install qgis-plugin-ci==2.3.0
 
       - name: Install qgis-plugin-repo
-        run: pip3 install qgis-plugin-repo
+        run: pip3 install qgis-plugin-repo==0.3.0
 
       - name: Package plugin
         run: |

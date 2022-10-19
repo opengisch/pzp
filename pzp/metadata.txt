@@ -10,3 +10,5 @@ repository=https://github.com/opengisch/pzp
 homepage=https://github.com/opengisch/pzp
 tracker=https://github.com/opengisch/pzp/issues
 hasProcessingProvider=no
+
+plugin_dependencies=pzp utils==0.0.4
