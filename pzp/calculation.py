@@ -46,7 +46,7 @@ def calculate(process_type, layer_intensity):
     )
 
     result = processing.run(
-        "native:fixgeometries",
+        "pzp:fix_geometries",
         {
             "INPUT": result["OUTPUT"],
             "OUTPUT": "TEMPORARY_OUTPUT",
