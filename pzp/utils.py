@@ -164,7 +164,7 @@ def set_qml_style(layer, qml_name):
     layer.loadNamedStyle(qml_file_path)
 
 
-def create_layer(name, path="Polygon"):
+def create_layer(name, path="MultiPolygon"):
     layer = QgsVectorLayer(
         path=path,
         baseName=name,
