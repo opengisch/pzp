@@ -1,10 +1,11 @@
 import datetime
 import os
 
+from pzp_utils.processing import domains
 from qgis import processing
 from qgis.core import QgsExpressionContextUtils, QgsProject
 
-from pzp import domains, utils
+from pzp import utils
 
 FORM_CLASS = utils.get_ui_class("calculation.ui")
 
@@ -35,6 +36,10 @@ def guess_params(group):
 
 
 def calculate(process_type, layer_intensity):
+
+    # TODO: calculate separately by "fonte processo" from area di studio and then group them in the end in the same layer!
+
+    # TODO: Get list of "area di studio" as param
 
     result = processing.run(
         "native:extractbyexpression",
@@ -68,7 +73,15 @@ def calculate(process_type, layer_intensity):
         "pzp:danger_zones",
         {
             "INPUT": result["OUTPUT"],
-            "DANGER_FIELD": "grado_pericolo",
+            "MATRIX_FIELD": "matrice",
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
+
+    result = processing.run(
+        "pzp:fix_geometries",
+        {
+            "INPUT": result["OUTPUT"],
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
