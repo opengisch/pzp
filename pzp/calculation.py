@@ -3,7 +3,7 @@ import os
 
 from pzp_utils.processing import domains
 from qgis import processing
-from qgis.core import QgsExpressionContextUtils, QgsProject
+from qgis.core import QgsExpressionContextUtils, QgsProject, QgsVectorLayer
 
 from pzp import utils
 
@@ -87,22 +87,39 @@ def calculate(process_type, layer_intensity):
     )
 
     layer = result["OUTPUT"]
-    layer.setName(
+    layer_name = (
         f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
     )
-    root = QgsProject.instance().layerTreeRoot()
+    layer.setName(layer_name)
 
-    tree_layer = root.findLayer(
-        QgsProject.instance().mapLayersByName("Intensità completa")[0]
+    gpkg_path = layer_intensity.dataProvider().dataSourceUri().split("|")[0]
+
+    # Save output layer to gpkg
+    params = {
+        "LAYERS": [layer],
+        "OUTPUT": gpkg_path,
+        "OVERWRITE": False,  # Important!
+        "SAVE_STYLES": False,
+        "SAVE_METADATA": False,
+        "SELECTED_FEATURES_ONLY": False,
+    }
+    processing.run("native:package", params)
+
+    # Load layer from gpkg
+    new_layer = QgsVectorLayer(
+        gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr"
     )
-    tree_layer.parent()
+    new_layer.setName(
+        f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+    )
 
-    QgsProject.instance().addMapLayer(layer, True)
-    # layer_parent.insertLayer(0, layer)
+    QgsProject.instance().layerTreeRoot()
+
+    QgsProject.instance().addMapLayer(new_layer, True)
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
-    layer.loadNamedStyle(qml_file_path)
+    new_layer.loadNamedStyle(qml_file_path)
 
     # # TODO: disambiguity dialog
     # dlg = AmbiguityDialog(self.iface)
