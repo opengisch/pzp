@@ -6,7 +6,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QHBoxLayout, QMenu, QToolButton
 
-from pzp import utils
+from pzp import no_impact, utils
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationDialog
 from pzp.check_dock import CheckResultsDock
@@ -45,16 +45,20 @@ class PZP:
         toolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
-        # self.toolbar.addAction(
-        #     self.create_action(
-        #         "check.png", "Verifica geometrie", self.do_check_geometries
-        #     )
-        # )
         self.toolbar.addAction(
             self.create_action(
                 "process.png", "Calcola zone di pericolo", self.do_calculate_zones
             )
         )
+
+        self.toolbar.addAction(
+            self.create_action(
+                "process.png",
+                "Aggiungi zone nessun impatto",
+                self.do_calculate_no_impact,
+            )
+        )
+
         self.toolbar.addAction(self.create_action("help.png", "Aiuto", self.do_help))
         self.options_factory = PluginOptionsFactory()
         self.options_factory.setTitle("PZP")
@@ -101,6 +105,15 @@ class PZP:
             # TODO: Check we have all the layers in the group
             dlg = CalculationDialog(self.iface, current_node)
             dlg.exec_()
+        else:
+            utils.push_error("Selezionare il gruppo che contiene il processo", 3)
+
+    def do_calculate_no_impact(self):
+        # Get selected group
+        current_node = self.iface.layerTreeView().currentNode()
+        if isinstance(current_node, QgsLayerTreeGroup):
+            # TODO: Check we have all the layers in the group
+            no_impact.calculate(*no_impact.guess_params(current_node))
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
 
