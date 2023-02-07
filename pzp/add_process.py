@@ -83,6 +83,52 @@ def add_process(process_type, gpkg_directory_path):
     options.setRemoveDuplicateNodes(True)
     options.setGeometryChecks(["QgsIsValidCheck"])
 
+    if process_type == 3000:  # Caduta sassi
+        propagation_layer = utils.create_layer(
+            "Probabilità di propagazione", "LineString"
+        )
+        QgsExpressionContextUtils.setLayerVariable(
+            propagation_layer, "pzp_layer", "propagation"
+        )
+        QgsExpressionContextUtils.setLayerVariable(
+            propagation_layer, "pzp_process", process_type
+        )
+
+        utils.add_field_to_layer(
+            propagation_layer, "osservazioni", "Osservazioni", QVariant.String
+        )
+        utils.add_field_to_layer(
+            propagation_layer,
+            "prob_propagazione",
+            "Probabilità propagazione",
+            QVariant.Int,
+        )
+        utils.add_field_to_layer(
+            propagation_layer,
+            "fonte_proc",
+            "Fonte del processo (es. nome riale)",
+            QVariant.String,
+        )
+        utils.add_field_to_layer(
+            propagation_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int
+        )
+        utils.set_qml_style(propagation_layer, "propagation")
+        utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
+        utils.set_unique_constraint_to_field(propagation_layer, "fonte_proc")
+        utils.set_value_relation_field(
+            propagation_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc"
+        )
+        utils.add_layer_to_gpkg(propagation_layer, gpkg_path)
+        propagation_gpkg_layer = utils.load_gpkg_layer(
+            propagation_layer.name(), gpkg_path
+        )
+        project.addMapLayer(propagation_gpkg_layer, False)
+        group.addLayer(propagation_gpkg_layer)
+        options = propagation_gpkg_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
+
     intensity_layer = utils.create_layer("Intensità completa")
     QgsExpressionContextUtils.setLayerVariable(
         intensity_layer, "pzp_layer", "intensity"
