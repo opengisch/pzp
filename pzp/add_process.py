@@ -161,7 +161,10 @@ def add_process(process_type, gpkg_directory_path):
 
     gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
     gpkg_layer.setSubsetString("\"periodo_ritorno\"='30'")
-    # gpkg_layer.setReadOnly(True)
+    options = gpkg_layer.geometryOptions()
+    options.setGeometryPrecision(0.001)
+    options.setRemoveDuplicateNodes(True)
+    options.setGeometryChecks(["QgsIsValidCheck"])
     gpkg_layer.setName("HQ 030")
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
@@ -171,7 +174,10 @@ def add_process(process_type, gpkg_directory_path):
 
     gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
     gpkg_layer.setSubsetString("\"periodo_ritorno\"='100'")
-    # gpkg_layer.setReadOnly(True)
+    options = gpkg_layer.geometryOptions()
+    options.setGeometryPrecision(0.001)
+    options.setRemoveDuplicateNodes(True)
+    options.setGeometryChecks(["QgsIsValidCheck"])
     gpkg_layer.setName("HQ 100")
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
@@ -181,7 +187,11 @@ def add_process(process_type, gpkg_directory_path):
 
     gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
     gpkg_layer.setSubsetString("\"periodo_ritorno\"='300'")
-    # gpkg_layer.setReadOnly(True)
+    options = gpkg_layer.geometryOptions()
+    options.setGeometryPrecision(0.001)
+    options.setRemoveDuplicateNodes(True)
+    options.setGeometryChecks(["QgsIsValidCheck"])
+
     gpkg_layer.setName("HQ 300")
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
@@ -191,7 +201,10 @@ def add_process(process_type, gpkg_directory_path):
 
     gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
     gpkg_layer.setSubsetString("\"periodo_ritorno\"='99999'")
-    # gpkg_layer.setReadOnly(True)
+    options = gpkg_layer.geometryOptions()
+    options.setGeometryPrecision(0.001)
+    options.setRemoveDuplicateNodes(True)
+    options.setGeometryChecks(["QgsIsValidCheck"])
     gpkg_layer.setName("HQ >300")
     project.addMapLayer(gpkg_layer, False)
     group_intensity_filtered.addLayer(gpkg_layer)
