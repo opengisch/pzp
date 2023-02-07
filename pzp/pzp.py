@@ -53,7 +53,7 @@ class PZP:
 
         self.toolbar.addAction(
             self.create_action(
-                "process.png",
+                "ok_hand.png",
                 "Aggiungi zone nessun impatto",
                 self.do_calculate_no_impact,
             )

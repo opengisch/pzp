@@ -29,4 +29,7 @@
     <qresource prefix="/plugins/pzp/" >
         <file>../icons/process.png</file>
     </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/ok_hand.png</file>
+    </qresource>
 </RCC>
