@@ -30,6 +30,7 @@ def calculate(process_type, layer_intensity, layer_area):
             "AREA_LAYER": layer_area.id(),
             "INTENSITY_LAYER": layer_intensity.id(),
             "PERIOD_FIELD": "periodo_ritorno",
+            "INTENSITY_FIELD": "classe_intensita",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
