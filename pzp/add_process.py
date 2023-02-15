@@ -132,7 +132,7 @@ def add_process(process_type, gpkg_directory_path):
         breaking_layer = utils.create_layer("Probabilità di rottura")
 
         QgsExpressionContextUtils.setLayerVariable(
-            breaking_layer, "pzp_layer", "propagation"
+            breaking_layer, "pzp_layer", "breaking"
         )
         QgsExpressionContextUtils.setLayerVariable(
             breaking_layer, "pzp_process", process_type
@@ -143,14 +143,14 @@ def add_process(process_type, gpkg_directory_path):
         )
 
         utils.add_field_to_layer(
-            breaking_layer,
-            "prob_propagazione",
-            "Probabilità di propagazione",
-            QVariant.Int,
+            breaking_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int
         )
 
         utils.add_field_to_layer(
-            breaking_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int
+            breaking_layer,
+            "classe_intensita",
+            "Intensità/impatto del processo",
+            QVariant.Int,
         )
 
         utils.add_field_to_layer(
@@ -170,6 +170,7 @@ def add_process(process_type, gpkg_directory_path):
             breaking_layer, "scala", "Scala di rappresentazione", QVariant.Int
         )
 
+        utils.set_qml_style(breaking_layer, "breaking")
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
         project.addMapLayer(breaking_gpkg_layer, False)
@@ -179,131 +180,135 @@ def add_process(process_type, gpkg_directory_path):
         options.setRemoveDuplicateNodes(True)
         options.setGeometryChecks(["QgsIsValidCheck"])
 
-    intensity_layer = utils.create_layer("Intensità completa")
-    QgsExpressionContextUtils.setLayerVariable(
-        intensity_layer, "pzp_layer", "intensity"
-    )
-    QgsExpressionContextUtils.setLayerVariable(
-        intensity_layer, "pzp_process", process_type
-    )
+    else:
 
-    utils.add_field_to_layer(
-        intensity_layer, "commento", "Osservazione o ev. commento", QVariant.String
-    )
-    utils.add_field_to_layer(
-        intensity_layer,
-        "periodo_ritorno",
-        "Periodo di ritorno (es. 30, 100, 300, 99999)",
-        QVariant.Int,
-    )
-    utils.add_field_to_layer(
-        intensity_layer,
-        "classe_intensita",
-        "Intensità/impatto del processo",
-        QVariant.Int,
-    )
-    utils.add_field_to_layer(
-        intensity_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int
-    )
-    utils.add_field_to_layer(
-        intensity_layer,
-        "fonte_proc",
-        "Fonte del processo (es. nome riale)",
-        QVariant.String,
-    )
-    utils.add_field_to_layer(
-        intensity_layer, "proc_parz_ch", "Processo rappresentato CH", QVariant.Int
-    )
-    utils.add_field_to_layer(
-        intensity_layer, "liv_dettaglio", "Precisione del lavoro", QVariant.Int
-    )
-    utils.add_field_to_layer(
-        intensity_layer, "scala", "Scala di rappresentazione", QVariant.Int
-    )
-    # utils.add_field_to_layer(intensity_layer, "matrice", "No. casella matrice", QVariant.Int)
-    # utils.add_field_to_layer(
-    #     intensity_layer, "prob_propagazione", "Probabilità propagazione", QVariant.Int
-    # )
+        intensity_layer = utils.create_layer("Intensità completa")
+        QgsExpressionContextUtils.setLayerVariable(
+            intensity_layer, "pzp_layer", "intensity"
+        )
+        QgsExpressionContextUtils.setLayerVariable(
+            intensity_layer, "pzp_process", process_type
+        )
 
-    utils.set_qml_style(intensity_layer, "intensity")
-    utils.set_expression_constraint_to_field(
-        intensity_layer, "periodo_ritorno", '"periodo_ritorno" > 0'
-    )
-    utils.set_value_map_to_field(
-        intensity_layer, "classe_intensita", domains.INTENSITIES
-    )
-    utils.set_not_null_constraint_to_field(intensity_layer, "classe_intensita")
-    utils.set_value_map_to_field(intensity_layer, "proc_parz", domains.PROCESS_TYPES)
-    utils.set_default_value_to_field(intensity_layer, "proc_parz", "@pzp_process")
-    utils.set_not_null_constraint_to_field(intensity_layer, "fonte_proc")
+        utils.add_field_to_layer(
+            intensity_layer, "commento", "Osservazione o ev. commento", QVariant.String
+        )
+        utils.add_field_to_layer(
+            intensity_layer,
+            "periodo_ritorno",
+            "Periodo di ritorno (es. 30, 100, 300, 99999)",
+            QVariant.Int,
+        )
+        utils.add_field_to_layer(
+            intensity_layer,
+            "classe_intensita",
+            "Intensità/impatto del processo",
+            QVariant.Int,
+        )
+        utils.add_field_to_layer(
+            intensity_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int
+        )
+        utils.add_field_to_layer(
+            intensity_layer,
+            "fonte_proc",
+            "Fonte del processo (es. nome riale)",
+            QVariant.String,
+        )
+        utils.add_field_to_layer(
+            intensity_layer, "proc_parz_ch", "Processo rappresentato CH", QVariant.Int
+        )
+        utils.add_field_to_layer(
+            intensity_layer, "liv_dettaglio", "Precisione del lavoro", QVariant.Int
+        )
+        utils.add_field_to_layer(
+            intensity_layer, "scala", "Scala di rappresentazione", QVariant.Int
+        )
+        # utils.add_field_to_layer(intensity_layer, "matrice", "No. casella matrice", QVariant.Int)
+        # utils.add_field_to_layer(
+        #     intensity_layer, "prob_propagazione", "Probabilità propagazione", QVariant.Int
+        # )
 
-    utils.set_value_relation_field(
-        intensity_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc"
-    )
+        utils.set_qml_style(intensity_layer, "intensity")
+        utils.set_expression_constraint_to_field(
+            intensity_layer, "periodo_ritorno", '"periodo_ritorno" > 0'
+        )
+        utils.set_value_map_to_field(
+            intensity_layer, "classe_intensita", domains.INTENSITIES
+        )
+        utils.set_not_null_constraint_to_field(intensity_layer, "classe_intensita")
+        utils.set_value_map_to_field(
+            intensity_layer, "proc_parz", domains.PROCESS_TYPES
+        )
+        utils.set_default_value_to_field(intensity_layer, "proc_parz", "@pzp_process")
+        utils.set_not_null_constraint_to_field(intensity_layer, "fonte_proc")
 
-    utils.add_layer_to_gpkg(intensity_layer, gpkg_path)
-    gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-    project.addMapLayer(gpkg_layer, False)
-    group.addLayer(gpkg_layer)
-    options = gpkg_layer.geometryOptions()
-    options.setGeometryPrecision(0.001)
-    options.setRemoveDuplicateNodes(True)
-    options.setGeometryChecks(["QgsIsValidCheck"])
+        utils.set_value_relation_field(
+            intensity_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc"
+        )
 
-    group_intensity_filtered = utils.create_group(
-        "Intensità (con filtri x visualizzazione scenari)", group
-    )
-    group_intensity_filtered.setExpanded(True)
+        utils.add_layer_to_gpkg(intensity_layer, gpkg_path)
+        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
+        project.addMapLayer(gpkg_layer, False)
+        group.addLayer(gpkg_layer)
+        options = gpkg_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
 
-    gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-    gpkg_layer.setSubsetString("\"periodo_ritorno\"='30'")
-    options = gpkg_layer.geometryOptions()
-    options.setGeometryPrecision(0.001)
-    options.setRemoveDuplicateNodes(True)
-    options.setGeometryChecks(["QgsIsValidCheck"])
-    gpkg_layer.setName("HQ 030")
-    project.addMapLayer(gpkg_layer, False)
-    group_intensity_filtered.addLayer(gpkg_layer)
-    layer_node = group.findLayer(gpkg_layer.id())
-    layer_node.setExpanded(False)
-    layer_node.setItemVisibilityChecked(False)
+        group_intensity_filtered = utils.create_group(
+            "Intensità (con filtri x visualizzazione scenari)", group
+        )
+        group_intensity_filtered.setExpanded(True)
 
-    gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-    gpkg_layer.setSubsetString("\"periodo_ritorno\"='100'")
-    options = gpkg_layer.geometryOptions()
-    options.setGeometryPrecision(0.001)
-    options.setRemoveDuplicateNodes(True)
-    options.setGeometryChecks(["QgsIsValidCheck"])
-    gpkg_layer.setName("HQ 100")
-    project.addMapLayer(gpkg_layer, False)
-    group_intensity_filtered.addLayer(gpkg_layer)
-    layer_node = group.findLayer(gpkg_layer.id())
-    layer_node.setExpanded(False)
-    layer_node.setItemVisibilityChecked(False)
+        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
+        gpkg_layer.setSubsetString("\"periodo_ritorno\"='30'")
+        options = gpkg_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
+        gpkg_layer.setName("HQ 030")
+        project.addMapLayer(gpkg_layer, False)
+        group_intensity_filtered.addLayer(gpkg_layer)
+        layer_node = group.findLayer(gpkg_layer.id())
+        layer_node.setExpanded(False)
+        layer_node.setItemVisibilityChecked(False)
 
-    gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-    gpkg_layer.setSubsetString("\"periodo_ritorno\"='300'")
-    options = gpkg_layer.geometryOptions()
-    options.setGeometryPrecision(0.001)
-    options.setRemoveDuplicateNodes(True)
-    options.setGeometryChecks(["QgsIsValidCheck"])
+        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
+        gpkg_layer.setSubsetString("\"periodo_ritorno\"='100'")
+        options = gpkg_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
+        gpkg_layer.setName("HQ 100")
+        project.addMapLayer(gpkg_layer, False)
+        group_intensity_filtered.addLayer(gpkg_layer)
+        layer_node = group.findLayer(gpkg_layer.id())
+        layer_node.setExpanded(False)
+        layer_node.setItemVisibilityChecked(False)
 
-    gpkg_layer.setName("HQ 300")
-    project.addMapLayer(gpkg_layer, False)
-    group_intensity_filtered.addLayer(gpkg_layer)
-    layer_node = group.findLayer(gpkg_layer.id())
-    layer_node.setExpanded(False)
-    layer_node.setItemVisibilityChecked(False)
+        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
+        gpkg_layer.setSubsetString("\"periodo_ritorno\"='300'")
+        options = gpkg_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
 
-    gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-    gpkg_layer.setSubsetString("\"periodo_ritorno\"='99999'")
-    options = gpkg_layer.geometryOptions()
-    options.setGeometryPrecision(0.001)
-    options.setRemoveDuplicateNodes(True)
-    options.setGeometryChecks(["QgsIsValidCheck"])
-    gpkg_layer.setName("HQ >300")
-    project.addMapLayer(gpkg_layer, False)
-    group_intensity_filtered.addLayer(gpkg_layer)
-    layer_node = group.findLayer(gpkg_layer.id())
-    layer_node.setExpanded(False)
-    layer_node.setItemVisibilityChecked(False)
+        gpkg_layer.setName("HQ 300")
+        project.addMapLayer(gpkg_layer, False)
+        group_intensity_filtered.addLayer(gpkg_layer)
+        layer_node = group.findLayer(gpkg_layer.id())
+        layer_node.setExpanded(False)
+        layer_node.setItemVisibilityChecked(False)
+
+        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
+        gpkg_layer.setSubsetString("\"periodo_ritorno\"='99999'")
+        options = gpkg_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
+        gpkg_layer.setName("HQ >300")
+        project.addMapLayer(gpkg_layer, False)
+        group_intensity_filtered.addLayer(gpkg_layer)
+        layer_node = group.findLayer(gpkg_layer.id())
+        layer_node.setExpanded(False)
+        layer_node.setItemVisibilityChecked(False)
