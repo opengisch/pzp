@@ -129,6 +129,56 @@ def add_process(process_type, gpkg_directory_path):
         options.setRemoveDuplicateNodes(True)
         options.setGeometryChecks(["QgsIsValidCheck"])
 
+        breaking_layer = utils.create_layer("Probabilità di rottura")
+
+        QgsExpressionContextUtils.setLayerVariable(
+            breaking_layer, "pzp_layer", "propagation"
+        )
+        QgsExpressionContextUtils.setLayerVariable(
+            breaking_layer, "pzp_process", process_type
+        )
+
+        utils.add_field_to_layer(
+            breaking_layer, "osservazioni", "Osservazioni", QVariant.String
+        )
+
+        utils.add_field_to_layer(
+            breaking_layer,
+            "prob_propagazione",
+            "Probabilità di propagazione",
+            QVariant.Int,
+        )
+
+        utils.add_field_to_layer(
+            breaking_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int
+        )
+
+        utils.add_field_to_layer(
+            breaking_layer,
+            "fonte_proc",
+            "Fonte del processo (es. nome riale)",
+            QVariant.String,
+        )
+
+        utils.add_field_to_layer(
+            breaking_layer, "proc_parz_ch", "Processo rappresentato CH", QVariant.Int
+        )
+        utils.add_field_to_layer(
+            breaking_layer, "liv_dettaglio", "Precisione del lavoro", QVariant.Int
+        )
+        utils.add_field_to_layer(
+            breaking_layer, "scala", "Scala di rappresentazione", QVariant.Int
+        )
+
+        utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
+        breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
+        project.addMapLayer(breaking_gpkg_layer, False)
+        group.addLayer(breaking_gpkg_layer)
+        options = breaking_gpkg_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
+
     intensity_layer = utils.create_layer("Intensità completa")
     QgsExpressionContextUtils.setLayerVariable(
         intensity_layer, "pzp_layer", "intensity"
