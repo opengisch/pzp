@@ -1,12 +1,12 @@
 import webbrowser
 
-from qgis.core import QgsLayerTreeGroup
+from qgis.core import QgsExpressionContextUtils, QgsLayerTreeGroup
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QHBoxLayout, QMenu, QToolButton
 
-from pzp import no_impact, utils
+from pzp import a_b, no_impact, utils
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationDialog
 from pzp.check_dock import CheckResultsDock
@@ -53,11 +53,22 @@ class PZP:
 
         self.toolbar.addAction(
             self.create_action(
-                "ok_hand.png",
+                "no_impact.png",
                 "Aggiungi zone nessun impatto",
                 self.do_calculate_no_impact,
             )
         )
+
+        a_b_menu = QMenu()
+        a_b_action = self.create_action("a_b.png", "A->B", self.do_a_b)
+        a_b_menu.addAction(a_b_action)
+        a_b_menu.addAction(self.create_action("b_a.png", "B->A", self.do_b_a))
+
+        toolButton = QToolButton()
+        toolButton.setDefaultAction(a_b_action)
+        toolButton.setMenu(a_b_menu)
+        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        self.toolbar.addWidget(toolButton)
 
         self.toolbar.addAction(self.create_action("help.png", "Aiuto", self.do_help))
         self.options_factory = PluginOptionsFactory()
@@ -116,6 +127,30 @@ class PZP:
             no_impact.calculate(*no_impact.guess_params(current_node))
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
+
+    def do_a_b(self):
+        layer = self.iface.activeLayer()
+        if layer:
+            if (
+                QgsExpressionContextUtils.layerScope(layer).variable("pzp_layer")
+                == "danger_zones"
+            ):
+                a_b.a_b(layer)
+                return
+
+        utils.push_error("Selezionare il layer con le zone di pericolo", 3)
+
+    def do_b_a(self):
+        layer = self.iface.activeLayer()
+        if layer:
+            if (
+                QgsExpressionContextUtils.layerScope(layer).variable("pzp_layer")
+                == "danger_zones"
+            ):
+                a_b.b_a(layer)
+                return
+
+        utils.push_error("Selezionare il layer con le zone di pericolo", 3)
 
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")
