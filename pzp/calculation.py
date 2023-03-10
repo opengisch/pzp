@@ -23,6 +23,8 @@ def guess_params(group):
     layer_nodes = group.findLayers()
     layer_intensity = None
     process_type = None
+    layer_propagation = None
+    layer_breaking = None
 
     for layer_node in layer_nodes:
         if layer_node.name() == "Intensità completa":
@@ -32,23 +34,62 @@ def guess_params(group):
                     "pzp_process"
                 )
             )
-            calculate(process_type, layer_intensity)
+        elif layer_node.name() == "Probabilità di propagazione":
+            layer_propagation = layer_node.layer()
+            process_type = int(
+                QgsExpressionContextUtils.layerScope(layer_propagation).variable(
+                    "pzp_process"
+                )
+            )
+        elif layer_node.name() == "Probabilità di rottura":
+            layer_breaking = layer_node.layer()
+            process_type = int(
+                QgsExpressionContextUtils.layerScope(layer_breaking).variable(
+                    "pzp_process"
+                )
+            )
+    calculate(process_type, layer_intensity, layer_propagation, layer_breaking)
 
 
-def calculate(process_type, layer_intensity):
+def calculate(process_type, layer_intensity, layer_propagation, layer_breaking):
 
     # TODO: calculate separately by "fonte processo" from area di studio and then group them in the end in the same layer!
 
     # TODO: Get list of "area di studio" as param
+    result = None
+    data_provider = None
+    if process_type == 3000:
+        data_provider = layer_breaking.dataProvider()
+        result = processing.run(
+            "pzp:propagation",
+            {
+                "BREAKING_LAYER": layer_breaking.id(),
+                "BREAKING_FIELD": "prob_rottura",
+                "PROPAGATION_LAYER": layer_propagation.id(),
+                "PROPAGATION_FIELD": "prob_propagazione",
+                "BREAKING_FIELD_PROP": "prob_rottura",
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
+        result = processing.run(
+            "native:extractbyexpression",
+            {
+                "INPUT": result["OUTPUT"],
+                "EXPRESSION": f'"proc_parz" = {process_type}',
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
 
-    result = processing.run(
-        "native:extractbyexpression",
-        {
-            "INPUT": layer_intensity.id(),
-            "EXPRESSION": f'"proc_parz" = {process_type}',
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
+    else:
+        data_provider = layer_intensity.dataProvider()
+        result = processing.run(
+            "native:extractbyexpression",
+            {
+                "INPUT": layer_intensity.id(),
+                "EXPRESSION": f'"proc_parz" = {process_type}',
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
 
     result = processing.run(
         "pzp:fix_geometries",
@@ -92,7 +133,7 @@ def calculate(process_type, layer_intensity):
     )
     layer.setName(layer_name)
 
-    gpkg_path = layer_intensity.dataProvider().dataSourceUri().split("|")[0]
+    gpkg_path = data_provider.dataSourceUri().split("|")[0]
 
     # Save output layer to gpkg
     params = {
@@ -121,19 +162,5 @@ def calculate(process_type, layer_intensity):
     qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
     new_layer.loadNamedStyle(qml_file_path)
 
-    # # TODO: disambiguity dialog
-    # dlg = AmbiguityDialog(self.iface)
-    # ambiguous_features = []
-
-    # for feature in layer.getFeatures():
-    #     # TODO: depending on the matrix of the process!!
-    #     if feature["Tipo di pericolo"] in [1004]:
-    #         print("AMBIGUO")
-    #         ambiguous_features.append(feature)
-
-    #     if dlg.exec_():
-    #         pass
-
-    # # Cycle all features in danger layer
-    # # by process, create a list of the ambiguous ones with featureid
-    # # populate list where to select the danger_type
+    QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_layer", "danger_zones")
+    QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)
