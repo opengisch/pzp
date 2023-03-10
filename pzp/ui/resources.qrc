@@ -32,4 +32,13 @@
     <qresource prefix="/plugins/pzp/" >
         <file>../icons/ok_hand.png</file>
     </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/no_impact.png</file>
+    </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/a_b.png</file>
+    </qresource>
+    <qresource prefix="/plugins/pzp/" >
+        <file>../icons/b_a.png</file>
+    </qresource>
 </RCC>
