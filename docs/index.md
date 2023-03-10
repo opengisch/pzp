@@ -1,29 +1,15 @@
 # Plugin Piani delle zone di pericolo
 
-Questa è la documentazione del plugin per QGIS per la creazione dei Piani delle zone di pericolo.
+Questa è la documentazione del plugin per QGIS per la creazione dei Piani delle zone di pericolo e dei relativi algoritmi.
 
-## Installazione
+La documentazione è divisa in più sezioni:
 
-Aggiungere un nuovo repository dei plugin in QGIS:
+  - Nella sezione [Plugin](plugin.md), vengono descritte le funzionalità del plugin per QGIS.
+  - Nella sezione [Algoritmi](algorithms.md), vengono descritti gli algoritmi (processing algorithms) utilizzati dal plugin.
+  - La sezione [Riferimento tecnico](reference.md), contiene informazioni tecniche ad esempio sulle matrici utilizzate per il calcolo delle zone di pericolo
 
-```
-https://download.opengis.ch/repos/ticino/plugins.xml
-```
+## Maggiori informazioni, domande e segnalazioni
 
-Installare il plugin `pzp`
+La versione più aggiornata di questa documentazione è disponibile all'indirizzo [https://opengisch.github.io/pzp/](https://opengisch.github.io/pzp/).
 
-!!! Note
-    Richiede QGIS 3.16 o superiore
-
-
-## Funzionalità
-
-### Creazione progetto QGIS per poter digitalizzare le mappe con le intensità
-
-### Generazione delle mappe con le zone di pericolo
-
-## Riferimenti
-
-### Matrici del pericolo utilizzate
-
-![Alluvionamento](./assets/matrice_alluvionamento.png)
+In caso di suggerimenti tecnici e segnalazione di problemi tecnici è possibile aprire una issue nel [repository Github del progetto](https://opengisch.github.io/pzp/).

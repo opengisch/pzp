@@ -2,6 +2,13 @@ site_name: PZP
 theme:
   name: material
   language: it
+  features:
+    - navigation.tabs
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
 
 markdown_extensions:
   - admonition
@@ -9,3 +16,9 @@ markdown_extensions:
   - pymdownx.superfences
 
 repo_url: https://github.com/opengisch/pzp
+
+nav:
+  - Home: index.md
+  - Plugin: plugin.md
+  - Algoritmi: algorithms.md
+  - Riferimento tecnico: reference.md
