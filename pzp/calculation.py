@@ -52,7 +52,6 @@ def guess_params(group):
 
 
 def calculate(process_type, layer_intensity, layer_propagation, layer_breaking):
-
     # TODO: calculate separately by "fonte processo" from area di studio and then group them in the end in the same layer!
 
     # TODO: Get list of "area di studio" as param
@@ -161,6 +160,11 @@ def calculate(process_type, layer_intensity, layer_propagation, layer_breaking):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
     new_layer.loadNamedStyle(qml_file_path)
+
+    options = new_layer.geometryOptions()
+    options.setGeometryPrecision(0.001)
+    options.setRemoveDuplicateNodes(True)
+    options.setGeometryChecks(["QgsIsValidCheck"])
 
     QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_layer", "danger_zones")
     QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)
