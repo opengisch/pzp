@@ -52,9 +52,6 @@ def guess_params(group):
 
 
 def calculate(process_type, layer_intensity, layer_propagation, layer_breaking):
-    # TODO: calculate separately by "fonte processo" from area di studio and then group them in the end in the same layer!
-
-    # TODO: Get list of "area di studio" as param
     result = None
     data_provider = None
     if process_type == 3000:

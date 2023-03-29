@@ -28,6 +28,8 @@ def calculate(process_type, layer_intensity, layer_area):
         "pzp:no_impact",
         {
             "AREA_LAYER": layer_area.id(),
+            "AREA_PROCESS_SOURCE_FIELD": "fonte_proc",
+            "INTENSITY_PROCESS_SOURCE_FIELD": "fonte_proc",
             "INTENSITY_LAYER": layer_intensity.id(),
             "PERIOD_FIELD": "periodo_ritorno",
             "INTENSITY_FIELD": "classe_intensita",
