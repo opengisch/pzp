@@ -114,6 +114,7 @@ def calculate(process_type, layer_intensity, layer_propagation, layer_breaking):
         {
             "INPUT": result["OUTPUT"],
             "MATRIX_FIELD": "matrice",
+            "PROCESS_SOURCE_FIELD": "fonte_proc",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
