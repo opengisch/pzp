@@ -26,6 +26,22 @@ un campo contenente il valore della matrice per ogni geometria.
 
 ![Correggi geometrie](./assets/algoritmo_correggi_geometrie.png)
 
+### Scopo
+Questo algoritmo cerca di correggere gli errori più frequenti di digitalizzazione delle geometrie.
+
+Vengono eseguiti in particolare eseguite le seguenti operazioni:
+
+- Aggancia punti al reticolo (con reticolo di 1mm)
+- Creazione e rimozione di un buffer negativo molto piccolo (1e-06 m) per rimuovere "sbavature" delle geometrie
+- Rimozione delle aree con superficie inferiore a 1m<sup>2</sup>
+- Rimozione dei buchi con superficie maggiore a 1m<sup>2</sup>
+
+### Parametri input
+- Layer con le geometrie
+
+### Ouptut
+Viene generato un layer con le geometrie corrette mantenendo gli attributi delle geometrie iniziali.
+
 ## Fondi layer intensità
 
 ![Fondi layer intensità](./assets/algoritmo_fondi_intensita.png)

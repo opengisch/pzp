@@ -1,22 +1,36 @@
 # Reference
 
+## Versioni
+
+| Versione | Data pubblicazione | Descizione |
+|----------|--------------------|------------|
+|          |                    |            |
+
 ## Matrici del pericolo utilizzate
 
-### Flusso di detrito e alluvionamento
+### Matrice intensità
 
-![Alluvionamento](./assets/matrice_alluvionamento.png)
+![Intensità](./assets/matrice_intensita.jpg)
+
+### Alluvionamento
+
+![Alluvionamento](./assets/matrice_alluvionamento.jpg)
+
+### Flusso di detriti
+
+![Flusso di detriti](./assets/matrice_flusso_detrito.jpg)
 
 ### Scivolamento spontaneo e colata detritica di versante
 
-![Scivolamento](./assets/matrice_scivolamento.png)
+![Scivolamento](./assets/matrice_scivolamento.jpg)
 
 ### Caduta sassi/blocchi/massi
 
-![Caduta sassi](./assets/matrice_caduta_sassi.png)
+![Caduta sassi](./assets/matrice_caduta_sassi.jpg)
 
 ### Valanga radente e valanga polverosa
 
-![Valanga](./assets/matrice_valanga.png)
+![Valanga](./assets/matrice_valanga.jpg)
 
 ## Codici domini
 
@@ -63,8 +77,5 @@
 | 4100   | Valanga radente                         |
 | 4200   | Valanga polverosa                       |
 
-## Versioni
-
-| Versione | Data pubblicazione | Descizione |
-|----------|--------------------|------------|
-|          |                    |            |
+## Variabili dei layer
+...
