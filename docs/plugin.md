@@ -78,10 +78,22 @@ Questo layer permette di digitalizzare le intensità. Attributi necessari sono:
 
 #### Probabilità di propagazione
 
+Questo layer permette di digitalizzare le linee che definiscono le probabilità di propagazione. Attributi necessari sono:
+
+- probabilità di propagazione
+- fonte del processo
+- probabilità di rottura (a cui la linea si riferisce)
+
 !!! Nota
     Questo layer è presente solamente per il processo "Caduta sassi/blocchi/massi"
 
 #### Probabilità di rottura
+
+Questo layer permette di digitalizzare le geometrie che definiscono le probabilità di rottura. Attributi necessari sono:
+
+- probabilià di rottura
+- intensità
+- fonte del processo
 
 !!! Nota
     Questo layer è presente solamente per il processo "Caduta sassi/blocchi/massi"
@@ -94,7 +106,7 @@ Tramite il pulsante "Calcolo delle zone di nessun impatto" è possibile generare
 impatto, per fonte di processo, all'interno delle aree di studio. In
 pratica, per ogni area di studio, viene creata una geometria con
 intensità "nessun impatto" corrispondente a tutta la superficie
-dell'area di studio non coperta da altre geometrie dell fonte di
+dell'area di studio non coperta da altre geometrie della fonte di
 proceso in questione.
 
 !!! Nota
@@ -130,9 +142,6 @@ layer, l'operazione viene eseguita su tutte le geometrie del layer con possibili
 !!! Nota
     Per poter utilizzare questo pulsante occorre selezionare il layer con le zone di pericolo sul quale si vuole eseguire l'operazione
 
-
-### Ottenere informazioni
-
-## FAQ
-
-Domande frequenti
+### Ottenere informazioni Alla pagina https://opengisch.github.io/pzp/
+è presente la documentazione aggiornata. La pagina è accessibile
+tramite il pulsante "Aiuto" nel plugin.

@@ -2,9 +2,9 @@
 
 ## Versioni
 
-| Versione | Data pubblicazione | Descizione |
-|----------|--------------------|------------|
-|          |                    |            |
+| Versione | Data pubblicazione | Descrizione            |
+|----------|--------------------|------------------------|
+| 1.0.0    | 31.03.2023         | Prima release pubblica |
 
 ## Matrici del pericolo utilizzate
 
@@ -78,4 +78,9 @@
 | 4200   | Valanga polverosa                       |
 
 ## Variabili dei layer
-...
+I layer generati dal plugin hanno le seguenti variabili definite:
+
+| Variabile   | Descrizione                              |
+|-------------|------------------------------------------|
+| pzp_layer   | tipo di layer (es. intensity)            |
+| pzp_process | codice del processo del layer (es. 1110) |
