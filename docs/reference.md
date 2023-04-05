@@ -4,6 +4,7 @@
 
 | Versione | Data pubblicazione | Descrizione                                                |
 |----------|--------------------|------------------------------------------------------------|
+| 1.0.2    | 05.04.2023         | Miglioramento algoritmo calcolo zone di pericolo           |
 | 1.0.1    | 04.04.2023         | Miglioramento compatibilità stili e algoritmi in QGIS 3.16 |
 | 1.0.0    | 31.03.2023         | Prima release pubblica                                     |
 
