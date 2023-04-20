@@ -36,7 +36,6 @@ class AddProcessDialog(QDialog, FORM_CLASS):
 
 
 def add_process(process_type, gpkg_directory_path):
-
     # TODO: docstring process_type is the process code
     # TODO: manage different process_types
 
@@ -74,6 +73,7 @@ def add_process(process_type, gpkg_directory_path):
     utils.set_unique_constraint_to_field(area_layer, "fonte_proc")
     utils.set_default_value_to_field(area_layer, "proc_parz", "@pzp_process")
     utils.set_not_null_constraint_to_field(area_layer, "proc_parz")
+    utils.remove_unique_constraint_to_field(area_layer, "proc_parz")
     utils.add_layer_to_gpkg(area_layer, gpkg_path)
     area_gpkg_layer = utils.load_gpkg_layer(area_layer.name(), gpkg_path)
     project.addMapLayer(area_gpkg_layer, False)
@@ -181,7 +181,6 @@ def add_process(process_type, gpkg_directory_path):
         options.setGeometryChecks(["QgsIsValidCheck"])
 
     else:
-
         intensity_layer = utils.create_layer("Intensità completa")
         QgsExpressionContextUtils.setLayerVariable(
             intensity_layer, "pzp_layer", "intensity"

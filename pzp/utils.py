@@ -117,7 +117,6 @@ def add_field_to_layer(layer, name, alias="", variant=QVariant.Int):
 
 
 def set_value_map_to_field(layer, field_name, domain_map):
-
     index = layer.fields().indexOf(field_name)
     setup = QgsEditorWidgetSetup(
         "ValueMap",
@@ -143,6 +142,13 @@ def set_not_null_constraint_to_field(layer, field_name, enforce=True):
     layer.setFieldConstraint(index, constraint, strength)
 
 
+def remove_not_null_constraint_to_field(layer, field_name):
+    index = layer.fields().indexOf(field_name)
+
+    constraint = QgsFieldConstraints.ConstraintNotNull
+    layer.removeFieldConstraint(index, constraint)
+
+
 def set_unique_constraint_to_field(layer, field_name, enforce=True):
     index = layer.fields().indexOf(field_name)
 
@@ -151,6 +157,13 @@ def set_unique_constraint_to_field(layer, field_name, enforce=True):
     if not enforce:
         strength = QgsFieldConstraints.ConstraintStrengthSoft
     layer.setFieldConstraint(index, constraint, strength)
+
+
+def remove_unique_constraint_to_field(layer, field_name):
+    index = layer.fields().indexOf(field_name)
+
+    constraint = QgsFieldConstraints.ConstraintUnique
+    layer.removeFieldConstraint(index, constraint)
 
 
 def set_expression_constraint_to_field(layer, field_name, expression, description=""):

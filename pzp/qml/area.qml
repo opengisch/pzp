@@ -1,20 +1,25 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.16.16-Hannover" styleCategories="Symbology|Fields|Forms">
+<qgis version="3.16.12-Hannover" labelsEnabled="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms" readOnly="0">
+  <flags>
+    <Identifiable>1</Identifiable>
+    <Removable>1</Removable>
+    <Searchable>1</Searchable>
+  </flags>
   <renderer-v2 type="singleSymbol" symbollevels="0" enableorderby="0" forceraster="0">
     <symbols>
-      <symbol type="fill" force_rhr="0" name="0" clip_to_extent="1" alpha="1">
-        <layer locked="0" pass="0" class="SimpleFill" enabled="1">
-          <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="color" v="0,0,255,0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="31,120,250,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="0.46"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="style" v="solid"/>
+      <symbol type="fill" name="0" clip_to_extent="1" alpha="1" force_rhr="0">
+        <layer enabled="1" class="SimpleFill" locked="0" pass="0">
+          <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
+          <prop v="0,0,255,0" k="color"/>
+          <prop v="bevel" k="joinstyle"/>
+          <prop v="0,0" k="offset"/>
+          <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+          <prop v="MM" k="offset_unit"/>
+          <prop v="31,120,250,255" k="outline_color"/>
+          <prop v="solid" k="outline_style"/>
+          <prop v="0.46" k="outline_width"/>
+          <prop v="MM" k="outline_width_unit"/>
+          <prop v="solid" k="style"/>
           <data_defined_properties>
             <Option type="Map">
               <Option type="QString" name="name" value=""/>
@@ -23,20 +28,20 @@
             </Option>
           </data_defined_properties>
         </layer>
-        <layer locked="0" pass="0" class="LinePatternFill" enabled="1">
-          <prop k="angle" v="45"/>
-          <prop k="color" v="0,0,0,255"/>
-          <prop k="distance" v="2"/>
-          <prop k="distance_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="distance_unit" v="MM"/>
-          <prop k="line_width" v="0.5"/>
-          <prop k="line_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
+        <layer enabled="1" class="LinePatternFill" locked="0" pass="0">
+          <prop v="45" k="angle"/>
+          <prop v="0,0,0,255" k="color"/>
+          <prop v="2" k="distance"/>
+          <prop v="3x:0,0,0,0,0,0" k="distance_map_unit_scale"/>
+          <prop v="MM" k="distance_unit"/>
+          <prop v="0.5" k="line_width"/>
+          <prop v="3x:0,0,0,0,0,0" k="line_width_map_unit_scale"/>
+          <prop v="MM" k="line_width_unit"/>
+          <prop v="0" k="offset"/>
+          <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+          <prop v="MM" k="offset_unit"/>
+          <prop v="3x:0,0,0,0,0,0" k="outline_width_map_unit_scale"/>
+          <prop v="MM" k="outline_width_unit"/>
           <data_defined_properties>
             <Option type="Map">
               <Option type="QString" name="name" value=""/>
@@ -44,29 +49,29 @@
               <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
-          <symbol type="line" force_rhr="0" name="@0@1" clip_to_extent="1" alpha="1">
-            <layer locked="0" pass="0" class="SimpleLine" enabled="1">
-              <prop k="align_dash_pattern" v="0"/>
-              <prop k="capstyle" v="square"/>
-              <prop k="customdash" v="5;2"/>
-              <prop k="customdash_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="customdash_unit" v="MM"/>
-              <prop k="dash_pattern_offset" v="0"/>
-              <prop k="dash_pattern_offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="dash_pattern_offset_unit" v="MM"/>
-              <prop k="draw_inside_polygon" v="0"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="31,120,180,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="0.15"/>
-              <prop k="line_width_unit" v="MM"/>
-              <prop k="offset" v="0"/>
-              <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="ring_filter" v="0"/>
-              <prop k="tweak_dash_pattern_on_corners" v="0"/>
-              <prop k="use_custom_dash" v="0"/>
-              <prop k="width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <symbol type="line" name="@0@1" clip_to_extent="1" alpha="1" force_rhr="0">
+            <layer enabled="1" class="SimpleLine" locked="0" pass="0">
+              <prop v="0" k="align_dash_pattern"/>
+              <prop v="square" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="dash_pattern_offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="dash_pattern_offset_map_unit_scale"/>
+              <prop v="MM" k="dash_pattern_offset_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="31,120,180,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.15" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="ring_filter"/>
+              <prop v="0" k="tweak_dash_pattern_on_corners"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
               <data_defined_properties>
                 <Option type="Map">
                   <Option type="QString" name="name" value=""/>
@@ -151,28 +156,28 @@
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias name="" index="0" field="fid"/>
-    <alias name="Osservazione o ev. commento" index="1" field="commento"/>
-    <alias name="Processo rappresentato TI" index="2" field="proc_parz"/>
-    <alias name="Fonte del processo (es. nome riale)" index="3" field="fonte_proc"/>
+    <alias index="0" name="" field="fid"/>
+    <alias index="1" name="Commento" field="commento"/>
+    <alias index="2" name="Processo" field="proc_parz"/>
+    <alias index="3" name="Fonte processo" field="fonte_proc"/>
   </aliases>
   <defaults>
-    <default field="fid" expression="" applyOnUpdate="0"/>
-    <default field="commento" expression="" applyOnUpdate="0"/>
-    <default field="proc_parz" expression="@pzp_process" applyOnUpdate="0"/>
-    <default field="fonte_proc" expression="" applyOnUpdate="0"/>
+    <default field="fid" applyOnUpdate="0" expression=""/>
+    <default field="commento" applyOnUpdate="0" expression=""/>
+    <default field="proc_parz" applyOnUpdate="0" expression="@pzp_process"/>
+    <default field="fonte_proc" applyOnUpdate="0" expression=""/>
   </defaults>
   <constraints>
-    <constraint notnull_strength="1" field="fid" exp_strength="0" unique_strength="1" constraints="3"/>
-    <constraint notnull_strength="0" field="commento" exp_strength="0" unique_strength="0" constraints="0"/>
-    <constraint notnull_strength="1" field="proc_parz" exp_strength="1" unique_strength="1" constraints="7"/>
-    <constraint notnull_strength="1" field="fonte_proc" exp_strength="1" unique_strength="1" constraints="7"/>
+    <constraint unique_strength="1" exp_strength="0" field="fid" constraints="3" notnull_strength="1"/>
+    <constraint unique_strength="0" exp_strength="0" field="commento" constraints="0" notnull_strength="0"/>
+    <constraint unique_strength="0" exp_strength="0" field="proc_parz" constraints="1" notnull_strength="1"/>
+    <constraint unique_strength="1" exp_strength="0" field="fonte_proc" constraints="3" notnull_strength="1"/>
   </constraints>
   <constraintExpressions>
-    <constraint desc="" exp="" field="fid"/>
-    <constraint desc="" exp="" field="commento"/>
-    <constraint desc="" exp="" field="proc_parz"/>
-    <constraint desc="" exp="" field="fonte_proc"/>
+    <constraint field="fid" exp="" desc=""/>
+    <constraint field="commento" exp="" desc=""/>
+    <constraint field="proc_parz" exp="" desc=""/>
+    <constraint field="fonte_proc" exp="" desc=""/>
   </constraintExpressions>
   <expressionfields/>
   <editform tolerant="1"></editform>
@@ -199,15 +204,15 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>tablayout</editorlayout>
   <attributeEditorForm>
-    <attributeEditorField showLabel="1" name="proc_parz" index="2"/>
-    <attributeEditorField showLabel="1" name="fonte_proc" index="3"/>
-    <attributeEditorField showLabel="1" name="commento" index="1"/>
+    <attributeEditorField index="2" showLabel="1" name="proc_parz"/>
+    <attributeEditorField index="3" showLabel="1" name="fonte_proc"/>
+    <attributeEditorField index="1" showLabel="1" name="commento"/>
   </attributeEditorForm>
   <editable>
-    <field name="commento" editable="1"/>
-    <field name="fid" editable="1"/>
-    <field name="fonte_proc" editable="1"/>
-    <field name="proc_parz" editable="0"/>
+    <field editable="1" name="commento"/>
+    <field editable="1" name="fid"/>
+    <field editable="1" name="fonte_proc"/>
+    <field editable="0" name="proc_parz"/>
   </editable>
   <labelOnTop>
     <field name="commento" labelOnTop="0"/>
@@ -217,5 +222,6 @@ def my_form_open(dialog, layer, feature):
   </labelOnTop>
   <dataDefinedFieldProperties/>
   <widgets/>
+  <previewExpression>"commento"</previewExpression>
   <layerGeometryType>2</layerGeometryType>
 </qgis>
