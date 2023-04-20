@@ -47,15 +47,15 @@ class PZP:
 
         self.toolbar.addAction(
             self.create_action(
-                "process.png", "Calcola zone di pericolo", self.do_calculate_zones
+                "no_impact.png",
+                "Aggiungi zone nessun impatto",
+                self.do_calculate_no_impact,
             )
         )
 
         self.toolbar.addAction(
             self.create_action(
-                "no_impact.png",
-                "Aggiungi zone nessun impatto",
-                self.do_calculate_no_impact,
+                "process.png", "Calcola zone di pericolo", self.do_calculate_zones
             )
         )
 
