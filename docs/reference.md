@@ -4,6 +4,7 @@
 
 | Versione | Data pubblicazione | Descrizione                                                                    |
 |----------|--------------------|--------------------------------------------------------------------------------|
+| 1.0.4    | 20.04.2023         | Miglioramento degli stili dei layer                                            |
 | 1.0.3    | 18.04.2023         | Utilizza il codice del valore della matrice (es. 1003) invece del valore reale |
 | 1.0.2    | 05.04.2023         | Miglioramento algoritmo calcolo zone di pericolo                               |
 | 1.0.1    | 04.04.2023         | Miglioramento compatibilità stili e algoritmi in QGIS 3.16                     |
