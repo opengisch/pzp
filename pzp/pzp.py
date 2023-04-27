@@ -8,7 +8,7 @@ from qgis.PyQt.QtWidgets import QAction, QHBoxLayout, QMenu, QToolButton
 
 from pzp import a_b, no_impact, utils
 from pzp.add_process import AddProcessDialog
-from pzp.calculation import CalculationDialog
+from pzp.calculation import CalculationDialog, PropagationDialog
 from pzp.check_dock import CheckResultsDock
 from pzp.ui.resources import *  # noqa
 
@@ -50,6 +50,12 @@ class PZP:
                 "no_impact.png",
                 "Aggiungi zone nessun impatto",
                 self.do_calculate_no_impact,
+            )
+        )
+
+        self.toolbar.addAction(
+            self.create_action(
+                "propagation.png", "Calcola propagazione", self.do_calculate_propagation
             )
         )
 
@@ -108,6 +114,16 @@ class PZP:
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.checks_dock)
         self.checks_dock.setVisible(True)
         self.checks_dock.show()
+
+    def do_calculate_propagation(self):
+        # Get selected group
+        current_node = self.iface.layerTreeView().currentNode()
+        if isinstance(current_node, QgsLayerTreeGroup):
+            # TODO: Check we have all the layers in the group
+            dlg = PropagationDialog(self.iface, current_node)
+            dlg.exec_()
+        else:
+            utils.push_error("Selezionare il gruppo che contiene il processo", 3)
 
     def do_calculate_zones(self):
         # Get selected group

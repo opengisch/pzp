@@ -161,6 +161,10 @@ def add_process(process_type, gpkg_directory_path):
         )
 
         utils.add_field_to_layer(
+            breaking_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int
+        )
+
+        utils.add_field_to_layer(
             breaking_layer, "proc_parz_ch", "Processo rappresentato CH", QVariant.Int
         )
         utils.add_field_to_layer(
@@ -169,6 +173,8 @@ def add_process(process_type, gpkg_directory_path):
         utils.add_field_to_layer(
             breaking_layer, "scala", "Scala di rappresentazione", QVariant.Int
         )
+
+        utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
 
         utils.set_qml_style(breaking_layer, "breaking")
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
