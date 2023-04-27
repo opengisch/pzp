@@ -4,6 +4,7 @@
 
 | Versione | Data pubblicazione | Descrizione                                                                    |
 |----------|--------------------|--------------------------------------------------------------------------------|
+| 1.0.7    | 27.04.2023         | Creazione separata layer propagazione                                          |
 | 1.0.6    | 21.04.2023         | Permetti gli apici nel nome delle fonti di processo anche per algo no_impact   |
 | 1.0.5    | 21.04.2023         | Permetti gli apici nel nome delle fonti di processo                            |
 | 1.0.4    | 20.04.2023         | Miglioramento degli stili dei layer                                            |
