@@ -114,10 +114,8 @@ def add_process(process_type, gpkg_directory_path):
         )
         utils.set_qml_style(propagation_layer, "propagation")
         utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
-        # utils.set_unique_constraint_to_field(propagation_layer, "fonte_proc")
-        # utils.set_value_relation_field(
-        #     propagation_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc"
-        # )
+        utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
+
         utils.add_layer_to_gpkg(propagation_layer, gpkg_path)
         propagation_gpkg_layer = utils.load_gpkg_layer(
             propagation_layer.name(), gpkg_path
@@ -250,6 +248,10 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_value_relation_field(
             intensity_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc"
         )
+
+        utils.remove_unique_constraint_to_field(intensity_layer, "fonte_proc")
+        utils.remove_unique_constraint_to_field(intensity_layer, "classe_intensita")
+        utils.remove_unique_constraint_to_field(intensity_layer, "periodo_ritorno")
 
         utils.add_layer_to_gpkg(intensity_layer, gpkg_path)
         gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
