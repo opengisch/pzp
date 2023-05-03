@@ -85,7 +85,7 @@ def add_process(process_type, gpkg_directory_path):
 
     if process_type == 3000:  # Caduta sassi
         propagation_layer = utils.create_layer(
-            "Probabilità di propagazione", "LineString"
+            "Probabilità di propagazione (tutti gli scenari)", "LineString"
         )
         QgsExpressionContextUtils.setLayerVariable(
             propagation_layer, "pzp_layer", "propagation"
@@ -121,13 +121,45 @@ def add_process(process_type, gpkg_directory_path):
             propagation_layer.name(), gpkg_path
         )
         project.addMapLayer(propagation_gpkg_layer, False)
-        group.addLayer(propagation_gpkg_layer)
+
+        group_propagation_filtered = utils.create_group(
+            "Probabilità di propagazione", group
+        )
+        group_propagation_filtered.setExpanded(True)
+
+        group_propagation_filtered.addLayer(propagation_gpkg_layer)
         options = propagation_gpkg_layer.geometryOptions()
         options.setGeometryPrecision(0.001)
         options.setRemoveDuplicateNodes(True)
         options.setGeometryChecks(["QgsIsValidCheck"])
 
-        breaking_layer = utils.create_layer("Probabilità di rottura")
+        filter_params = [
+            ("\"prob_rottura\"='1003'", "Prob. propagazione (scenario rottura 0-30)"),
+            ("\"prob_rottura\"='1002'", "Prob. propagazione (scenario rottura 30-100)"),
+            (
+                "\"prob_rottura\"='1001'",
+                "Prob. propagazione (scenario rottura 100-300)",
+            ),
+            ("\"prob_rottura\"='1000'", "Prob. propagazione (scenario rottura >300)"),
+        ]
+
+        for param in filter_params:
+            gpkg_layer = utils.create_filtered_layers_from_gpkg(
+                propagation_layer.name(),
+                gpkg_path,
+                param[0],
+                param[1],
+            )
+
+            project.addMapLayer(gpkg_layer, False)
+            group_propagation_filtered.addLayer(gpkg_layer)
+            layer_node = group.findLayer(gpkg_layer.id())
+            layer_node.setExpanded(False)
+            layer_node.setItemVisibilityChecked(False)
+
+        breaking_layer = utils.create_layer(
+            "Probabilità di rottura (tutti gli scenari)"
+        )
 
         QgsExpressionContextUtils.setLayerVariable(
             breaking_layer, "pzp_layer", "breaking"
@@ -178,11 +210,36 @@ def add_process(process_type, gpkg_directory_path):
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
         project.addMapLayer(breaking_gpkg_layer, False)
-        group.addLayer(breaking_gpkg_layer)
+
+        group_breaking_filtered = utils.create_group("Probabilità di rottura", group)
+        group_breaking_filtered.setExpanded(True)
+
+        group_breaking_filtered.addLayer(breaking_gpkg_layer)
         options = breaking_gpkg_layer.geometryOptions()
         options.setGeometryPrecision(0.001)
         options.setRemoveDuplicateNodes(True)
         options.setGeometryChecks(["QgsIsValidCheck"])
+
+        filter_params = [
+            ("\"prob_rottura\"='1003'", "Probabilità di rottura alta (0-30)"),
+            ("\"prob_rottura\"='1002'", "Probabilità di rottura alta (30-100)"),
+            ("\"prob_rottura\"='1001'", "Probabilità di rottura alta (100-300)"),
+            ("\"prob_rottura\"='1000'", "Probabilità di rottura alta (>300)"),
+        ]
+
+        for param in filter_params:
+            gpkg_layer = utils.create_filtered_layers_from_gpkg(
+                breaking_layer.name(),
+                gpkg_path,
+                param[0],
+                param[1],
+            )
+
+            project.addMapLayer(gpkg_layer, False)
+            group_breaking_filtered.addLayer(gpkg_layer)
+            layer_node = group.findLayer(gpkg_layer.id())
+            layer_node.setExpanded(False)
+            layer_node.setItemVisibilityChecked(False)
 
     else:
         intensity_layer = utils.create_layer("Intensità completa")
@@ -267,55 +324,23 @@ def add_process(process_type, gpkg_directory_path):
         )
         group_intensity_filtered.setExpanded(True)
 
-        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-        gpkg_layer.setSubsetString("\"periodo_ritorno\"='30'")
-        options = gpkg_layer.geometryOptions()
-        options.setGeometryPrecision(0.001)
-        options.setRemoveDuplicateNodes(True)
-        options.setGeometryChecks(["QgsIsValidCheck"])
-        gpkg_layer.setName("HQ 030")
-        project.addMapLayer(gpkg_layer, False)
-        group_intensity_filtered.addLayer(gpkg_layer)
-        layer_node = group.findLayer(gpkg_layer.id())
-        layer_node.setExpanded(False)
-        layer_node.setItemVisibilityChecked(False)
+        filter_params = [
+            ("\"periodo_ritorno\"='30'", "HQ 030"),
+            ("\"periodo_ritorno\"='100'", "HQ 100"),
+            ("\"periodo_ritorno\"='300'", "HQ 300"),
+            ("\"periodo_ritorno\"='99999'", "HQ >300"),
+        ]
 
-        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-        gpkg_layer.setSubsetString("\"periodo_ritorno\"='100'")
-        options = gpkg_layer.geometryOptions()
-        options.setGeometryPrecision(0.001)
-        options.setRemoveDuplicateNodes(True)
-        options.setGeometryChecks(["QgsIsValidCheck"])
-        gpkg_layer.setName("HQ 100")
-        project.addMapLayer(gpkg_layer, False)
-        group_intensity_filtered.addLayer(gpkg_layer)
-        layer_node = group.findLayer(gpkg_layer.id())
-        layer_node.setExpanded(False)
-        layer_node.setItemVisibilityChecked(False)
+        for param in filter_params:
+            gpkg_layer = utils.create_filtered_layers_from_gpkg(
+                intensity_layer.name(),
+                gpkg_path,
+                param[0],
+                param[1],
+            )
 
-        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-        gpkg_layer.setSubsetString("\"periodo_ritorno\"='300'")
-        options = gpkg_layer.geometryOptions()
-        options.setGeometryPrecision(0.001)
-        options.setRemoveDuplicateNodes(True)
-        options.setGeometryChecks(["QgsIsValidCheck"])
-
-        gpkg_layer.setName("HQ 300")
-        project.addMapLayer(gpkg_layer, False)
-        group_intensity_filtered.addLayer(gpkg_layer)
-        layer_node = group.findLayer(gpkg_layer.id())
-        layer_node.setExpanded(False)
-        layer_node.setItemVisibilityChecked(False)
-
-        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-        gpkg_layer.setSubsetString("\"periodo_ritorno\"='99999'")
-        options = gpkg_layer.geometryOptions()
-        options.setGeometryPrecision(0.001)
-        options.setRemoveDuplicateNodes(True)
-        options.setGeometryChecks(["QgsIsValidCheck"])
-        gpkg_layer.setName("HQ >300")
-        project.addMapLayer(gpkg_layer, False)
-        group_intensity_filtered.addLayer(gpkg_layer)
-        layer_node = group.findLayer(gpkg_layer.id())
-        layer_node.setExpanded(False)
-        layer_node.setItemVisibilityChecked(False)
+            project.addMapLayer(gpkg_layer, False)
+            group_intensity_filtered.addLayer(gpkg_layer)
+            layer_node = group.findLayer(gpkg_layer.id())
+            layer_node.setExpanded(False)
+            layer_node.setItemVisibilityChecked(False)
