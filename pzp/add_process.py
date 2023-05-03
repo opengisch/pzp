@@ -87,12 +87,6 @@ def add_process(process_type, gpkg_directory_path):
         propagation_layer = utils.create_layer(
             "Probabilità di propagazione (tutti gli scenari)", "LineString"
         )
-        QgsExpressionContextUtils.setLayerVariable(
-            propagation_layer, "pzp_layer", "propagation"
-        )
-        QgsExpressionContextUtils.setLayerVariable(
-            propagation_layer, "pzp_process", process_type
-        )
 
         utils.add_field_to_layer(
             propagation_layer, "osservazioni", "Osservazioni", QVariant.String
@@ -120,7 +114,15 @@ def add_process(process_type, gpkg_directory_path):
         propagation_gpkg_layer = utils.load_gpkg_layer(
             propagation_layer.name(), gpkg_path
         )
+
         project.addMapLayer(propagation_gpkg_layer, False)
+
+        QgsExpressionContextUtils.setLayerVariable(
+            propagation_gpkg_layer, "pzp_layer", "propagation"
+        )
+        QgsExpressionContextUtils.setLayerVariable(
+            propagation_gpkg_layer, "pzp_process", process_type
+        )
 
         group_propagation_filtered = utils.create_group(
             "Probabilità di propagazione", group
@@ -159,13 +161,6 @@ def add_process(process_type, gpkg_directory_path):
 
         breaking_layer = utils.create_layer(
             "Probabilità di rottura (tutti gli scenari)"
-        )
-
-        QgsExpressionContextUtils.setLayerVariable(
-            breaking_layer, "pzp_layer", "breaking"
-        )
-        QgsExpressionContextUtils.setLayerVariable(
-            breaking_layer, "pzp_process", process_type
         )
 
         utils.add_field_to_layer(
@@ -211,6 +206,13 @@ def add_process(process_type, gpkg_directory_path):
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
         project.addMapLayer(breaking_gpkg_layer, False)
 
+        QgsExpressionContextUtils.setLayerVariable(
+            breaking_gpkg_layer, "pzp_layer", "breaking"
+        )
+        QgsExpressionContextUtils.setLayerVariable(
+            breaking_gpkg_layer, "pzp_process", process_type
+        )
+
         group_breaking_filtered = utils.create_group("Probabilità di rottura", group)
         group_breaking_filtered.setExpanded(True)
 
@@ -243,12 +245,6 @@ def add_process(process_type, gpkg_directory_path):
 
     else:
         intensity_layer = utils.create_layer("Intensità completa")
-        QgsExpressionContextUtils.setLayerVariable(
-            intensity_layer, "pzp_layer", "intensity"
-        )
-        QgsExpressionContextUtils.setLayerVariable(
-            intensity_layer, "pzp_process", process_type
-        )
 
         utils.add_field_to_layer(
             intensity_layer, "commento", "Osservazione o ev. commento", QVariant.String
@@ -313,6 +309,12 @@ def add_process(process_type, gpkg_directory_path):
         utils.add_layer_to_gpkg(intensity_layer, gpkg_path)
         gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
         project.addMapLayer(gpkg_layer, False)
+
+        QgsExpressionContextUtils.setLayerVariable(gpkg_layer, "pzp_layer", "intensity")
+        QgsExpressionContextUtils.setLayerVariable(
+            gpkg_layer, "pzp_process", process_type
+        )
+
         group.addLayer(gpkg_layer)
         options = gpkg_layer.geometryOptions()
         options.setGeometryPrecision(0.001)

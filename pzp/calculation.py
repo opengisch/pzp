@@ -26,20 +26,26 @@ def guess_params_propagation(group):
     layer_breaking = None
 
     for layer_node in layer_nodes:
-        if layer_node.name() == "Probabilità di propagazione":
+        pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable(
+            "pzp_layer"
+        )
+        if pzp_layer == "propagation":
             layer_propagation = layer_node.layer()
             process_type = int(
                 QgsExpressionContextUtils.layerScope(layer_propagation).variable(
                     "pzp_process"
                 )
             )
-        elif layer_node.name() == "Probabilità di rottura":
+        elif pzp_layer == "breaking":
             layer_breaking = layer_node.layer()
             process_type = int(
                 QgsExpressionContextUtils.layerScope(layer_breaking).variable(
                     "pzp_process"
                 )
             )
+
+    # TODO: se non trova i layer avvisare
+
     calculate_propagation(process_type, layer_propagation, layer_breaking)
 
 
@@ -134,7 +140,10 @@ def guess_params(group):
     process_type = None
 
     for layer_node in layer_nodes:
-        if layer_node.name() == "Intensità completa":
+        pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable(
+            "pzp_layer"
+        )
+        if pzp_layer == "intensity":
             layer_intensity = layer_node.layer()
             process_type = int(
                 QgsExpressionContextUtils.layerScope(layer_intensity).variable(
