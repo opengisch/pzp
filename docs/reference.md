@@ -5,6 +5,7 @@
 | Versione | Data pubblicazione | Descrizione                                                                    |
 |----------|--------------------|--------------------------------------------------------------------------------|
 | 1.1.0    | 03.05.2023         | Aggiungi layer filtrati per processo caduta sassi                              |
+| 1.0.9    | 28.04.2023         | Migliora le icone                                                              |
 | 1.0.8    | 28.04.2023         | Migliora i vincoli nei form                                                    |
 | 1.0.7    | 27.04.2023         | Creazione separata layer propagazione                                          |
 | 1.0.6    | 21.04.2023         | Permetti gli apici nel nome delle fonti di processo anche per algo no_impact   |
