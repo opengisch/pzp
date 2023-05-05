@@ -4,6 +4,7 @@
 
 | Versione | Data pubblicazione | Descrizione                                                                    |
 |----------|--------------------|--------------------------------------------------------------------------------|
+| 1.1.2    | 05.05.2023         | Migliora algoritmo propagazione e migliora gestione errori                     |
 | 1.1.1    | 03.05.2023         | Migliora la gestione delle variabili dei layer                                 |
 | 1.1.0    | 03.05.2023         | Aggiungi layer filtrati per processo caduta sassi                              |
 | 1.0.9    | 28.04.2023         | Migliora le icone                                                              |
