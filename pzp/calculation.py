@@ -3,7 +3,12 @@ import os
 
 from pzp_utils.processing import domains
 from qgis import processing
-from qgis.core import QgsExpressionContextUtils, QgsProject, QgsVectorLayer
+from qgis.core import (
+    QgsApplication,
+    QgsExpressionContextUtils,
+    QgsProject,
+    QgsVectorLayer,
+)
 
 from pzp import utils
 
@@ -76,8 +81,16 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking):
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
+
+    # qgis:deletecolumn has been renamed native:deletecolumn after qgis 3.16
+    deletecolumn_id = "qgis:deletecolumn"
+    if "qgis:deletecolumn" not in [
+        x.id() for x in QgsApplication.processingRegistry().algorithms()
+    ]:
+        deletecolumn_id = "native:deletecolumn"
+
     result = processing.run(
-        "native:deletecolumn",
+        deletecolumn_id,
         {
             "INPUT": result["OUTPUT"],
             "COLUMN": ["fid"],
