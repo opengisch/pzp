@@ -59,10 +59,10 @@ def guess_params_propagation(group):
         utils.push_error("Impossibile determinare il tipo di processo", 3)
         return
 
-    calculate_propagation(process_type, layer_propagation, layer_breaking)
+    calculate_propagation(process_type, layer_propagation, layer_breaking, group)
 
 
-def calculate_propagation(process_type, layer_propagation, layer_breaking):
+def calculate_propagation(process_type, layer_propagation, layer_breaking, group):
     print(f"{process_type=}")
     print(f"{layer_propagation=}")
     print(f"{layer_breaking=}")
@@ -129,13 +129,17 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking):
     )
     new_layer.setName(f"Intensità completa")
 
-    QgsProject.instance().layerTreeRoot()
+    utils.set_qml_style(new_layer, "intensity")
 
-    QgsProject.instance().addMapLayer(new_layer, True)
+    project = QgsProject.instance()
+    project.addMapLayer(new_layer, False)
 
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    qml_file_path = os.path.join(current_dir, "qml", "intensity.qml")
-    new_layer.loadNamedStyle(qml_file_path)
+    group_intensity_filtered = utils.create_group(
+        "Intensità (con filtri x visualizzazione scenari)", group
+    )
+    group_intensity_filtered.setExpanded(True)
+
+    group_intensity_filtered.addLayer(new_layer)
 
     options = new_layer.geometryOptions()
     options.setGeometryPrecision(0.001)
@@ -144,6 +148,28 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking):
 
     QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_layer", "intensity")
     QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)
+
+    filter_params = [
+        ("\"periodo_ritorno\"='30'", "HQ 030"),
+        ("\"periodo_ritorno\"='100'", "HQ 100"),
+        ("\"periodo_ritorno\"='300'", "HQ 300"),
+        ("\"periodo_ritorno\"='99999'", "HQ >300"),
+    ]
+
+    for param in filter_params:
+        gpkg_layer = utils.create_filtered_layers_from_gpkg(
+            layer.name(),
+            gpkg_path,
+            param[0],
+            param[1],
+        )
+        utils.set_qml_style(gpkg_layer, "intensity")
+
+        project.addMapLayer(gpkg_layer, False)
+        group_intensity_filtered.addLayer(gpkg_layer)
+        layer_node = group.findLayer(gpkg_layer.id())
+        layer_node.setExpanded(False)
+        layer_node.setItemVisibilityChecked(False)
 
 
 class CalculationDialog:
