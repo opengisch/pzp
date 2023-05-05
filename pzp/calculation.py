@@ -49,7 +49,15 @@ def guess_params_propagation(group):
                 )
             )
 
-    # TODO: se non trova i layer avvisare
+    if not layer_propagation:
+        utils.push_error("Layer con le probabilità di propagazione non trovato", 3)
+        return
+    if not layer_breaking:
+        utils.push_error("Layer con le probabilità di rottura non trovato", 3)
+        return
+    if not process_type:
+        utils.push_error("Impossibile determinare il tipo di processo", 3)
+        return
 
     calculate_propagation(process_type, layer_propagation, layer_breaking)
 
@@ -163,6 +171,14 @@ def guess_params(group):
                     "pzp_process"
                 )
             )
+
+    if not layer_intensity:
+        utils.push_error("Layer con le intensità non trovato", 3)
+        return
+    if not process_type:
+        utils.push_error("Impossibile determinare il tipo di processo", 3)
+        return
+
     calculate(process_type, layer_intensity)
 
 
