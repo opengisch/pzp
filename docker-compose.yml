@@ -7,6 +7,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix ro
       - /home/mario/projects/pzp/pzp/pzp:/root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/pzp/
       - /home/mario/projects/pzp-utils/pzp_utils/:/root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/pzp_utils/
+      - ./io:/io
     command:
       - qgis
     environment:
