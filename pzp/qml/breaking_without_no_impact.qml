@@ -5,7 +5,6 @@
       <category symbol="0" value="1004" label="forte" render="true"/>
       <category symbol="1" value="1003" label="medio" render="true"/>
       <category symbol="2" value="1002" label="debole" render="true"/>
-      <category symbol="3" value="1001" label="impatto presente" render="true"/>
     </categories>
     <symbols>
       <symbol clip_to_extent="1" alpha="1" type="fill" name="0" force_rhr="0">
@@ -56,28 +55,6 @@
         <layer pass="3" class="SimpleFill" locked="0" enabled="1">
           <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
           <prop k="color" v="209,255,115,255"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="35,35,35,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="0.26"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="style" v="solid"/>
-          <data_defined_properties>
-            <Option type="Map">
-              <Option type="QString" value="" name="name"/>
-              <Option name="properties"/>
-              <Option type="QString" value="collection" name="type"/>
-            </Option>
-          </data_defined_properties>
-        </layer>
-      </symbol>
-      <symbol clip_to_extent="1" alpha="1" type="fill" name="3" force_rhr="0">
-        <layer pass="2" class="SimpleFill" locked="0" enabled="1">
-          <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="color" v="232,190,255,255"/>
           <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
@@ -171,9 +148,6 @@
         <config>
           <Option type="Map">
             <Option type="List" name="map">
-              <Option type="Map">
-                <Option type="QString" value="1001" name="Impatto presente"/>
-              </Option>
               <Option type="Map">
                 <Option type="QString" value="1002" name="Debole"/>
               </Option>
@@ -271,14 +245,14 @@
   </fieldConfiguration>
   <aliases>
     <alias index="0" name="" field="fid"/>
-    <alias index="1" name="" field="osservazioni"/>
-    <alias index="2" name="" field="prob_rottura"/>
-    <alias index="3" name="" field="classe_intensita"/>
-    <alias index="4" name="" field="fonte_proc"/>
-    <alias index="5" name="" field="proc_parz"/>
-    <alias index="6" name="" field="proc_parz_ch"/>
-    <alias index="7" name="" field="liv_dettaglio"/>
-    <alias index="8" name="" field="scala"/>
+    <alias index="1" name="Osservazioni" field="osservazioni"/>
+    <alias index="2" name="Probabilità di rottura" field="prob_rottura"/>
+    <alias index="3" name="Intensità/impatto del processo" field="classe_intensita"/>
+    <alias index="4" name="Fonte del processo (es. nome riale)" field="fonte_proc"/>
+    <alias index="5" name="Processo rappresentato TI" field="proc_parz"/>
+    <alias index="6" name="Processo rappresentato CH" field="proc_parz_ch"/>
+    <alias index="7" name="Precisione del lavoro" field="liv_dettaglio"/>
+    <alias index="8" name="Scala di rappresentazione" field="scala"/>
   </aliases>
   <defaults>
     <default expression="" applyOnUpdate="0" field="fid"/>

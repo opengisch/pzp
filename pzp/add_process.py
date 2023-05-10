@@ -146,7 +146,7 @@ def add_process(process_type, gpkg_directory_path):
         ]
 
         for param in filter_params:
-            gpkg_layer = utils.create_filtered_layers_from_gpkg(
+            gpkg_layer = utils.create_filtered_layer_from_gpkg(
                 propagation_layer.name(),
                 gpkg_path,
                 param[0],
@@ -223,23 +223,29 @@ def add_process(process_type, gpkg_directory_path):
         options.setGeometryChecks(["QgsIsValidCheck"])
 
         filter_params = [
-            ("\"prob_rottura\"='1003'", "Probabilità di rottura alta (0-30)"),
-            ("\"prob_rottura\"='1002'", "Probabilità di rottura alta (30-100)"),
-            ("\"prob_rottura\"='1001'", "Probabilità di rottura alta (100-300)"),
-            ("\"prob_rottura\"='1000'", "Probabilità di rottura alta (>300)"),
+            ("\"prob_rottura\"='1003'", "Probabilità di rottura alta (0-30)", True),
+            ("\"prob_rottura\"='1002'", "Probabilità di rottura media (30-100)", True),
+            ("\"prob_rottura\"='1001'", "Probabilità di rottura bassa (100-300)", True),
+            (
+                "\"prob_rottura\"='1000'",
+                "Probabilità di rottura molto bassa (>300)",
+                False,
+            ),
         ]
 
         for param in filter_params:
-            gpkg_layer = utils.create_filtered_layers_from_gpkg(
+            gpkg_layer = utils.create_filtered_layer_from_gpkg(
                 breaking_layer.name(),
                 gpkg_path,
                 param[0],
                 param[1],
             )
 
-            project.addMapLayer(gpkg_layer, False)
-            group_breaking_filtered.addLayer(gpkg_layer)
-            layer_node = group.findLayer(gpkg_layer.id())
+            added_layer = project.addMapLayer(gpkg_layer, False)
+            if param[2] is False:
+                utils.set_qml_style(added_layer, "breaking_without_no_impact")
+            group_breaking_filtered.addLayer(added_layer)
+            layer_node = group.findLayer(added_layer.id())
             layer_node.setExpanded(False)
             layer_node.setItemVisibilityChecked(False)
 
@@ -334,7 +340,7 @@ def add_process(process_type, gpkg_directory_path):
         ]
 
         for param in filter_params:
-            gpkg_layer = utils.create_filtered_layers_from_gpkg(
+            gpkg_layer = utils.create_filtered_layer_from_gpkg(
                 intensity_layer.name(),
                 gpkg_path,
                 param[0],

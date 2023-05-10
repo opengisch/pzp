@@ -243,7 +243,7 @@ def set_value_relation_field(layer, field_name, other_layer, key_field, value_fi
     layer.setEditorWidgetSetup(index, widget)
 
 
-def create_filtered_layers_from_gpkg(gpkg_layer_name, gpkg_path, substring, name):
+def create_filtered_layer_from_gpkg(gpkg_layer_name, gpkg_path, substring, name):
     gpkg_layer = load_gpkg_layer(gpkg_layer_name, gpkg_path)
     gpkg_layer.setSubsetString(substring)
     options = gpkg_layer.geometryOptions()

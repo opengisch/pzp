@@ -157,7 +157,7 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
     ]
 
     for param in filter_params:
-        gpkg_layer = utils.create_filtered_layers_from_gpkg(
+        gpkg_layer = utils.create_filtered_layer_from_gpkg(
             layer.name(),
             gpkg_path,
             param[0],
