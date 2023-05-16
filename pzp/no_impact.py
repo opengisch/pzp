@@ -37,6 +37,14 @@ def calculate(process_type, layer_intensity, layer_area):
         },
     )
 
+    result = processing.run(
+        "pzp:fix_geometries",
+        {
+            "INPUT": result["OUTPUT"],
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
+
     result_layer = result["OUTPUT"]
 
     with edit(layer_intensity):
