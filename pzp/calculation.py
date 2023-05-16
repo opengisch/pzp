@@ -90,6 +90,17 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
         },
     )
 
+    # Clippa per periodo di ritorno
+    result = processing.run(
+        "pzp:remove_overlappings",
+        {
+            "INPUT": result["OUTPUT"],
+            "INTENSITY_FIELD": "classe_intensita",
+            "PERIOD_FIELD": "periodo_ritorno",
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
+
     # qgis:deletecolumn has been renamed native:deletecolumn after qgis 3.16
     deletecolumn_id = "qgis:deletecolumn"
     if "qgis:deletecolumn" not in [
