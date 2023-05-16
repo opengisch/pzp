@@ -164,7 +164,7 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
         ("\"periodo_ritorno\"='30'", "HQ 030"),
         ("\"periodo_ritorno\"='100'", "HQ 100"),
         ("\"periodo_ritorno\"='300'", "HQ 300"),
-        ("\"periodo_ritorno\"='99999'", "HQ >300"),
+        ("\"periodo_ritorno\">'300'", "HQ >300"),
     ]
 
     for param in filter_params:

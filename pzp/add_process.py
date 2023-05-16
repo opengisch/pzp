@@ -109,6 +109,9 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_qml_style(propagation_layer, "propagation")
         utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
         utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
+        utils.set_value_relation_field(
+            propagation_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc"
+        )
 
         utils.add_layer_to_gpkg(propagation_layer, gpkg_path)
         propagation_gpkg_layer = utils.load_gpkg_layer(
@@ -189,19 +192,13 @@ def add_process(process_type, gpkg_directory_path):
             breaking_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int
         )
 
-        utils.add_field_to_layer(
-            breaking_layer, "proc_parz_ch", "Processo rappresentato CH", QVariant.Int
-        )
-        utils.add_field_to_layer(
-            breaking_layer, "liv_dettaglio", "Precisione del lavoro", QVariant.Int
-        )
-        utils.add_field_to_layer(
-            breaking_layer, "scala", "Scala di rappresentazione", QVariant.Int
-        )
-
         utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
 
         utils.set_qml_style(breaking_layer, "breaking")
+        utils.set_value_relation_field(
+            breaking_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc"
+        )
+
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
         project.addMapLayer(breaking_gpkg_layer, False)
@@ -276,19 +273,6 @@ def add_process(process_type, gpkg_directory_path):
             "Fonte del processo (es. nome riale)",
             QVariant.String,
         )
-        utils.add_field_to_layer(
-            intensity_layer, "proc_parz_ch", "Processo rappresentato CH", QVariant.Int
-        )
-        utils.add_field_to_layer(
-            intensity_layer, "liv_dettaglio", "Precisione del lavoro", QVariant.Int
-        )
-        utils.add_field_to_layer(
-            intensity_layer, "scala", "Scala di rappresentazione", QVariant.Int
-        )
-        # utils.add_field_to_layer(intensity_layer, "matrice", "No. casella matrice", QVariant.Int)
-        # utils.add_field_to_layer(
-        #     intensity_layer, "prob_propagazione", "Probabilità propagazione", QVariant.Int
-        # )
 
         utils.set_qml_style(intensity_layer, "intensity")
         utils.set_expression_constraint_to_field(
@@ -336,7 +320,7 @@ def add_process(process_type, gpkg_directory_path):
             ("\"periodo_ritorno\"='30'", "HQ 030"),
             ("\"periodo_ritorno\"='100'", "HQ 100"),
             ("\"periodo_ritorno\"='300'", "HQ 300"),
-            ("\"periodo_ritorno\"='99999'", "HQ >300"),
+            ("\"periodo_ritorno\">'300'", "HQ >300"),
         ]
 
         for param in filter_params:

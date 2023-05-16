@@ -1,21 +1,16 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.16.12-Hannover" labelsEnabled="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms" readOnly="0">
-  <flags>
-    <Identifiable>1</Identifiable>
-    <Removable>1</Removable>
-    <Searchable>1</Searchable>
-  </flags>
-  <renderer-v2 type="categorizedSymbol" symbollevels="1" enableorderby="0" forceraster="0" attr="classe_intensita">
+<qgis labelsEnabled="0" styleCategories="Symbology|Labeling|Fields|Forms" version="3.16.12-Hannover">
+  <renderer-v2 type="categorizedSymbol" symbollevels="1" forceraster="0" attr="classe_intensita" enableorderby="0">
     <categories>
-      <category render="true" symbol="0" label="forte" value="1004"/>
-      <category render="true" symbol="1" label="medio" value="1003"/>
-      <category render="true" symbol="2" label="debole" value="1002"/>
-      <category render="true" symbol="3" label="impatto presente" value="1001"/>
-      <category render="true" symbol="4" label="nessun impatto" value="1000"/>
+      <category symbol="0" value="1004" label="forte" render="true"/>
+      <category symbol="1" value="1003" label="medio" render="true"/>
+      <category symbol="2" value="1002" label="debole" render="true"/>
+      <category symbol="3" value="1001" label="impatto presente" render="true"/>
+      <category symbol="4" value="1000" label="nessun impatto" render="true"/>
     </categories>
     <symbols>
-      <symbol type="fill" name="0" clip_to_extent="1" alpha="1" force_rhr="0">
-        <layer enabled="1" class="SimpleFill" locked="0" pass="5">
+      <symbol type="fill" alpha="1" name="0" clip_to_extent="1" force_rhr="0">
+        <layer locked="0" pass="5" class="SimpleFill" enabled="1">
           <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
           <prop v="56,158,0,255" k="color"/>
           <prop v="bevel" k="joinstyle"/>
@@ -36,8 +31,8 @@
           </data_defined_properties>
         </layer>
       </symbol>
-      <symbol type="fill" name="1" clip_to_extent="1" alpha="1" force_rhr="0">
-        <layer enabled="1" class="SimpleFill" locked="0" pass="4">
+      <symbol type="fill" alpha="1" name="1" clip_to_extent="1" force_rhr="0">
+        <layer locked="0" pass="4" class="SimpleFill" enabled="1">
           <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
           <prop v="83,212,0,255" k="color"/>
           <prop v="bevel" k="joinstyle"/>
@@ -58,8 +53,8 @@
           </data_defined_properties>
         </layer>
       </symbol>
-      <symbol type="fill" name="2" clip_to_extent="1" alpha="1" force_rhr="0">
-        <layer enabled="1" class="SimpleFill" locked="0" pass="3">
+      <symbol type="fill" alpha="1" name="2" clip_to_extent="1" force_rhr="0">
+        <layer locked="0" pass="3" class="SimpleFill" enabled="1">
           <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
           <prop v="209,255,115,255" k="color"/>
           <prop v="bevel" k="joinstyle"/>
@@ -80,8 +75,8 @@
           </data_defined_properties>
         </layer>
       </symbol>
-      <symbol type="fill" name="3" clip_to_extent="1" alpha="1" force_rhr="0">
-        <layer enabled="1" class="SimpleFill" locked="0" pass="2">
+      <symbol type="fill" alpha="1" name="3" clip_to_extent="1" force_rhr="0">
+        <layer locked="0" pass="2" class="SimpleFill" enabled="1">
           <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
           <prop v="232,190,255,255" k="color"/>
           <prop v="bevel" k="joinstyle"/>
@@ -102,8 +97,8 @@
           </data_defined_properties>
         </layer>
       </symbol>
-      <symbol type="fill" name="4" clip_to_extent="1" alpha="1" force_rhr="0">
-        <layer enabled="1" class="LinePatternFill" locked="0" pass="1">
+      <symbol type="fill" alpha="1" name="4" clip_to_extent="1" force_rhr="0">
+        <layer locked="0" pass="1" class="LinePatternFill" enabled="1">
           <prop v="45" k="angle"/>
           <prop v="121,125,127,201" k="color"/>
           <prop v="2.2" k="distance"/>
@@ -124,8 +119,8 @@
               <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
-          <symbol type="line" name="@4@0" clip_to_extent="1" alpha="1" force_rhr="0">
-            <layer enabled="1" class="SimpleLine" locked="0" pass="0">
+          <symbol type="line" alpha="1" name="@4@0" clip_to_extent="1" force_rhr="0">
+            <layer locked="0" pass="0" class="SimpleLine" enabled="1">
               <prop v="0" k="align_dash_pattern"/>
               <prop v="square" k="capstyle"/>
               <prop v="5;2" k="customdash"/>
@@ -157,7 +152,7 @@
             </layer>
           </symbol>
         </layer>
-        <layer enabled="1" class="SimpleFill" locked="0" pass="0">
+        <layer locked="0" pass="0" class="SimpleFill" enabled="1">
           <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
           <prop v="0,0,255,0" k="color"/>
           <prop v="bevel" k="joinstyle"/>
@@ -180,8 +175,8 @@
       </symbol>
     </symbols>
     <source-symbol>
-      <symbol type="fill" name="0" clip_to_extent="1" alpha="1" force_rhr="0">
-        <layer enabled="1" class="SimpleFill" locked="0" pass="0">
+      <symbol type="fill" alpha="1" name="0" clip_to_extent="1" force_rhr="0">
+        <layer locked="0" pass="0" class="SimpleFill" enabled="1">
           <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
           <prop v="237,76,44,255" k="color"/>
           <prop v="bevel" k="joinstyle"/>
@@ -231,7 +226,7 @@
         <config>
           <Option type="Map">
             <Option type="bool" name="AllowNull" value="false"/>
-            <Option type="int" name="Max" value="10000"/>
+            <Option type="int" name="Max" value="99999"/>
             <Option type="int" name="Min" value="0"/>
             <Option type="int" name="Precision" value="0"/>
             <Option type="int" name="Step" value="1"/>
@@ -246,19 +241,19 @@
           <Option type="Map">
             <Option type="List" name="map">
               <Option type="Map">
-                <Option type="QString" name="Debole" value="1002"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Forte" value="1004"/>
+                <Option type="QString" name="Nessun impatto" value="1000"/>
               </Option>
               <Option type="Map">
                 <Option type="QString" name="Impatto presente" value="1001"/>
               </Option>
               <Option type="Map">
+                <Option type="QString" name="Debole" value="1002"/>
+              </Option>
+              <Option type="Map">
                 <Option type="QString" name="Medio" value="1003"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" name="Nessun impatto" value="1000"/>
+                <Option type="QString" name="Forte" value="1004"/>
               </Option>
             </Option>
           </Option>
@@ -269,34 +264,16 @@
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
-            <Option type="List" name="map">
-              <Option type="Map">
-                <Option type="QString" name="Alluvionamento corso d'acqua minore" value="1110"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Alluvionamento corso d'acqua principale" value="1120"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Caduta sassi o blocchi" value="3000"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Colata detritica di versante" value="2002"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Flusso detrito" value="1200"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Ruscellamento superficiale" value="1400"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Scivolamento spontaneo" value="2001"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Valanga polverosa" value="4200"/>
-              </Option>
-              <Option type="Map">
-                <Option type="QString" name="Valanga radente" value="4100"/>
-              </Option>
+            <Option type="Map" name="map">
+              <Option type="int" name="Alluvionamento corso d'acqua minore" value="1110"/>
+              <Option type="int" name="Alluvionamento corso d'acqua principale" value="1120"/>
+              <Option type="int" name="Caduta sassi o blocchi" value="3000"/>
+              <Option type="int" name="Colata detritica di versante" value="2002"/>
+              <Option type="int" name="Flusso detrito" value="1200"/>
+              <Option type="int" name="Ruscellamento superficiale" value="1400"/>
+              <Option type="int" name="Scivolamento spontaneo" value="2001"/>
+              <Option type="int" name="Valanga polverosa" value="4200"/>
+              <Option type="int" name="Valanga radente" value="4100"/>
             </Option>
           </Option>
         </config>
@@ -308,14 +285,9 @@
           <Option type="Map">
             <Option type="bool" name="AllowMulti" value="false"/>
             <Option type="bool" name="AllowNull" value="false"/>
-            <Option type="QString" name="Description" value=""/>
             <Option type="QString" name="FilterExpression" value=""/>
             <Option type="QString" name="Key" value="fonte_proc"/>
-            <Option type="QString" name="Layer" value="Area_di_studio_6d782492_808a_4064_964f_8de0fc140247"/>
-            <Option type="QString" name="LayerName" value="Area di studio"/>
-            <Option type="QString" name="LayerProviderName" value="ogr"/>
-            <Option type="QString" name="LayerSource" value="/home/data_1110_20042023_120252.gpkg|layername=Area di studio"/>
-            <Option type="int" name="NofColumns" value="1"/>
+            <Option type="QString" name="Layer" value="Area_di_studio_0146f378_ac97_4d76_8f8a_748c2f98232c"/>
             <Option type="bool" name="OrderByValue" value="false"/>
             <Option type="bool" name="UseCompleter" value="false"/>
             <Option type="QString" name="Value" value="fonte_proc"/>
@@ -323,80 +295,14 @@
         </config>
       </editWidget>
     </field>
-    <field name="proc_parz_ch" configurationFlags="None">
-      <editWidget type="ValueRelation">
-        <config>
-          <Option type="Map">
-            <Option type="bool" name="AllowMulti" value="false"/>
-            <Option type="bool" name="AllowNull" value="false"/>
-            <Option type="QString" name="Description" value=""/>
-            <Option type="QString" name="FilterExpression" value="CASE&#xa;WHEN current_value ( 'proc_parz' ) = 0 THEN &quot;code&quot; = 0&#xa;WHEN current_value ( 'proc_parz' ) = 1110 THEN &quot;code&quot; = 1100&#xa;WHEN current_value ( 'proc_parz' ) = 1120 THEN &quot;code&quot; = 1100 &#xa;WHEN current_value ( 'proc_parz' ) = 1130 THEN &quot;code&quot; = 1100 &#xa;WHEN current_value ( 'proc_parz' ) = 1200 THEN &quot;code&quot; = 1200 &#xa;WHEN current_value ( 'proc_parz' ) = 1300 THEN &quot;code&quot; = 1300 &#xa;WHEN current_value ( 'proc_parz' ) = 1400 THEN &quot;code&quot; = 0 &#xa;WHEN current_value ( 'proc_parz' ) = 2001 THEN &quot;code&quot; = 2210 &#xa;WHEN current_value ( 'proc_parz' ) = 2002 THEN &quot;code&quot; = 2220 &#xa;WHEN current_value ( 'proc_parz' ) = 2003 THEN &quot;code&quot; = 2100 &#xa;WHEN current_value ( 'proc_parz' ) = 2004 THEN &quot;code&quot; = 2210 &#xa;WHEN current_value ( 'proc_parz' ) = 3000 THEN &quot;code&quot; = 3100 &#xa;WHEN current_value ( 'proc_parz' ) = 3001 THEN &quot;code&quot; = 3200 &#xa;WHEN current_value ( 'proc_parz' ) = 3002 THEN &quot;code&quot; = 3200 &#xa;WHEN current_value ( 'proc_parz' ) = 4100 THEN &quot;code&quot; = 4100 &#xa;WHEN current_value ( 'proc_parz' ) = 4200 THEN &quot;code&quot; = 4200 &#xa;WHEN current_value ( 'proc_parz' ) = 4300 THEN &quot;code&quot; = 4300 &#xa;ELSE NULL&#xa;END"/>
-            <Option type="QString" name="Key" value=""/>
-            <Option type="QString" name="Layer" value=""/>
-            <Option type="QString" name="LayerName" value=""/>
-            <Option type="QString" name="LayerProviderName" value=""/>
-            <Option type="QString" name="LayerSource" value=""/>
-            <Option type="int" name="NofColumns" value="1"/>
-            <Option type="bool" name="OrderByValue" value="false"/>
-            <Option type="bool" name="UseCompleter" value="false"/>
-            <Option type="QString" name="Value" value=""/>
-          </Option>
-        </config>
-      </editWidget>
-    </field>
-    <field name="liv_dettaglio" configurationFlags="None">
-      <editWidget type="ValueRelation">
-        <config>
-          <Option type="Map">
-            <Option type="bool" name="AllowMulti" value="false"/>
-            <Option type="bool" name="AllowNull" value="true"/>
-            <Option type="QString" name="Description" value=""/>
-            <Option type="QString" name="FilterExpression" value=""/>
-            <Option type="QString" name="Key" value=""/>
-            <Option type="QString" name="Layer" value=""/>
-            <Option type="QString" name="LayerName" value=""/>
-            <Option type="QString" name="LayerProviderName" value=""/>
-            <Option type="QString" name="LayerSource" value=""/>
-            <Option type="int" name="NofColumns" value="1"/>
-            <Option type="bool" name="OrderByValue" value="false"/>
-            <Option type="bool" name="UseCompleter" value="false"/>
-            <Option type="QString" name="Value" value=""/>
-          </Option>
-        </config>
-      </editWidget>
-    </field>
-    <field name="scala" configurationFlags="None">
-      <editWidget type="ValueRelation">
-        <config>
-          <Option type="Map">
-            <Option type="bool" name="AllowMulti" value="false"/>
-            <Option type="bool" name="AllowNull" value="true"/>
-            <Option type="QString" name="Description" value=""/>
-            <Option type="QString" name="FilterExpression" value=""/>
-            <Option type="QString" name="Key" value=""/>
-            <Option type="QString" name="Layer" value=""/>
-            <Option type="QString" name="LayerName" value=""/>
-            <Option type="QString" name="LayerProviderName" value=""/>
-            <Option type="QString" name="LayerSource" value=""/>
-            <Option type="int" name="NofColumns" value="1"/>
-            <Option type="bool" name="OrderByValue" value="false"/>
-            <Option type="bool" name="UseCompleter" value="false"/>
-            <Option type="QString" name="Value" value=""/>
-          </Option>
-        </config>
-      </editWidget>
-    </field>
   </fieldConfiguration>
   <aliases>
-    <alias index="0" name="" field="fid"/>
-    <alias index="1" name="Commento" field="commento"/>
-    <alias index="2" name="Periodo di ritorno" field="periodo_ritorno"/>
-    <alias index="3" name="Intensità" field="classe_intensita"/>
-    <alias index="4" name="Processo" field="proc_parz"/>
-    <alias index="5" name="Fonte del processo" field="fonte_proc"/>
-    <alias index="6" name="Processo parziale CH" field="proc_parz_ch"/>
-    <alias index="7" name="Livello dettaglio" field="liv_dettaglio"/>
-    <alias index="8" name="Scala" field="scala"/>
+    <alias field="fid" index="0" name=""/>
+    <alias field="commento" index="1" name="Commento"/>
+    <alias field="periodo_ritorno" index="2" name="Periodo di ritorno"/>
+    <alias field="classe_intensita" index="3" name="Intensità"/>
+    <alias field="proc_parz" index="4" name="Processo"/>
+    <alias field="fonte_proc" index="5" name="Fonte del processo"/>
   </aliases>
   <defaults>
     <default field="fid" applyOnUpdate="0" expression=""/>
@@ -405,20 +311,14 @@
     <default field="classe_intensita" applyOnUpdate="0" expression=""/>
     <default field="proc_parz" applyOnUpdate="0" expression="@pzp_process"/>
     <default field="fonte_proc" applyOnUpdate="0" expression=""/>
-    <default field="proc_parz_ch" applyOnUpdate="0" expression=""/>
-    <default field="liv_dettaglio" applyOnUpdate="0" expression=""/>
-    <default field="scala" applyOnUpdate="0" expression=""/>
   </defaults>
   <constraints>
-    <constraint unique_strength="1" exp_strength="0" field="fid" constraints="3" notnull_strength="1"/>
-    <constraint unique_strength="0" exp_strength="0" field="commento" constraints="0" notnull_strength="0"/>
-    <constraint unique_strength="0" exp_strength="1" field="periodo_ritorno" constraints="4" notnull_strength="0"/>
-    <constraint unique_strength="0" exp_strength="0" field="classe_intensita" constraints="1" notnull_strength="1"/>
-    <constraint unique_strength="0" exp_strength="0" field="proc_parz" constraints="0" notnull_strength="0"/>
-    <constraint unique_strength="0" exp_strength="0" field="fonte_proc" constraints="1" notnull_strength="1"/>
-    <constraint unique_strength="0" exp_strength="0" field="proc_parz_ch" constraints="0" notnull_strength="0"/>
-    <constraint unique_strength="0" exp_strength="0" field="liv_dettaglio" constraints="0" notnull_strength="0"/>
-    <constraint unique_strength="0" exp_strength="0" field="scala" constraints="0" notnull_strength="0"/>
+    <constraint exp_strength="0" field="fid" constraints="3" notnull_strength="1" unique_strength="1"/>
+    <constraint exp_strength="0" field="commento" constraints="0" notnull_strength="0" unique_strength="0"/>
+    <constraint exp_strength="1" field="periodo_ritorno" constraints="5" notnull_strength="1" unique_strength="0"/>
+    <constraint exp_strength="0" field="classe_intensita" constraints="1" notnull_strength="1" unique_strength="0"/>
+    <constraint exp_strength="0" field="proc_parz" constraints="0" notnull_strength="0" unique_strength="0"/>
+    <constraint exp_strength="1" field="fonte_proc" constraints="5" notnull_strength="1" unique_strength="0"/>
   </constraints>
   <constraintExpressions>
     <constraint field="fid" exp="" desc=""/>
@@ -427,9 +327,6 @@
     <constraint field="classe_intensita" exp="" desc=""/>
     <constraint field="proc_parz" exp="" desc=""/>
     <constraint field="fonte_proc" exp="" desc=""/>
-    <constraint field="proc_parz_ch" exp="" desc=""/>
-    <constraint field="liv_dettaglio" exp="" desc=""/>
-    <constraint field="scala" exp="" desc=""/>
   </constraintExpressions>
   <expressionfields/>
   <editform tolerant="1"></editform>
@@ -456,56 +353,49 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>tablayout</editorlayout>
   <attributeEditorForm>
-    <attributeEditorContainer columnCount="1" showLabel="1" name="Dati principali" visibilityExpression="" visibilityExpressionEnabled="0" groupBox="0">
-      <attributeEditorField index="4" showLabel="1" name="proc_parz"/>
-      <attributeEditorField index="2" showLabel="1" name="periodo_ritorno"/>
-      <attributeEditorField index="3" showLabel="1" name="classe_intensita"/>
-      <attributeEditorField index="5" showLabel="1" name="fonte_proc"/>
-      <attributeEditorField index="1" showLabel="1" name="commento"/>
-    </attributeEditorContainer>
-    <attributeEditorContainer columnCount="1" showLabel="1" name="Dati secondari" visibilityExpression="" visibilityExpressionEnabled="0" groupBox="0">
-      <attributeEditorField index="-1" showLabel="1" name="area"/>
-      <attributeEditorField index="6" showLabel="1" name="proc_parz_ch"/>
-      <attributeEditorField index="7" showLabel="1" name="liv_dettaglio"/>
-      <attributeEditorField index="8" showLabel="1" name="scala"/>
+    <attributeEditorContainer columnCount="1" name="Dati principali" visibilityExpression="" showLabel="1" groupBox="0" visibilityExpressionEnabled="0">
+      <attributeEditorField index="4" name="proc_parz" showLabel="1"/>
+      <attributeEditorField index="2" name="periodo_ritorno" showLabel="1"/>
+      <attributeEditorField index="3" name="classe_intensita" showLabel="1"/>
+      <attributeEditorField index="5" name="fonte_proc" showLabel="1"/>
+      <attributeEditorField index="1" name="commento" showLabel="1"/>
     </attributeEditorContainer>
   </attributeEditorForm>
   <editable>
-    <field editable="0" name="area"/>
-    <field editable="1" name="classe_intensita"/>
-    <field editable="1" name="commento"/>
-    <field editable="1" name="fid"/>
-    <field editable="1" name="fonte"/>
-    <field editable="1" name="fonte_proc"/>
-    <field editable="1" name="liv_dettaglio"/>
-    <field editable="1" name="matrice"/>
-    <field editable="1" name="periodo_ritorno"/>
-    <field editable="1" name="prob_accadimento"/>
-    <field editable="1" name="prob_propagazione"/>
-    <field editable="1" name="prob_rottura"/>
-    <field editable="0" name="proc_parz"/>
-    <field editable="1" name="proc_parz_ch"/>
-    <field editable="1" name="scala"/>
+    <field name="area" editable="0"/>
+    <field name="classe_intensita" editable="1"/>
+    <field name="commento" editable="1"/>
+    <field name="fid" editable="1"/>
+    <field name="fonte" editable="1"/>
+    <field name="fonte_proc" editable="1"/>
+    <field name="liv_dettaglio" editable="1"/>
+    <field name="matrice" editable="1"/>
+    <field name="periodo_ritorno" editable="1"/>
+    <field name="prob_accadimento" editable="1"/>
+    <field name="prob_propagazione" editable="1"/>
+    <field name="prob_rottura" editable="1"/>
+    <field name="proc_parz" editable="0"/>
+    <field name="proc_parz_ch" editable="1"/>
+    <field name="scala" editable="1"/>
   </editable>
   <labelOnTop>
-    <field name="area" labelOnTop="0"/>
-    <field name="classe_intensita" labelOnTop="0"/>
-    <field name="commento" labelOnTop="1"/>
-    <field name="fid" labelOnTop="0"/>
-    <field name="fonte" labelOnTop="0"/>
-    <field name="fonte_proc" labelOnTop="0"/>
-    <field name="liv_dettaglio" labelOnTop="0"/>
-    <field name="matrice" labelOnTop="0"/>
-    <field name="periodo_ritorno" labelOnTop="0"/>
-    <field name="prob_accadimento" labelOnTop="0"/>
-    <field name="prob_propagazione" labelOnTop="0"/>
-    <field name="prob_rottura" labelOnTop="0"/>
-    <field name="proc_parz" labelOnTop="0"/>
-    <field name="proc_parz_ch" labelOnTop="0"/>
-    <field name="scala" labelOnTop="0"/>
+    <field labelOnTop="0" name="area"/>
+    <field labelOnTop="0" name="classe_intensita"/>
+    <field labelOnTop="1" name="commento"/>
+    <field labelOnTop="0" name="fid"/>
+    <field labelOnTop="0" name="fonte"/>
+    <field labelOnTop="0" name="fonte_proc"/>
+    <field labelOnTop="0" name="liv_dettaglio"/>
+    <field labelOnTop="0" name="matrice"/>
+    <field labelOnTop="0" name="periodo_ritorno"/>
+    <field labelOnTop="0" name="prob_accadimento"/>
+    <field labelOnTop="0" name="prob_propagazione"/>
+    <field labelOnTop="0" name="prob_rottura"/>
+    <field labelOnTop="0" name="proc_parz"/>
+    <field labelOnTop="0" name="proc_parz_ch"/>
+    <field labelOnTop="0" name="scala"/>
   </labelOnTop>
   <dataDefinedFieldProperties/>
   <widgets/>
-  <previewExpression>"commento"</previewExpression>
   <layerGeometryType>2</layerGeometryType>
 </qgis>
