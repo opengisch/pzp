@@ -4,6 +4,7 @@
 
 | Versione | Data pubblicazione | Descrizione                                                                    |
 |----------|--------------------|--------------------------------------------------------------------------------|
+| 1.1.6    | 16.05.2023         | Migliora gli stili dei layer                                                   |
 | 1.1.5    | 16.05.2023         | Correzione e miglioramenti degli algoritmi                                     |
 | 1.1.4    | 10.05.2023         | Migliora gli stili dei layer                                                   |
 | 1.1.3    | 05.05.2023         | Crea layer filtrati per layer intensità generato da algoritmo propagazione     |
