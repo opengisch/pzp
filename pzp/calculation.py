@@ -161,10 +161,10 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
     QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)
 
     filter_params = [
-        ("\"periodo_ritorno\"='30'", "HQ 030"),
-        ("\"periodo_ritorno\"='100'", "HQ 100"),
-        ("\"periodo_ritorno\"='300'", "HQ 300"),
-        ("\"periodo_ritorno\">'300'", "HQ >300"),
+        ("\"periodo_ritorno\"='30'", "T 30"),
+        ("\"periodo_ritorno\"='100'", "T 100"),
+        ("\"periodo_ritorno\"='300'", "T 300"),
+        ("\"periodo_ritorno\">'300'", "T >300"),
     ]
 
     for param in filter_params:

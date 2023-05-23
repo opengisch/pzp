@@ -316,12 +316,20 @@ def add_process(process_type, gpkg_directory_path):
         )
         group_intensity_filtered.setExpanded(True)
 
-        filter_params = [
-            ("\"periodo_ritorno\"='30'", "HQ 030"),
-            ("\"periodo_ritorno\"='100'", "HQ 100"),
-            ("\"periodo_ritorno\"='300'", "HQ 300"),
-            ("\"periodo_ritorno\">'300'", "HQ >300"),
-        ]
+        if process_type in [2001, 2002, 3000, 4100, 4200]:
+            filter_params = [
+                ("\"periodo_ritorno\"='30'", "T 30"),
+                ("\"periodo_ritorno\"='100'", "T 100"),
+                ("\"periodo_ritorno\"='300'", "T 300"),
+                ("\"periodo_ritorno\">'300'", "T >300"),
+            ]
+        else:
+            filter_params = [
+                ("\"periodo_ritorno\"='30'", "HQ 030"),
+                ("\"periodo_ritorno\"='100'", "HQ 100"),
+                ("\"periodo_ritorno\"='300'", "HQ 300"),
+                ("\"periodo_ritorno\">'300'", "HQ >300"),
+            ]
 
         for param in filter_params:
             gpkg_layer = utils.create_filtered_layer_from_gpkg(
