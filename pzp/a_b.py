@@ -14,21 +14,23 @@ def a_b(layer):
         for feature in selection:
             matrice = feature["matrice"]
             if process_type == 1200:  # Flusso detrito
-                if matrice == 2:
+                if matrice == 1008:
                     feature["grado_pericolo"] = 1003
-                elif matrice == 4:
+                elif matrice == 1006:
                     feature["grado_pericolo"] = 1003
-                elif matrice == 6:
+                elif matrice == 1004:
                     feature["grado_pericolo"] = 1004
 
             elif process_type in [2001, 2002]:  # Sciv. spontaneo and colata detritica
-                if matrice == 3:
+                if matrice == 1007:
                     feature["grado_pericolo"] = 1003
-                elif matrice == 5:
+                elif matrice == 1005:
                     feature["grado_pericolo"] = 1003
             elif process_type == 3000:  # Caduta sassi
-                if matrice == 6:
+                if matrice == 1004:
                     feature["grado_pericolo"] = 1004
+                elif matrice == 1006:
+                    feature["grado_pericolo"] = 1003
             else:
                 pass
 
@@ -48,21 +50,23 @@ def b_a(layer):
         for feature in selection:
             matrice = feature["matrice"]
             if process_type == 1200:  # Flusso detrito
-                if matrice == 2:
+                if matrice == 1008:
                     feature["grado_pericolo"] = 1002
-                elif matrice == 4:
+                elif matrice == 1006:
                     feature["grado_pericolo"] = 1002
-                elif matrice == 6:
+                elif matrice == 1004:
                     feature["grado_pericolo"] = 1003
 
             elif process_type in [2001, 2002]:  # Sciv. spontaneo and colata detritica
-                if matrice == 3:
+                if matrice == 1007:
                     feature["grado_pericolo"] = 1002
-                elif matrice == 5:
+                elif matrice == 1005:
                     feature["grado_pericolo"] = 1002
             elif process_type == 3000:  # Caduta sassi
-                if matrice == 6:
+                if matrice == 1004:
                     feature["grado_pericolo"] = 1003
+                elif matrice == 1006:
+                    feature["grado_pericolo"] = 1002
             else:
                 pass
 
