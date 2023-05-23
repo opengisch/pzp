@@ -30,10 +30,11 @@ In particolare tramite la toolbar è possibile:
 
 - aggiungere un nuovo processo con i relativi layer al progetto QGIS attuale
 - aggiungere dei layer con dati di base o mappe di base
-- eseguire il calcolo delle zone di pericolo
 - eseguire il calcolo delle zone di nessun impatto
+- generare il layer con le intensità tramite linee di propagazione
+- eseguire il calcolo delle zone di pericolo
 - modificare il valore delle zone di pericolo che hanno possibilità multiple
-- consultare questo manuale
+- consultare questo manuale online
 
 ### Aggiunta dei layer per la registrazione di un processo al progetto QGIS
 
@@ -111,6 +112,18 @@ proceso in questione.
 
 !!! Nota
     Per poter utilizzare questo pulsante occorre selezionare il gruppo contentente il processo nel pannello dei layer di QGIS
+
+### Generazione delle intensità tramite le linee di propagazione
+
+![Calcolo propagazione](./assets/calcolo_propagazione.gif)
+
+Tramite il pulsante "Calcola propagazione" è possibile generare il
+layer delle intensità partendo dai layer con le probabilità di rottura
+e da quello con le linee di propagazione, per il processo di caduta
+sassi o blocchi.
+
+Il layer generato può venir utilizzato per procedere al calcolo delle
+zone di pericolo, come per gli altri tipi di processo.
 
 ### Calcolo delle zone di pericolo
 
