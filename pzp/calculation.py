@@ -75,9 +75,11 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
         {
             "BREAKING_LAYER": layer_breaking.id(),
             "BREAKING_FIELD": "prob_rottura",
+            "SOURCE_FIELD": "fonte_proc",
             "PROPAGATION_LAYER": layer_propagation.id(),
             "PROPAGATION_FIELD": "prob_propagazione",
             "BREAKING_FIELD_PROP": "prob_rottura",
+            "SOURCE_FIELD_PROP": "fonte_proc",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
@@ -97,6 +99,7 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
             "INPUT": result["OUTPUT"],
             "INTENSITY_FIELD": "classe_intensita",
             "PERIOD_FIELD": "periodo_ritorno",
+            "SOURCE_FIELD": "fonte_proc",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
