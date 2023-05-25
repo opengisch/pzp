@@ -4,6 +4,7 @@
 
 | Versione | Data pubblicazione | Descrizione                                                                    |
 |----------|--------------------|--------------------------------------------------------------------------------|
+| 1.2.0    | 25.05.2023          | Calcola propagazione per fonte di processo                                     |
 | 1.1.7    | 23.05.2023         | Correzione errore A->B e miglioramento stili e documentazione                  |
 | 1.1.6    | 16.05.2023         | Migliora gli stili dei layer                                                   |
 | 1.1.5    | 16.05.2023         | Correzione e miglioramenti degli algoritmi                                     |
