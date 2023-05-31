@@ -36,7 +36,14 @@ class PZP:
 
         geodata_menu.addAction(add_basemaps_action)
         geodata_menu.addAction(
-            self.create_action("ruler.png", "Aggiungi dati base", self.do_add_base_data)
+            self.create_action(
+                "ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms
+            )
+        )
+        geodata_menu.addAction(
+            self.create_action(
+                "ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs
+            )
         )
 
         toolButton = QToolButton()
@@ -104,8 +111,11 @@ class PZP:
     def do_add_basemaps(self):
         utils.load_qlr_layer("mappe_base")
 
-    def do_add_base_data(self):
-        utils.load_qlr_layer("dati_base")
+    def do_add_base_data_wms(self):
+        utils.load_qlr_layer("dati_base_wms")
+
+    def do_add_base_data_wfs(self):
+        utils.load_qlr_layer("dati_base_wfs")
 
     def do_check_geometries(self):
         self.checks_dock = CheckResultsDock(self.iface)
