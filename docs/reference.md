@@ -4,7 +4,8 @@
 
 | Versione | Data pubblicazione | Descrizione                                                                    |
 |----------|--------------------|--------------------------------------------------------------------------------|
-| 1.2.2    | 31.5.2023          | Aggiornamento mappe di base e dati di base                                     |
+| 1.2.3    | 07.06.2023         | Miglioramento simbologia                                                       |
+| 1.2.2    | 31.05.2023         | Aggiornamento mappe di base e dati di base                                     |
 | 1.2.1    | 31.05.2023         | Aggiornamento mappe di base e dati di base                                     |
 | 1.2.0    | 25.05.2023         | Calcola propagazione per fonte di processo                                     |
 | 1.1.7    | 23.05.2023         | Correzione errore A->B e miglioramento stili e documentazione                  |
