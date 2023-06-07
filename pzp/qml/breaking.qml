@@ -1,121 +1,121 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
 <qgis version="3.16.12-Hannover" styleCategories="Symbology|Labeling|Fields|Forms" labelsEnabled="0">
-  <renderer-v2 attr="classe_intensita" type="categorizedSymbol" symbollevels="1" forceraster="0" enableorderby="0">
+  <renderer-v2 type="categorizedSymbol" symbollevels="1" forceraster="0" attr="classe_intensita" enableorderby="0">
     <categories>
-      <category value="1004" symbol="0" render="true" label="forte"/>
-      <category value="1003" symbol="1" render="true" label="medio"/>
-      <category value="1002" symbol="2" render="true" label="debole"/>
-      <category value="1001" symbol="3" render="true" label="impatto presente"/>
+      <category label="forte" render="true" value="1004" symbol="0"/>
+      <category label="medio" render="true" value="1003" symbol="1"/>
+      <category label="debole" render="true" value="1002" symbol="2"/>
+      <category label="impatto presente" render="true" value="1001" symbol="3"/>
     </categories>
     <symbols>
-      <symbol type="fill" clip_to_extent="1" force_rhr="0" name="0" alpha="1">
-        <layer enabled="1" pass="5" locked="0" class="SimpleFill">
-          <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
-          <prop v="56,158,0,255" k="color"/>
-          <prop v="bevel" k="joinstyle"/>
-          <prop v="0,0" k="offset"/>
-          <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
-          <prop v="MM" k="offset_unit"/>
-          <prop v="35,35,35,255" k="outline_color"/>
-          <prop v="solid" k="outline_style"/>
-          <prop v="0.26" k="outline_width"/>
-          <prop v="MM" k="outline_width_unit"/>
-          <prop v="solid" k="style"/>
+      <symbol type="fill" alpha="0.8" name="0" force_rhr="0" clip_to_extent="1">
+        <layer enabled="1" locked="0" class="SimpleFill" pass="0">
+          <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="color" v="56,158,0,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="35,35,35,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option type="QString" value="" name="name"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option type="QString" value="collection" name="type"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
         </layer>
       </symbol>
-      <symbol type="fill" clip_to_extent="1" force_rhr="0" name="1" alpha="1">
-        <layer enabled="1" pass="4" locked="0" class="SimpleFill">
-          <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
-          <prop v="83,212,0,255" k="color"/>
-          <prop v="bevel" k="joinstyle"/>
-          <prop v="0,0" k="offset"/>
-          <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
-          <prop v="MM" k="offset_unit"/>
-          <prop v="35,35,35,255" k="outline_color"/>
-          <prop v="solid" k="outline_style"/>
-          <prop v="0.26" k="outline_width"/>
-          <prop v="MM" k="outline_width_unit"/>
-          <prop v="solid" k="style"/>
+      <symbol type="fill" alpha="0.8" name="1" force_rhr="0" clip_to_extent="1">
+        <layer enabled="1" locked="0" class="SimpleFill" pass="0">
+          <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="color" v="83,212,0,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="35,35,35,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option type="QString" value="" name="name"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option type="QString" value="collection" name="type"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
         </layer>
       </symbol>
-      <symbol type="fill" clip_to_extent="1" force_rhr="0" name="2" alpha="1">
-        <layer enabled="1" pass="3" locked="0" class="SimpleFill">
-          <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
-          <prop v="209,255,115,255" k="color"/>
-          <prop v="bevel" k="joinstyle"/>
-          <prop v="0,0" k="offset"/>
-          <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
-          <prop v="MM" k="offset_unit"/>
-          <prop v="35,35,35,255" k="outline_color"/>
-          <prop v="solid" k="outline_style"/>
-          <prop v="0.26" k="outline_width"/>
-          <prop v="MM" k="outline_width_unit"/>
-          <prop v="solid" k="style"/>
+      <symbol type="fill" alpha="0.8" name="2" force_rhr="0" clip_to_extent="1">
+        <layer enabled="1" locked="0" class="SimpleFill" pass="0">
+          <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="color" v="209,255,115,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="35,35,35,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option type="QString" value="" name="name"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option type="QString" value="collection" name="type"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
         </layer>
       </symbol>
-      <symbol type="fill" clip_to_extent="1" force_rhr="0" name="3" alpha="1">
-        <layer enabled="1" pass="2" locked="0" class="SimpleFill">
-          <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
-          <prop v="232,190,255,255" k="color"/>
-          <prop v="bevel" k="joinstyle"/>
-          <prop v="0,0" k="offset"/>
-          <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
-          <prop v="MM" k="offset_unit"/>
-          <prop v="35,35,35,255" k="outline_color"/>
-          <prop v="solid" k="outline_style"/>
-          <prop v="0.26" k="outline_width"/>
-          <prop v="MM" k="outline_width_unit"/>
-          <prop v="solid" k="style"/>
+      <symbol type="fill" alpha="0.8" name="3" force_rhr="0" clip_to_extent="1">
+        <layer enabled="1" locked="0" class="SimpleFill" pass="0">
+          <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="color" v="232,190,255,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="35,35,35,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option type="QString" value="" name="name"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option type="QString" value="collection" name="type"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
         </layer>
       </symbol>
     </symbols>
     <source-symbol>
-      <symbol type="fill" clip_to_extent="1" force_rhr="0" name="0" alpha="1">
-        <layer enabled="1" pass="0" locked="0" class="SimpleFill">
-          <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
-          <prop v="0,0,255,255" k="color"/>
-          <prop v="bevel" k="joinstyle"/>
-          <prop v="0,0" k="offset"/>
-          <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
-          <prop v="MM" k="offset_unit"/>
-          <prop v="35,35,35,255" k="outline_color"/>
-          <prop v="solid" k="outline_style"/>
-          <prop v="0.26" k="outline_width"/>
-          <prop v="MM" k="outline_width_unit"/>
-          <prop v="solid" k="style"/>
+      <symbol type="fill" alpha="0.8" name="0" force_rhr="0" clip_to_extent="1">
+        <layer enabled="1" locked="0" class="SimpleFill" pass="0">
+          <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="color" v="0,0,255,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="35,35,35,255"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option type="QString" value="" name="name"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option type="QString" value="collection" name="type"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
         </layer>
@@ -127,126 +127,121 @@
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <fieldConfiguration>
-    <field configurationFlags="None" name="fid">
+    <field name="fid" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="osservazioni">
+    <field name="osservazioni" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="bool" value="false" name="IsMultiline"/>
-            <Option type="bool" value="false" name="UseHtml"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="prob_rottura">
+    <field name="prob_rottura" configurationFlags="None">
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
             <Option type="List" name="map">
               <Option type="Map">
-                <Option type="QString" value="1003" name="Alta"/>
+                <Option type="QString" name="Alta" value="1003"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="1002" name="Media"/>
+                <Option type="QString" name="Media" value="1002"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="1001" name="Bassa"/>
+                <Option type="QString" name="Bassa" value="1001"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="1000" name="Molto bassa"/>
+                <Option type="QString" name="Molto bassa" value="1000"/>
               </Option>
             </Option>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="classe_intensita">
+    <field name="classe_intensita" configurationFlags="None">
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
             <Option type="List" name="map">
               <Option type="Map">
-                <Option type="QString" value="1001" name="Impatto presente"/>
+                <Option type="QString" name="Impatto presente" value="1001"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="1002" name="Debole"/>
+                <Option type="QString" name="Debole" value="1002"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="1003" name="Medio"/>
+                <Option type="QString" name="Medio" value="1003"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="1004" name="Forte"/>
+                <Option type="QString" name="Forte" value="1004"/>
               </Option>
             </Option>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="fonte_proc">
+    <field name="fonte_proc" configurationFlags="None">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option type="bool" value="false" name="AllowMulti"/>
-            <Option type="bool" value="false" name="AllowNull"/>
-            <Option type="QString" value="" name="Description"/>
-            <Option type="QString" value="" name="FilterExpression"/>
-            <Option type="QString" value="fonte_proc" name="Key"/>
-            <Option type="QString" value="Area_di_studio_aa84f6d5_0df4_44d2_b47f_60facbee7eb8" name="Layer"/>
-            <Option type="QString" value="Area di studio" name="LayerName"/>
-            <Option type="QString" value="ogr" name="LayerProviderName"/>
-            <Option type="QString" value="/io/data_3000_25052023_114518.gpkg|layername=Area di studio" name="LayerSource"/>
-            <Option type="int" value="1" name="NofColumns"/>
-            <Option type="bool" value="false" name="OrderByValue"/>
-            <Option type="bool" value="false" name="UseCompleter"/>
-            <Option type="QString" value="fonte_proc" name="Value"/>
+            <Option type="bool" name="AllowMulti" value="false"/>
+            <Option type="bool" name="AllowNull" value="false"/>
+            <Option type="QString" name="FilterExpression" value=""/>
+            <Option type="QString" name="Key" value="fonte_proc"/>
+            <Option type="QString" name="Layer" value="Area_di_studio_642ee896_7e7d_424e_bf79_062b44660254"/>
+            <Option type="bool" name="OrderByValue" value="false"/>
+            <Option type="bool" name="UseCompleter" value="false"/>
+            <Option type="QString" name="Value" value="fonte_proc"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="proc_parz">
+    <field name="proc_parz" configurationFlags="None">
       <editWidget type="Range">
         <config>
           <Option type="Map">
-            <Option type="bool" value="true" name="AllowNull"/>
-            <Option type="int" value="2147483647" name="Max"/>
-            <Option type="int" value="-2147483648" name="Min"/>
-            <Option type="int" value="0" name="Precision"/>
-            <Option type="int" value="1" name="Step"/>
-            <Option type="QString" value="SpinBox" name="Style"/>
+            <Option type="bool" name="AllowNull" value="true"/>
+            <Option type="int" name="Max" value="2147483647"/>
+            <Option type="int" name="Min" value="-2147483648"/>
+            <Option type="int" name="Precision" value="0"/>
+            <Option type="int" name="Step" value="1"/>
+            <Option type="QString" name="Style" value="SpinBox"/>
           </Option>
         </config>
       </editWidget>
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias field="fid" index="0" name=""/>
-    <alias field="osservazioni" index="1" name="Osservazioni"/>
-    <alias field="prob_rottura" index="2" name="Probabilità di rottura"/>
-    <alias field="classe_intensita" index="3" name="Intensità"/>
-    <alias field="fonte_proc" index="4" name="Fonte del processo"/>
-    <alias field="proc_parz" index="5" name="Processo parziale"/>
+    <alias name="" index="0" field="fid"/>
+    <alias name="Osservazioni" index="1" field="osservazioni"/>
+    <alias name="Probabilità di rottura" index="2" field="prob_rottura"/>
+    <alias name="Intensità" index="3" field="classe_intensita"/>
+    <alias name="Fonte del processo" index="4" field="fonte_proc"/>
+    <alias name="Processo parziale" index="5" field="proc_parz"/>
   </aliases>
   <defaults>
-    <default expression="" field="fid" applyOnUpdate="0"/>
-    <default expression="" field="osservazioni" applyOnUpdate="0"/>
-    <default expression="" field="prob_rottura" applyOnUpdate="0"/>
-    <default expression="" field="classe_intensita" applyOnUpdate="0"/>
-    <default expression="" field="fonte_proc" applyOnUpdate="0"/>
-    <default expression=" @pzp_process" field="proc_parz" applyOnUpdate="0"/>
+    <default expression="" applyOnUpdate="0" field="fid"/>
+    <default expression="" applyOnUpdate="0" field="osservazioni"/>
+    <default expression="" applyOnUpdate="0" field="prob_rottura"/>
+    <default expression="" applyOnUpdate="0" field="classe_intensita"/>
+    <default expression="" applyOnUpdate="0" field="fonte_proc"/>
+    <default expression=" @pzp_process" applyOnUpdate="0" field="proc_parz"/>
   </defaults>
   <constraints>
-    <constraint field="fid" constraints="3" notnull_strength="1" unique_strength="1" exp_strength="0"/>
-    <constraint field="osservazioni" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
-    <constraint field="prob_rottura" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
-    <constraint field="classe_intensita" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
-    <constraint field="fonte_proc" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
-    <constraint field="proc_parz" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
+    <constraint notnull_strength="1" unique_strength="1" constraints="3" exp_strength="0" field="fid"/>
+    <constraint notnull_strength="0" unique_strength="0" constraints="0" exp_strength="0" field="osservazioni"/>
+    <constraint notnull_strength="0" unique_strength="0" constraints="0" exp_strength="0" field="prob_rottura"/>
+    <constraint notnull_strength="0" unique_strength="0" constraints="0" exp_strength="0" field="classe_intensita"/>
+    <constraint notnull_strength="0" unique_strength="0" constraints="0" exp_strength="0" field="fonte_proc"/>
+    <constraint notnull_strength="0" unique_strength="0" constraints="0" exp_strength="0" field="proc_parz"/>
   </constraints>
   <constraintExpressions>
     <constraint desc="" field="fid" exp=""/>
@@ -281,17 +276,17 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>tablayout</editorlayout>
   <attributeEditorForm>
-    <attributeEditorContainer visibilityExpression="" name="Dati principali" groupBox="0" visibilityExpressionEnabled="0" showLabel="1" columnCount="1">
-      <attributeEditorField index="5" name="proc_parz" showLabel="1"/>
-      <attributeEditorField index="2" name="prob_rottura" showLabel="1"/>
-      <attributeEditorField index="3" name="classe_intensita" showLabel="1"/>
-      <attributeEditorField index="4" name="fonte_proc" showLabel="1"/>
-      <attributeEditorField index="1" name="osservazioni" showLabel="1"/>
+    <attributeEditorContainer visibilityExpression="" groupBox="0" name="Dati principali" showLabel="1" columnCount="1" visibilityExpressionEnabled="0">
+      <attributeEditorField name="proc_parz" showLabel="1" index="5"/>
+      <attributeEditorField name="prob_rottura" showLabel="1" index="2"/>
+      <attributeEditorField name="classe_intensita" showLabel="1" index="3"/>
+      <attributeEditorField name="fonte_proc" showLabel="1" index="4"/>
+      <attributeEditorField name="osservazioni" showLabel="1" index="1"/>
     </attributeEditorContainer>
-    <attributeEditorContainer visibilityExpression="" name="Dati secondari" groupBox="0" visibilityExpressionEnabled="0" showLabel="1" columnCount="1">
-      <attributeEditorField index="-1" name="proc_parz_ch" showLabel="1"/>
-      <attributeEditorField index="-1" name="liv_dettaglio" showLabel="1"/>
-      <attributeEditorField index="-1" name="scala" showLabel="1"/>
+    <attributeEditorContainer visibilityExpression="" groupBox="0" name="Dati secondari" showLabel="1" columnCount="1" visibilityExpressionEnabled="0">
+      <attributeEditorField name="proc_parz_ch" showLabel="1" index="-1"/>
+      <attributeEditorField name="liv_dettaglio" showLabel="1" index="-1"/>
+      <attributeEditorField name="scala" showLabel="1" index="-1"/>
     </attributeEditorContainer>
   </attributeEditorForm>
   <editable>
@@ -313,22 +308,22 @@ def my_form_open(dialog, layer, feature):
     <field name="scala" editable="1"/>
   </editable>
   <labelOnTop>
-    <field name="area" labelOnTop="0"/>
-    <field name="classe_intensita" labelOnTop="0"/>
-    <field name="commento" labelOnTop="1"/>
-    <field name="fid" labelOnTop="0"/>
-    <field name="fonte" labelOnTop="0"/>
-    <field name="fonte_proc" labelOnTop="0"/>
-    <field name="liv_dettaglio" labelOnTop="0"/>
-    <field name="matrice" labelOnTop="0"/>
-    <field name="osservazioni" labelOnTop="0"/>
-    <field name="periodo_ritorno" labelOnTop="0"/>
-    <field name="prob_accadimento" labelOnTop="0"/>
-    <field name="prob_propagazione" labelOnTop="0"/>
-    <field name="prob_rottura" labelOnTop="0"/>
-    <field name="proc_parz" labelOnTop="0"/>
-    <field name="proc_parz_ch" labelOnTop="0"/>
-    <field name="scala" labelOnTop="0"/>
+    <field labelOnTop="0" name="area"/>
+    <field labelOnTop="0" name="classe_intensita"/>
+    <field labelOnTop="1" name="commento"/>
+    <field labelOnTop="0" name="fid"/>
+    <field labelOnTop="0" name="fonte"/>
+    <field labelOnTop="0" name="fonte_proc"/>
+    <field labelOnTop="0" name="liv_dettaglio"/>
+    <field labelOnTop="0" name="matrice"/>
+    <field labelOnTop="0" name="osservazioni"/>
+    <field labelOnTop="0" name="periodo_ritorno"/>
+    <field labelOnTop="0" name="prob_accadimento"/>
+    <field labelOnTop="0" name="prob_propagazione"/>
+    <field labelOnTop="0" name="prob_rottura"/>
+    <field labelOnTop="0" name="proc_parz"/>
+    <field labelOnTop="0" name="proc_parz_ch"/>
+    <field labelOnTop="0" name="scala"/>
   </labelOnTop>
   <dataDefinedFieldProperties/>
   <widgets/>
