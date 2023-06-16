@@ -4,6 +4,7 @@
 
 | Versione | Data pubblicazione | Descrizione                                                                    |
 |----------|--------------------|--------------------------------------------------------------------------------|
+| 1.2.5    | 16.06.2023         | Migliora simbologia                                                            |
 | 1.2.4    | 16.06.2023         | Utilizza algoritmo fondi per area                                              |
 | 1.2.3    | 07.06.2023         | Miglioramento simbologia                                                       |
 | 1.2.2    | 31.05.2023         | Aggiornamento mappe di base e dati di base                                     |
