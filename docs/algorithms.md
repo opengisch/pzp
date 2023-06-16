@@ -152,3 +152,33 @@ area di studio. In pratica, per ogni area di studio, viene creata una
 geometria con intensità "nessun impatto" corrispondente a tutta la
 superficie dell'area di studio non coperta da altre geometrie della
 fonte di proceso in questione.
+
+## Rimuovi sovrapposizioni
+
+### Scopo
+Questo algoritmo permette di rimuovere le sovrapposizioni nei layer delle intensità.
+
+### Parametri input
+- Layer con le intensità
+  - Campo contenente l'intensità
+  - Campo contenente il periodo di ritorno
+  - Campo contenente la fonte del processo
+
+### Output
+Viene generato un layer dove sono state rimosse le sovrapposizioni
+tenendo in considerazione lo stesso periodo di ritorno e la stessa
+fonte di processo.
+
+## Fondi per area
+
+### Scopo
+Questo algoritmo permette di rimuovere le piccole aree fondendole con
+le geometrie confinanti
+
+### Parametri input
+- Layer con le geometrie
+- Modalità di fusione
+
+### Output
+Viene generato un layer dove le geometrie con area inferiore a 1m2
+sono state fuse con le geometrie adiacenti

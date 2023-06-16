@@ -11,4 +11,4 @@ homepage=https://github.com/opengisch/pzp
 tracker=https://github.com/opengisch/pzp/issues
 hasProcessingProvider=no
 
-plugin_dependencies=pzp utils==v1.2.0
+plugin_dependencies=pzp utils==v1.2.1
