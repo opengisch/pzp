@@ -15,6 +15,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.uic import loadUiType
 from qgis.utils import iface
 
@@ -252,3 +253,13 @@ def create_filtered_layer_from_gpkg(gpkg_layer_name, gpkg_path, substring, name)
     options.setGeometryChecks(["QgsIsValidCheck"])
     gpkg_layer.setName(name)
     return gpkg_layer
+
+class OverrideCursor:
+    def __init__(self, cursor):
+        self.cursor = cursor
+
+    def __enter__(self):
+        QApplication.setOverrideCursor(self.cursor)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        QApplication.restoreOverrideCursor()
