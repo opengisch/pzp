@@ -9,6 +9,7 @@ from qgis.core import (
     QgsProject,
     QgsVectorLayer,
 )
+from qgis.PyQt.QtCore import Qt
 
 from pzp import utils
 
@@ -219,7 +220,8 @@ def guess_params(group):
         utils.push_error("Impossibile determinare il tipo di processo", 3)
         return
 
-    calculate(process_type, layer_intensity)
+    with utils.OverrideCursor(Qt.WaitCursor):
+        calculate(process_type, layer_intensity)
 
 
 def calculate(process_type, layer_intensity):
