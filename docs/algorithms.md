@@ -39,7 +39,7 @@ Questo algoritmo cerca di correggere gli errori più frequenti di digitalizzazio
 ### Ouptut
 Viene generato un layer con le geometrie corrette mantenendo gli attributi delle geometrie iniziali.
 
-Vengono eseguite in particolare eseguite le seguenti operazioni:
+Vengono eseguite in particolare le seguenti operazioni:
 
 - Aggancia punti al reticolo (con reticolo di 1mm)
 - Creazione e rimozione di un buffer negativo molto piccolo (1e-06 m) per rimuovere "sbavature" delle geometrie
@@ -101,7 +101,7 @@ molto frastagliate.
 ### Parametri input
 - Layer con le intensità
   - Campo contenente le intensità
-  - Area minima in m<sup>2</sup> dei poligoni da considerara
+  - Area minima in m<sup>2</sup> dei poligoni da considerare
   - Area massima in m<sup>2</sup> per l'eliminazione dei buchi. Buchi più piccoli di così vengono eliminati.
   - Parametro "Chaiken threshold" dell'algoritmo generalize di GRASS utilizzato
   - Parametro "Reduce threshold" dell'algoritmo generalize di GRASS utilizzato
@@ -127,7 +127,7 @@ Questo algoritmo permette la generazione delle zone di pericolo
 
 ### Output
 Viene generato un layer contenente le zone di pericolo. Per ogni fonte
-di processo vengono tagliate tutti i poligoni in corrispondenza di
+di processo vengono tagliati tutti i poligoni in corrispondenza di
 tutte le intersezioni, vengono mantenuti i poligoni duplicati con
 valore maggiore e vengono fuse superfici con lo stesso valore.
 
