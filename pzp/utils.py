@@ -20,16 +20,16 @@ from qgis.PyQt.uic import loadUiType
 from qgis.utils import iface
 
 
-def push_info(message):
-    _get_iface().messageBar().pushInfo("pzp", message)
+def push_info(message, showMore=""):
+    _get_iface().messageBar().pushInfo("pzp", message, showMore)
 
 
-def push_warning(message, time=0):
-    _get_iface().messageBar().pushMessage("pzp", message, Qgis.Warning, time)
+def push_warning(message, time=0, showMore=""):
+    _get_iface().messageBar().pushMessage("pzp", message, showMore, Qgis.Warning, time)
 
 
-def push_error(message, time=0):
-    _get_iface().messageBar().pushMessage("pzp", message, Qgis.Critical, time)
+def push_error(message, time=0, showMore=""):
+    _get_iface().messageBar().pushMessage("pzp", message, showMore, Qgis.Critical, time)
 
 
 def _get_iface():

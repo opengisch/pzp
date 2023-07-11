@@ -1,11 +1,14 @@
 import datetime
 import os
+import traceback
 
 from pzp_utils.processing import domains
+from pzp_utils.processing.merge_by_area import MergeByArea
 from qgis import processing
 from qgis.core import (
     QgsApplication,
     QgsExpressionContextUtils,
+    QgsProcessingException,
     QgsProject,
     QgsVectorLayer,
 )
@@ -194,7 +197,6 @@ class CalculationDialog:
     def exec_(self):
         guess_params(self.group)
 
-
 def guess_params(group):
     # process and layers
     layer_nodes = group.findLayers()
@@ -220,8 +222,15 @@ def guess_params(group):
         utils.push_error("Impossibile determinare il tipo di processo", 3)
         return
 
-    with utils.OverrideCursor(Qt.WaitCursor):
-        calculate(process_type, layer_intensity)
+    try:
+        with utils.OverrideCursor(Qt.WaitCursor):
+            calculate(process_type, layer_intensity)
+
+    except QgsProcessingException as processingException:
+        utils.push_error("Errore di processing: {0}".format(str(processingException)), showMore=traceback.format_exc())
+
+    except Exception as exception:
+        utils.push_error("Errore sconosciuto: {0}".format(str(exception)), showMore=traceback.format_exc())
 
 
 def calculate(process_type, layer_intensity):
@@ -271,9 +280,19 @@ def calculate(process_type, layer_intensity):
     )
 
     result = processing.run(
-        "pzp:fix_geometries",
+        "native:fixgeometries",
         {
             "INPUT": result["OUTPUT"],
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
+
+    result = processing.run(
+        "pzp:merge_by_area",
+        {
+            'INPUT': result['OUTPUT'],
+            'MODE': MergeByArea.MODE_HIGHEST_VALUE,
+            "VALUE_FIELD": "classe_intensita",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
