@@ -23,28 +23,14 @@ class PZP:
         self.toolbar.setObjectName("PZPToolbar")
         self.toolbar.setToolTip("PZP Toolbar")
 
-        self.toolbar.addAction(
-            self.create_action(
-                "landslide.png", "Aggiungi processo", self.do_add_process
-            )
-        )
+        self.toolbar.addAction(self.create_action("landslide.png", "Aggiungi processo", self.do_add_process))
 
         geodata_menu = QMenu()
-        add_basemaps_action = self.create_action(
-            "world.png", "Aggiungi mappe base", self.do_add_basemaps
-        )
+        add_basemaps_action = self.create_action("world.png", "Aggiungi mappe base", self.do_add_basemaps)
 
         geodata_menu.addAction(add_basemaps_action)
-        geodata_menu.addAction(
-            self.create_action(
-                "ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms
-            )
-        )
-        geodata_menu.addAction(
-            self.create_action(
-                "ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs
-            )
-        )
+        geodata_menu.addAction(self.create_action("ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms))
+        geodata_menu.addAction(self.create_action("ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs))
 
         toolButton = QToolButton()
         toolButton.setDefaultAction(add_basemaps_action)
@@ -61,16 +47,10 @@ class PZP:
         )
 
         self.toolbar.addAction(
-            self.create_action(
-                "propagation.png", "Calcola propagazione", self.do_calculate_propagation
-            )
+            self.create_action("propagation.png", "Calcola propagazione", self.do_calculate_propagation)
         )
 
-        self.toolbar.addAction(
-            self.create_action(
-                "process.png", "Calcola zone di pericolo", self.do_calculate_zones
-            )
-        )
+        self.toolbar.addAction(self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones))
 
         a_b_menu = QMenu()
         a_b_action = self.create_action("a_b.png", "A->B", self.do_a_b)
@@ -89,9 +69,7 @@ class PZP:
         self.iface.registerOptionsWidgetFactory(self.options_factory)
 
     def create_action(self, icon, name, callback):
-        action = QAction(
-            QIcon(f":/plugins/pzp/icons/{icon}"), name, self.iface.mainWindow()
-        )
+        action = QAction(QIcon(f":/plugins/pzp/icons/{icon}"), name, self.iface.mainWindow())
         action.triggered.connect(callback)
         self.iface.addPluginToMenu("PZP", action)
         return action
@@ -106,7 +84,8 @@ class PZP:
 
     def do_add_process(self):
         dlg = AddProcessDialog(self.iface)
-        dlg.exec_()
+        with utils.OverrideCursor(Qt.WaitCursor):
+            dlg.exec_()
 
     def do_add_basemaps(self):
         utils.load_qlr_layer("mappe_base")
@@ -131,7 +110,8 @@ class PZP:
         if isinstance(current_node, QgsLayerTreeGroup):
             # TODO: Check we have all the layers in the group
             dlg = PropagationDialog(self.iface, current_node)
-            dlg.exec_()
+            with utils.OverrideCursor(Qt.WaitCursor):
+                dlg.exec_()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
 
@@ -141,7 +121,8 @@ class PZP:
         if isinstance(current_node, QgsLayerTreeGroup):
             # TODO: Check we have all the layers in the group
             dlg = CalculationDialog(self.iface, current_node)
-            dlg.exec_()
+            with utils.OverrideCursor(Qt.WaitCursor):
+                dlg.exec_()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
 
@@ -157,10 +138,7 @@ class PZP:
     def do_a_b(self):
         layer = self.iface.activeLayer()
         if layer:
-            if (
-                QgsExpressionContextUtils.layerScope(layer).variable("pzp_layer")
-                == "danger_zones"
-            ):
+            if QgsExpressionContextUtils.layerScope(layer).variable("pzp_layer") == "danger_zones":
                 a_b.a_b(layer)
                 return
 
@@ -169,10 +147,7 @@ class PZP:
     def do_b_a(self):
         layer = self.iface.activeLayer()
         if layer:
-            if (
-                QgsExpressionContextUtils.layerScope(layer).variable("pzp_layer")
-                == "danger_zones"
-            ):
+            if QgsExpressionContextUtils.layerScope(layer).variable("pzp_layer") == "danger_zones":
                 a_b.b_a(layer)
                 return
 

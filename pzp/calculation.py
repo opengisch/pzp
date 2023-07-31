@@ -12,7 +12,6 @@ from qgis.core import (
     QgsProject,
     QgsVectorLayer,
 )
-from qgis.PyQt.QtCore import Qt
 
 from pzp import utils
 
@@ -201,8 +200,7 @@ def guess_params(group):
         return
 
     try:
-        with utils.OverrideCursor(Qt.WaitCursor):
-            calculate(process_type, layer_intensity)
+        calculate(process_type, layer_intensity)
 
     except QgsProcessingException as processingException:
         utils.push_error("Errore di processing: {0}".format(str(processingException)), showMore=traceback.format_exc())
