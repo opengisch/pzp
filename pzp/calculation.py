@@ -16,8 +16,6 @@ from qgis.PyQt.QtCore import Qt
 
 from pzp import utils
 
-FORM_CLASS = utils.get_ui_class("calculation.ui")
-
 
 class PropagationDialog:
     def __init__(self, iface, group, parent=None):
