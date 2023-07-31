@@ -35,23 +35,13 @@ def guess_params_propagation(group):
     layer_breaking = None
 
     for layer_node in layer_nodes:
-        pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable(
-            "pzp_layer"
-        )
+        pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable("pzp_layer")
         if pzp_layer == "propagation":
             layer_propagation = layer_node.layer()
-            process_type = int(
-                QgsExpressionContextUtils.layerScope(layer_propagation).variable(
-                    "pzp_process"
-                )
-            )
+            process_type = int(QgsExpressionContextUtils.layerScope(layer_propagation).variable("pzp_process"))
         elif pzp_layer == "breaking":
             layer_breaking = layer_node.layer()
-            process_type = int(
-                QgsExpressionContextUtils.layerScope(layer_breaking).variable(
-                    "pzp_process"
-                )
-            )
+            process_type = int(QgsExpressionContextUtils.layerScope(layer_breaking).variable("pzp_process"))
 
     if not layer_propagation:
         utils.push_error("Layer con le probabilità di propagazione non trovato", 3)
@@ -110,9 +100,7 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
 
     # qgis:deletecolumn has been renamed native:deletecolumn after qgis 3.16
     deletecolumn_id = "qgis:deletecolumn"
-    if "qgis:deletecolumn" not in [
-        x.id() for x in QgsApplication.processingRegistry().algorithms()
-    ]:
+    if "qgis:deletecolumn" not in [x.id() for x in QgsApplication.processingRegistry().algorithms()]:
         deletecolumn_id = "native:deletecolumn"
 
     result = processing.run(
@@ -125,7 +113,7 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
     )
 
     layer = result["OUTPUT"]
-    layer_name = f"Intensità completa"
+    layer_name = "Intensità completa"
     layer.setName(layer_name)
 
     gpkg_path = data_provider.dataSourceUri().split("|")[0]
@@ -142,19 +130,15 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
     processing.run("native:package", params)
 
     # Load layer from gpkg
-    new_layer = QgsVectorLayer(
-        gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr"
-    )
-    new_layer.setName(f"Intensità completa")
+    new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
+    new_layer.setName("Intensità completa")
 
     utils.set_qml_style(new_layer, "intensity")
 
     project = QgsProject.instance()
     project.addMapLayer(new_layer, False)
 
-    group_intensity_filtered = utils.create_group(
-        "Intensità (con filtri x visualizzazione scenari)", group
-    )
+    group_intensity_filtered = utils.create_group("Intensità (con filtri x visualizzazione scenari)", group)
     group_intensity_filtered.setExpanded(True)
 
     group_intensity_filtered.addLayer(new_layer)
@@ -197,6 +181,7 @@ class CalculationDialog:
     def exec_(self):
         guess_params(self.group)
 
+
 def guess_params(group):
     # process and layers
     layer_nodes = group.findLayers()
@@ -204,20 +189,15 @@ def guess_params(group):
     process_type = None
 
     for layer_node in layer_nodes:
-        pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable(
-            "pzp_layer"
-        )
+        pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable("pzp_layer")
         if pzp_layer == "intensity":
             layer_intensity = layer_node.layer()
-            process_type = int(
-                QgsExpressionContextUtils.layerScope(layer_intensity).variable(
-                    "pzp_process"
-                )
-            )
+            process_type = int(QgsExpressionContextUtils.layerScope(layer_intensity).variable("pzp_process"))
 
     if not layer_intensity:
         utils.push_error("Layer con le intensità non trovato", 3)
         return
+
     if not process_type:
         utils.push_error("Impossibile determinare il tipo di processo", 3)
         return
@@ -290,17 +270,15 @@ def calculate(process_type, layer_intensity):
     result = processing.run(
         "pzp:merge_by_area",
         {
-            'INPUT': result['OUTPUT'],
-            'MODE': MergeByArea.MODE_HIGHEST_VALUE,
-            "VALUE_FIELD": "classe_intensita",
+            "INPUT": result["OUTPUT"],
+            "MODE": MergeByArea.MODE_HIGHEST_VALUE,
+            "VALUE_FIELD": "grado_pericolo",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
 
     layer = result["OUTPUT"]
-    layer_name = (
-        f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-    )
+    layer_name = f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
     layer.setName(layer_name)
 
     gpkg_path = data_provider.dataSourceUri().split("|")[0]
@@ -317,12 +295,8 @@ def calculate(process_type, layer_intensity):
     processing.run("native:package", params)
 
     # Load layer from gpkg
-    new_layer = QgsVectorLayer(
-        gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr"
-    )
-    new_layer.setName(
-        f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-    )
+    new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
+    new_layer.setName(f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}")
 
     QgsProject.instance().layerTreeRoot()
 
