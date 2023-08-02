@@ -267,8 +267,8 @@ def calculate(process_type, layer_intensity):
         "pzp:merge_by_area",
         {
             "INPUT": result["OUTPUT"],
-            "MODE": MergeByArea.MODE_HIGHEST_VALUE,
-            "VALUE_FIELD": "grado_pericolo",
+            "MODE": MergeByArea.MODE_HIGHEST_MATRIX_VALUE,
+            "VALUE_FIELD": "matrice",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
