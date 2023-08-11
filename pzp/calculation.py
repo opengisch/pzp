@@ -264,23 +264,13 @@ def calculate(process_type, layer_intensity):
         },
     )
 
-    # result = processing.run(
-    #     "native:fixgeometries",
-    #     {
-    #         "INPUT": result["OUTPUT"],
-    #         "OUTPUT": "TEMPORARY_OUTPUT",
-    #     },
-    # )
-
-    # result = processing.run(
-    #     "pzp:merge_by_area",
-    #     {
-    #         "INPUT": result["OUTPUT"],
-    #         "MODE": MergeByArea.MODE_LARGEST_AREA,
-    #         "VALUE_FIELD": "matrice",
-    #         "OUTPUT": "TEMPORARY_OUTPUT",
-    #     },
-    # )
+    result = processing.run(
+        "native:fixgeometries",
+        {
+            "INPUT": result["OUTPUT"],
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
 
     layer = result["OUTPUT"]
     layer_name = f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
