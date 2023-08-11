@@ -88,13 +88,16 @@ class PZP:
             dlg.exec_()
 
     def do_add_basemaps(self):
-        utils.load_qlr_layer("mappe_base")
+        with utils.OverrideCursor(Qt.WaitCursor):
+            utils.load_qlr_layer("mappe_base")
 
     def do_add_base_data_wms(self):
-        utils.load_qlr_layer("dati_base_wms")
+        with utils.OverrideCursor(Qt.WaitCursor):
+            utils.load_qlr_layer("dati_base_wms")
 
     def do_add_base_data_wfs(self):
-        utils.load_qlr_layer("dati_base_wfs")
+        with utils.OverrideCursor(Qt.WaitCursor):
+            utils.load_qlr_layer("dati_base_wfs")
 
     def do_check_geometries(self):
         self.checks_dock = CheckResultsDock(self.iface)
