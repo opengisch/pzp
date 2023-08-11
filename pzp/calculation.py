@@ -3,7 +3,6 @@ import os
 import traceback
 
 from pzp_utils.processing import domains
-from pzp_utils.processing.merge_by_area import MergeByArea
 from qgis import processing
 from qgis.core import (
     QgsApplication,
@@ -246,6 +245,16 @@ def calculate(process_type, layer_intensity):
     )
 
     result = processing.run(
+        "native:dissolve",
+        {
+            "INPUT": result["OUTPUT"],
+            "FIELD": "matrice",
+            "SEPARATE_DISJOINT": False,
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        },
+    )
+
+    result = processing.run(
         "pzp:danger_zones",
         {
             "INPUT": result["OUTPUT"],
@@ -259,16 +268,6 @@ def calculate(process_type, layer_intensity):
         "native:fixgeometries",
         {
             "INPUT": result["OUTPUT"],
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
-
-    result = processing.run(
-        "pzp:merge_by_area",
-        {
-            "INPUT": result["OUTPUT"],
-            "MODE": MergeByArea.MODE_HIGHEST_VALUE,
-            "VALUE_FIELD": "grado_pericolo",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
