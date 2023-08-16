@@ -1,16 +1,23 @@
+import os
 import webbrowser
 
-from qgis.core import QgsExpressionContextUtils, QgsLayerTreeGroup
-from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
+from qgis.core import (
+    QgsExpressionContextUtils,
+    QgsIconUtils,
+    QgsLayerDefinition,
+    QgsLayerTreeGroup,
+    QgsProject,
+)
 from qgis.PyQt.QtCore import Qt
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QHBoxLayout, QMenu, QToolButton
+from qgis.PyQt.QtWidgets import QAction, QMenu, QToolButton
 
 from pzp import a_b, no_impact, utils
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationDialog, PropagationDialog
 from pzp.check_dock import CheckResultsDock
 from pzp.ui.resources import *  # noqa
+
+PLUGIN_NAME = "PZP"
 
 
 class PZP:
@@ -19,15 +26,63 @@ class PZP:
         self.toolbar = None
 
     def initGui(self):
-        self.toolbar = self.iface.addToolBar("PZP")
+        self.toolbar = self.iface.addToolBar(PLUGIN_NAME)
         self.toolbar.setObjectName("PZPToolbar")
-        self.toolbar.setToolTip("PZP Toolbar")
+        self.toolbar.setToolTip(f"{PLUGIN_NAME} Toolbar")
 
-        self.toolbar.addAction(self.create_action("landslide.png", "Aggiungi processo", self.do_add_process))
+        action = self.create_action("landslide.png", "Aggiungi processo", self.do_add_process)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+
+        self.init_geodata_menu()
+
+        action = self.create_action(
+            "no_impact.png",
+            "Aggiungi zone nessun impatto",
+            self.do_calculate_no_impact,
+        )
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+
+        action = self.create_action("propagation.png", "Calcola propagazione", self.do_calculate_propagation)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+
+        action = self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+
+        a_b_menu = QMenu()
+        a_b_action = self.create_action("a_b.png", "A->B", self.do_a_b)
+        a_b_menu.addAction(a_b_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, a_b_action)
+
+        b_a_action = self.create_action("b_a.png", "B->A", self.do_b_a)
+        a_b_menu.addAction(b_a_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, b_a_action)
+
+        toolButton = QToolButton()
+        toolButton.setDefaultAction(a_b_action)
+        toolButton.setMenu(a_b_menu)
+        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        self.toolbar.addWidget(toolButton)
+
+        action = self.create_action("help.png", "Aiuto", self.do_help)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+
+        menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
+        menu_pzp.setIcon(utils.get_icon("landslide.png"))
+
+    def init_geodata_menu(self):
+        menuMappeBase = self.init_geodata_menu_qlr("mappe_base", "world.png")
+        # self.init_geodata_menu_qlr("dati_base_wms", "ruler.png")
+        # self.init_geodata_menu_qlr("dati_base_wfs", "ruler.png")
+
+        add_basemaps_action = self.create_action("world.png", "Aggiungi mappe base", self.do_add_basemaps)
+        add_basemaps_action.setMenu(menuMappeBase)
 
         geodata_menu = QMenu()
-        add_basemaps_action = self.create_action("world.png", "Aggiungi mappe base", self.do_add_basemaps)
-
         geodata_menu.addAction(add_basemaps_action)
         geodata_menu.addAction(self.create_action("ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms))
         geodata_menu.addAction(self.create_action("ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs))
@@ -38,49 +93,67 @@ class PZP:
         toolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
-        self.toolbar.addAction(
-            self.create_action(
-                "no_impact.png",
-                "Aggiungi zone nessun impatto",
-                self.do_calculate_no_impact,
-            )
-        )
+    def init_geodata_menu_qlr(self, qlr_filename, icon_name):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_filename}.qlr")
 
-        self.toolbar.addAction(
-            self.create_action("propagation.png", "Calcola propagazione", self.do_calculate_propagation)
-        )
+        layersDefinitionProject = QgsProject()
+        layerTreeRoot = layersDefinitionProject.layerTreeRoot()
 
-        self.toolbar.addAction(self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones))
+        QgsLayerDefinition.loadLayerDefinition(qlr_file_path, layersDefinitionProject, layerTreeRoot)
 
-        a_b_menu = QMenu()
-        a_b_action = self.create_action("a_b.png", "A->B", self.do_a_b)
-        a_b_menu.addAction(a_b_action)
-        a_b_menu.addAction(self.create_action("b_a.png", "B->A", self.do_b_a))
+        menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
 
-        toolButton = QToolButton()
-        toolButton.setDefaultAction(a_b_action)
-        toolButton.setMenu(a_b_menu)
-        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
-        self.toolbar.addWidget(toolButton)
+        for group in layerTreeRoot.findGroups():
+            # Only one root group per .qlr is supported
+            return self.walk_group(group, menu_pzp, icon_name)
 
-        self.toolbar.addAction(self.create_action("help.png", "Aiuto", self.do_help))
-        self.options_factory = PluginOptionsFactory()
-        self.options_factory.setTitle("PZP")
-        self.iface.registerOptionsWidgetFactory(self.options_factory)
+    def walk_group(self, group, parent_menu, icon=None):
+        print(f"Group: {group.name()}")
+
+        if icon is None:
+            icon = "group.svg"
+
+        submenu = self.create_submenu(icon, group.name(), parent_menu)
+
+        for subgroup in group.findGroups():
+            self.walk_group(subgroup, submenu)
+
+        for layer in group.findLayers():
+            if layer.parent() == group:
+                print(f"Layer: {layer.name()}")
+
+                action = QAction(QgsIconUtils.iconForLayer(layer.layer()), layer.name(), self.iface.mainWindow())
+                submenu.addAction(action)
+
+        # Create action for add all in the group
+        actionAddAll = self.create_action("group.svg", "Aggiungi tutto da questo gruppo", self.do_add_basemaps)
+        font = actionAddAll.font()
+        font.setBold(True)
+        actionAddAll.setFont(font)
+        submenu.addAction(actionAddAll)
+
+        return submenu
 
     def create_action(self, icon, name, callback):
-        action = QAction(QIcon(f":/plugins/pzp/icons/{icon}"), name, self.iface.mainWindow())
+        action = QAction(utils.get_icon(icon), name, self.iface.mainWindow())
         action.triggered.connect(callback)
-        self.iface.addPluginToMenu("PZP", action)
         return action
 
-    def unload(self):
-        for action in self.toolbar.actions():
-            self.iface.removePluginMenu("PZP", action)
-            del action
+    def create_submenu(self, icon, name, parent_menu):
+        submenu = parent_menu.addMenu(name)
+        submenu.setIcon(utils.get_icon(icon))
+        return submenu
 
+    def unload(self):
+        # Clear PZP menu
+        menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
+        menu_pzp.clear()
+
+        toolbar_actions = self.toolbar.actions()
+        for action in toolbar_actions:
+            self.toolbar.removeAction(action)
         del self.toolbar
-        self.iface.unregisterOptionsWidgetFactory(self.options_factory)
 
     def do_add_process(self):
         dlg = AddProcessDialog(self.iface)
@@ -158,22 +231,3 @@ class PZP:
 
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")
-
-
-class PluginOptionsFactory(QgsOptionsWidgetFactory):
-    def __init__(self):
-        super().__init__()
-
-    def icon(self):
-        return QIcon("icons/my_plugin_icon.svg")
-
-    def createWidget(self, parent):
-        return ConfigOptionsPage(parent)
-
-
-class ConfigOptionsPage(QgsOptionsPageWidget):
-    def __init__(self, parent):
-        super().__init__(parent)
-        layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout)
