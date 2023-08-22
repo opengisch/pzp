@@ -16,7 +16,6 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.uic import loadUiType
 from qgis.utils import iface
 
@@ -97,13 +96,10 @@ def check_project():
 
 def get_ui_class(ui_file):
     """Get UI Python class from .ui file.
-       Can be filename.ui or subdirectory/filename.ui
-    :param ui_file: The file of the ui in svir.ui
+    :param ui_file: The file of the u
     :type ui_file: str
     """
-    os.path.sep.join(ui_file.split("/"))
-    ui_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "ui", ui_file))
-    return loadUiType(ui_file_path)[0]
+    return loadUiType(ui_file)[0]
 
 
 def add_field_to_layer(layer, name, alias="", variant=QVariant.Int):
@@ -253,14 +249,3 @@ def create_filtered_layer_from_gpkg(gpkg_layer_name, gpkg_path, substring, name)
 
 def get_icon(filename):
     return QIcon(f":/plugins/pzp/icons/{filename}")
-
-
-class OverrideCursor:
-    def __init__(self, cursor):
-        self.cursor = cursor
-
-    def __enter__(self):
-        QApplication.setOverrideCursor(self.cursor)
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        QApplication.restoreOverrideCursor()

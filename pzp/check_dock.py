@@ -1,12 +1,13 @@
+import os
 from functools import partial
 
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QDockWidget, QHeaderView, QPushButton, QTableWidgetItem
 
-from pzp.utils import get_ui_class
+from pzp.utils.utils import get_ui_class
 
-FORM_CLASS = get_ui_class("checker.ui")
+FORM_CLASS = get_ui_class(os.path.join(os.path.dirname(__file__), "ui/checker.ui"))
 
 
 class CheckResultsDock(QDockWidget, FORM_CLASS):

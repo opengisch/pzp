@@ -8,22 +8,29 @@ from qgis.core import (
     QgsLayerTreeGroup,
     QgsProject,
 )
-from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtCore import QObject, Qt
 from qgis.PyQt.QtWidgets import QAction, QMenu, QToolButton
 
-from pzp import a_b, no_impact, utils
+from pzp import a_b, no_impact
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationDialog, PropagationDialog
 from pzp.check_dock import CheckResultsDock
 from pzp.ui.resources import *  # noqa
+from pzp.utils import utils
+from pzp.utils.override_cursor import OverrideCursor
 
 PLUGIN_NAME = "PZP"
 
 
-class PZP:
+class PZP(QObject):
     def __init__(self, iface):
+        super().__init__(None)
         self.iface = iface
         self.toolbar = None
+
+        self.layerDefinitionProjectMappeBase = None
+        self.layerDefinitionProjectDatiBaseWMF = None
+        self.layerDefinitionProjectDatiBaseWFS = None
 
     def initGui(self):
         self.toolbar = self.iface.addToolBar(PLUGIN_NAME)
@@ -76,16 +83,22 @@ class PZP:
 
     def init_geodata_menu(self):
         menuMappeBase = self.init_geodata_menu_qlr("mappe_base", "world.png")
-        # self.init_geodata_menu_qlr("dati_base_wms", "ruler.png")
-        # self.init_geodata_menu_qlr("dati_base_wfs", "ruler.png")
+        # menuDatiBaseWMS = self.init_geodata_menu_qlr("dati_base_wms", "ruler.png")
+        # menuDatiBaseWFS = self.init_geodata_menu_qlr("dati_base_wfs", "ruler.png")
 
         add_basemaps_action = self.create_action("world.png", "Aggiungi mappe base", self.do_add_basemaps)
         add_basemaps_action.setMenu(menuMappeBase)
 
+        add_basedatawms_action = self.create_action("ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms)
+        # add_basedatawms_action.setMenu(menuDatiBaseWMS)
+
+        add_basedatawfs_action = self.create_action("ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs)
+        # add_basedatawfs_action.setMenu(menuDatiBaseWFS)
+
         geodata_menu = QMenu()
         geodata_menu.addAction(add_basemaps_action)
-        geodata_menu.addAction(self.create_action("ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms))
-        geodata_menu.addAction(self.create_action("ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs))
+        geodata_menu.addAction(add_basedatawms_action)
+        geodata_menu.addAction(add_basedatawfs_action)
 
         toolButton = QToolButton()
         toolButton.setDefaultAction(add_basemaps_action)
@@ -97,10 +110,10 @@ class PZP:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_filename}.qlr")
 
-        layersDefinitionProject = QgsProject()
-        layerTreeRoot = layersDefinitionProject.layerTreeRoot()
+        self.layerDefinitionProjectMappeBase = QgsProject()
+        layerTreeRoot = self.layerDefinitionProjectMappeBase.layerTreeRoot()
 
-        QgsLayerDefinition.loadLayerDefinition(qlr_file_path, layersDefinitionProject, layerTreeRoot)
+        QgsLayerDefinition.loadLayerDefinition(qlr_file_path, self.layerDefinitionProjectMappeBase, layerTreeRoot)
 
         menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
 
@@ -109,8 +122,6 @@ class PZP:
             return self.walk_group(group, menu_pzp, icon_name)
 
     def walk_group(self, group, parent_menu, icon=None):
-        print(f"Group: {group.name()}")
-
         if icon is None:
             icon = "group.svg"
 
@@ -121,13 +132,12 @@ class PZP:
 
         for layer in group.findLayers():
             if layer.parent() == group:
-                print(f"Layer: {layer.name()}")
-
                 action = QAction(QgsIconUtils.iconForLayer(layer.layer()), layer.name(), self.iface.mainWindow())
                 submenu.addAction(action)
 
         # Create action for add all in the group
-        actionAddAll = self.create_action("group.svg", "Aggiungi tutto da questo gruppo", self.do_add_basemaps)
+        actionAddAll = self.create_action("group.svg", "Aggiungi tutto da questo gruppo", self.do_add_group)
+        actionAddAll.setProperty("group", group)
         font = actionAddAll.font()
         font.setBold(True)
         actionAddAll.setFont(font)
@@ -157,20 +167,28 @@ class PZP:
 
     def do_add_process(self):
         dlg = AddProcessDialog(self.iface)
-        with utils.OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.WaitCursor):
             dlg.exec_()
 
     def do_add_basemaps(self):
-        with utils.OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.WaitCursor):
             utils.load_qlr_layer("mappe_base")
 
     def do_add_base_data_wms(self):
-        with utils.OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.WaitCursor):
             utils.load_qlr_layer("dati_base_wms")
 
     def do_add_base_data_wfs(self):
-        with utils.OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.WaitCursor):
             utils.load_qlr_layer("dati_base_wfs")
+
+    def do_add_group(self):
+        with OverrideCursor(Qt.WaitCursor):
+            action = self.sender()
+            print(f"Sender: {action}")
+
+            group = action.property("group")
+            print(f"Group: {group}")
 
     def do_check_geometries(self):
         self.checks_dock = CheckResultsDock(self.iface)
@@ -186,7 +204,7 @@ class PZP:
         if isinstance(current_node, QgsLayerTreeGroup):
             # TODO: Check we have all the layers in the group
             dlg = PropagationDialog(self.iface, current_node)
-            with utils.OverrideCursor(Qt.WaitCursor):
+            with OverrideCursor(Qt.WaitCursor):
                 dlg.exec_()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
@@ -197,7 +215,7 @@ class PZP:
         if isinstance(current_node, QgsLayerTreeGroup):
             # TODO: Check we have all the layers in the group
             dlg = CalculationDialog(self.iface, current_node)
-            with utils.OverrideCursor(Qt.WaitCursor):
+            with OverrideCursor(Qt.WaitCursor):
                 dlg.exec_()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)

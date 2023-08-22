@@ -3,7 +3,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QComboBox, QDialog, QTableWidgetItem
 from qgis.utils import iface
 
-from pzp.utils import get_ui_class
+from pzp.utils.utils import get_ui_class
 
 FORM_CLASS = get_ui_class("ambiguity.ui")
 

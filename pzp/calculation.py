@@ -12,7 +12,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from pzp import utils
+from pzp.utils import utils
 
 
 class PropagationDialog:
