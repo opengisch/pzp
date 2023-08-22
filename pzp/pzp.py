@@ -6,6 +6,7 @@ from qgis.core import (
     QgsIconUtils,
     QgsLayerDefinition,
     QgsLayerTreeGroup,
+    QgsLayerTreeNode,
     QgsProject,
 )
 from qgis.PyQt.QtCore import QObject, Qt
@@ -185,10 +186,48 @@ class PZP(QObject):
     def do_add_group(self):
         with OverrideCursor(Qt.WaitCursor):
             action = self.sender()
-            print(f"Sender: {action}")
-
             group = action.property("group")
-            print(f"Group: {group}")
+
+            parentGroups = []
+            parentGroup = group.parent()
+            while parentGroup and parentGroup.parent():
+                parentGroups.insert(0, parentGroup)
+                parentGroup = parentGroup.parent()
+
+            parentGroups.append(group)
+
+            projectParentGroup = QgsProject.instance().layerTreeRoot()
+            for newParentGroup in parentGroups:
+                groupAlreadyExists = False
+                for children in projectParentGroup.children():
+                    if children.name() == newParentGroup.name():
+                        projectParentGroup = children
+                        groupAlreadyExists = True
+                        break
+
+                if not groupAlreadyExists:
+                    projectParentGroup = projectParentGroup.addGroup(newParentGroup.name())
+
+            # We reached the inserting group -> add all subgroups and layers
+            self.do_add_group_recursive(projectParentGroup, group)
+
+    def do_add_group_recursive(self, projectParentGroup, group):
+        for layerNode in group.children():
+            existingTreeElement = None
+            for children in projectParentGroup.children():
+                if children.name() == layerNode.name():
+                    existingTreeElement = children
+                    break
+
+            # Sublayer
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeLayer and existingTreeElement is None:
+                projectParentGroup.addLayer(layerNode.layer())
+                continue
+
+            # Subgroup
+            if existingTreeElement is None:
+                existingTreeElement = projectParentGroup.addGroup(layerNode.name())
+            self.do_add_group_recursive(existingTreeElement, layerNode)
 
     def do_check_geometries(self):
         self.checks_dock = CheckResultsDock(self.iface)
