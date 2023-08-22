@@ -24,6 +24,8 @@ PLUGIN_NAME = "PZP"
 
 
 class PZP(QObject):
+    PROPERTY_LAYER_NODE = "layer_node"
+
     def __init__(self, iface):
         super().__init__(None)
         self.iface = iface
@@ -134,11 +136,13 @@ class PZP(QObject):
         for layer in group.findLayers():
             if layer.parent() == group:
                 action = QAction(QgsIconUtils.iconForLayer(layer.layer()), layer.name(), self.iface.mainWindow())
+                action.triggered.connect(self.do_add_layer_node)
+                action.setProperty(self.PROPERTY_LAYER_NODE, layer)
                 submenu.addAction(action)
 
         # Create action for add all in the group
-        actionAddAll = self.create_action("group.svg", "Aggiungi tutto da questo gruppo", self.do_add_group)
-        actionAddAll.setProperty("group", group)
+        actionAddAll = self.create_action("group.svg", "Aggiungi tutto da questo gruppo", self.do_add_layer_node)
+        actionAddAll.setProperty(self.PROPERTY_LAYER_NODE, group)
         font = actionAddAll.font()
         font.setBold(True)
         actionAddAll.setFont(font)
@@ -183,18 +187,19 @@ class PZP(QObject):
         with OverrideCursor(Qt.WaitCursor):
             utils.load_qlr_layer("dati_base_wfs")
 
-    def do_add_group(self):
+    def do_add_layer_node(self):
         with OverrideCursor(Qt.WaitCursor):
             action = self.sender()
-            group = action.property("group")
+            layerNode = action.property(self.PROPERTY_LAYER_NODE)
 
             parentGroups = []
-            parentGroup = group.parent()
+            parentGroup = layerNode.parent()
             while parentGroup and parentGroup.parent():
                 parentGroups.insert(0, parentGroup)
                 parentGroup = parentGroup.parent()
 
-            parentGroups.append(group)
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeGroup:
+                parentGroups.append(layerNode)
 
             projectParentGroup = QgsProject.instance().layerTreeRoot()
             for newParentGroup in parentGroups:
@@ -209,7 +214,21 @@ class PZP(QObject):
                     projectParentGroup = projectParentGroup.addGroup(newParentGroup.name())
 
             # We reached the inserting group -> add all subgroups and layers
-            self.do_add_group_recursive(projectParentGroup, group)
+            # For group types...
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeGroup:
+                self.do_add_group_recursive(projectParentGroup, layerNode)
+
+            # ... and for layer types
+            else:
+                for children in projectParentGroup.children():
+                    if children.name() == layerNode.name():
+                        # Already existing
+                        return
+
+                # Sublayer
+                newLayer = layerNode.layer().clone()
+                projectParentGroup.addLayer(newLayer)
+                QgsProject.instance().layerStore().addMapLayer(newLayer)
 
     def do_add_group_recursive(self, projectParentGroup, group):
         for layerNode in group.children():
@@ -221,7 +240,9 @@ class PZP(QObject):
 
             # Sublayer
             if layerNode.nodeType() == QgsLayerTreeNode.NodeLayer and existingTreeElement is None:
-                projectParentGroup.addLayer(layerNode.layer())
+                newLayer = layerNode.layer().clone()
+                projectParentGroup.addLayer(newLayer)
+                QgsProject.instance().layerStore().addMapLayer(newLayer)
                 continue
 
             # Subgroup
