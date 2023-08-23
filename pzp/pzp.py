@@ -10,7 +10,7 @@ from qgis.core import (
     QgsProject,
 )
 from qgis.PyQt.QtCore import QObject, Qt
-from qgis.PyQt.QtWidgets import QAction, QMenu, QToolButton
+from qgis.PyQt.QtWidgets import QAction, QMenu, QMessageBox, QToolButton
 
 from pzp import a_b, no_impact
 from pzp.add_process import AddProcessDialog
@@ -25,6 +25,11 @@ PLUGIN_NAME = "PZP"
 
 class PZP(QObject):
     PROPERTY_LAYER_NODE = "layer_node"
+    PROPERTY_QLR_FILENAME = "qlr_filename"
+
+    QLR_FILENAME_MAPPE_BASE = "mappe_base"
+    QLR_FILENAME_DATI_BASE_WMS = "dati_base_wms"
+    QLR_FILENAME_DATI_BASE_WFS = "dati_base_wfs"
 
     def __init__(self, iface):
         super().__init__(None)
@@ -85,18 +90,22 @@ class PZP(QObject):
         menu_pzp.setIcon(utils.get_icon("landslide.png"))
 
     def init_geodata_menu(self):
-        menuMappeBase = self.init_geodata_menu_qlr("mappe_base", "world.png")
-        # menuDatiBaseWMS = self.init_geodata_menu_qlr("dati_base_wms", "ruler.png")
-        # menuDatiBaseWFS = self.init_geodata_menu_qlr("dati_base_wfs", "ruler.png")
+        menuMappeBase = self.init_geodata_menu_qlr(self.QLR_FILENAME_MAPPE_BASE, "world.png", "Aggiungi mappe base")
+        menuDatiBaseWMS = self.init_geodata_menu_qlr(
+            self.QLR_FILENAME_DATI_BASE_WMS, "ruler.png", "Aggiungi dati base WMS"
+        )
+        menuDatiBaseWFS = self.init_geodata_menu_qlr(
+            self.QLR_FILENAME_DATI_BASE_WFS, "ruler.png", "Aggiungi dati base WFS"
+        )
 
         add_basemaps_action = self.create_action("world.png", "Aggiungi mappe base", self.do_add_basemaps)
         add_basemaps_action.setMenu(menuMappeBase)
 
         add_basedatawms_action = self.create_action("ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms)
-        # add_basedatawms_action.setMenu(menuDatiBaseWMS)
+        add_basedatawms_action.setMenu(menuDatiBaseWMS)
 
         add_basedatawfs_action = self.create_action("ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs)
-        # add_basedatawfs_action.setMenu(menuDatiBaseWFS)
+        add_basedatawfs_action.setMenu(menuDatiBaseWFS)
 
         geodata_menu = QMenu()
         geodata_menu.addAction(add_basemaps_action)
@@ -109,20 +118,11 @@ class PZP(QObject):
         toolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
-    def init_geodata_menu_qlr(self, qlr_filename, icon_name):
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_filename}.qlr")
-
-        self.layerDefinitionProjectMappeBase = QgsProject()
-        layerTreeRoot = self.layerDefinitionProjectMappeBase.layerTreeRoot()
-
-        QgsLayerDefinition.loadLayerDefinition(qlr_file_path, self.layerDefinitionProjectMappeBase, layerTreeRoot)
-
+    def init_geodata_menu_qlr(self, qlr_filename, icon_name, menu_name):
         menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
-
-        for group in layerTreeRoot.findGroups():
-            # Only one root group per .qlr is supported
-            return self.walk_group(group, menu_pzp, icon_name)
+        placeholderMenu = self.create_submenu(icon_name, menu_name, menu_pzp)
+        placeholderMenu.setProperty(self.PROPERTY_QLR_FILENAME, qlr_filename)
+        placeholderMenu.aboutToShow.connect(self.placeholderMenuAboutToShow)
 
     def walk_group(self, group, parent_menu, icon=None):
         if icon is None:
@@ -177,15 +177,15 @@ class PZP(QObject):
 
     def do_add_basemaps(self):
         with OverrideCursor(Qt.WaitCursor):
-            utils.load_qlr_layer("mappe_base")
+            utils.load_qlr_layer(self.QLR_FILENAME_MAPPE_BASE)
 
     def do_add_base_data_wms(self):
         with OverrideCursor(Qt.WaitCursor):
-            utils.load_qlr_layer("dati_base_wms")
+            utils.load_qlr_layer(self.QLR_FILENAME_DATI_BASE_WMS)
 
     def do_add_base_data_wfs(self):
         with OverrideCursor(Qt.WaitCursor):
-            utils.load_qlr_layer("dati_base_wfs")
+            utils.load_qlr_layer(self.QLR_FILENAME_DATI_BASE_WFS)
 
     def do_add_layer_node(self):
         with OverrideCursor(Qt.WaitCursor):
@@ -309,3 +309,41 @@ class PZP(QObject):
 
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")
+
+    def placeholderMenuAboutToShow(self):
+        placeholderMenu = self.sender()
+        qlr_filename = placeholderMenu.property(self.PROPERTY_QLR_FILENAME)
+
+        project = None
+        if self.QLR_FILENAME_MAPPE_BASE == qlr_filename:
+            project = self.layerDefinitionProjectMappeBase
+        elif self.QLR_FILENAME_DATI_BASE_WMS == qlr_filename:
+            project = self.layerDefinitionProjectDatiBaseWMF
+        elif self.QLR_FILENAME_DATI_BASE_WFS == qlr_filename:
+            project = self.layerDefinitionProjectDatiBaseWFS
+        else:
+            QMessageBox.critical(self, "Unknown qlr filename", f"Unknown qlr filename {qlr_filename}")
+
+        # Project already loaded
+        if project is not None:
+            return
+
+        with OverrideCursor(Qt.WaitCursor):
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_filename}.qlr")
+
+            project = QgsProject()
+            layerTreeRoot = project.layerTreeRoot()
+
+            QgsLayerDefinition.loadLayerDefinition(qlr_file_path, project, layerTreeRoot)
+
+            if self.QLR_FILENAME_MAPPE_BASE == qlr_filename:
+                self.layerDefinitionProjectMappeBase = project
+            elif self.QLR_FILENAME_DATI_BASE_WMS == qlr_filename:
+                self.layerDefinitionProjectDatiBaseWMF = project
+            elif self.QLR_FILENAME_DATI_BASE_WFS == qlr_filename:
+                self.layerDefinitionProjectDatiBaseWFS = project
+
+            for group in layerTreeRoot.findGroups():
+                # Only one root group per .qlr is supported (thus return)
+                return self.walk_group(group, placeholderMenu)
