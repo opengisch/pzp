@@ -1,61 +1,80 @@
+import os
 import webbrowser
 
-from qgis.core import QgsExpressionContextUtils, QgsLayerTreeGroup
-from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
-from qgis.PyQt.QtCore import Qt
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QHBoxLayout, QMenu, QToolButton
+from qgis.core import (
+    QgsExpressionContextUtils,
+    QgsIconUtils,
+    QgsLayerDefinition,
+    QgsLayerTreeGroup,
+    QgsLayerTreeNode,
+    QgsProject,
+)
+from qgis.PyQt.QtCore import QObject, Qt
+from qgis.PyQt.QtWidgets import QAction, QMenu, QMessageBox, QToolButton
 
-from pzp import a_b, no_impact, utils
+from pzp import a_b, no_impact
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationDialog, PropagationDialog
 from pzp.check_dock import CheckResultsDock
 from pzp.ui.resources import *  # noqa
+from pzp.utils import utils
+from pzp.utils.override_cursor import OverrideCursor
+
+PLUGIN_NAME = "PZP"
 
 
-class PZP:
+class PZP(QObject):
+    PROPERTY_LAYER_NODE = "layer_node"
+    PROPERTY_QLR_FILENAME = "qlr_filename"
+
+    QLR_FILENAME_MAPPE_BASE = "mappe_base"
+    QLR_FILENAME_DATI_BASE_WMS = "dati_base_wms"
+    QLR_FILENAME_DATI_BASE_WFS = "dati_base_wfs"
+
     def __init__(self, iface):
+        super().__init__(None)
         self.iface = iface
         self.toolbar = None
 
+        self.layerDefinitionProjectMappeBase = None
+        self.layerDefinitionProjectDatiBaseWMF = None
+        self.layerDefinitionProjectDatiBaseWFS = None
+
     def initGui(self):
-        self.toolbar = self.iface.addToolBar("PZP")
+        self.toolbar = self.iface.addToolBar(PLUGIN_NAME)
         self.toolbar.setObjectName("PZPToolbar")
-        self.toolbar.setToolTip("PZP Toolbar")
+        self.toolbar.setToolTip(f"{PLUGIN_NAME} Toolbar")
 
-        self.toolbar.addAction(self.create_action("landslide.png", "Aggiungi processo", self.do_add_process))
+        action = self.create_action("landslide.png", "Aggiungi processo", self.do_add_process)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
 
-        geodata_menu = QMenu()
-        add_basemaps_action = self.create_action("world.png", "Aggiungi mappe base", self.do_add_basemaps)
+        self.init_geodata_menu()
 
-        geodata_menu.addAction(add_basemaps_action)
-        geodata_menu.addAction(self.create_action("ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms))
-        geodata_menu.addAction(self.create_action("ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs))
-
-        toolButton = QToolButton()
-        toolButton.setDefaultAction(add_basemaps_action)
-        toolButton.setMenu(geodata_menu)
-        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
-        self.toolbar.addWidget(toolButton)
-
-        self.toolbar.addAction(
-            self.create_action(
-                "no_impact.png",
-                "Aggiungi zone nessun impatto",
-                self.do_calculate_no_impact,
-            )
+        action = self.create_action(
+            "no_impact.png",
+            "Aggiungi zone nessun impatto",
+            self.do_calculate_no_impact,
         )
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
 
-        self.toolbar.addAction(
-            self.create_action("propagation.png", "Calcola propagazione", self.do_calculate_propagation)
-        )
+        action = self.create_action("propagation.png", "Calcola propagazione", self.do_calculate_propagation)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
 
-        self.toolbar.addAction(self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones))
+        action = self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
 
         a_b_menu = QMenu()
         a_b_action = self.create_action("a_b.png", "A->B", self.do_a_b)
         a_b_menu.addAction(a_b_action)
-        a_b_menu.addAction(self.create_action("b_a.png", "B->A", self.do_b_a))
+        self.iface.addPluginToMenu(PLUGIN_NAME, a_b_action)
+
+        b_a_action = self.create_action("b_a.png", "B->A", self.do_b_a)
+        a_b_menu.addAction(b_a_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, b_a_action)
 
         toolButton = QToolButton()
         toolButton.setDefaultAction(a_b_action)
@@ -63,41 +82,174 @@ class PZP:
         toolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
-        self.toolbar.addAction(self.create_action("help.png", "Aiuto", self.do_help))
-        self.options_factory = PluginOptionsFactory()
-        self.options_factory.setTitle("PZP")
-        self.iface.registerOptionsWidgetFactory(self.options_factory)
+        action = self.create_action("help.png", "Aiuto", self.do_help)
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+
+        menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
+        menu_pzp.setIcon(utils.get_icon("landslide.png"))
+
+    def init_geodata_menu(self):
+        menuMappeBase = self.init_geodata_menu_qlr(self.QLR_FILENAME_MAPPE_BASE, "world.png", "Aggiungi mappe base")
+        menuDatiBaseWMS = self.init_geodata_menu_qlr(
+            self.QLR_FILENAME_DATI_BASE_WMS, "ruler.png", "Aggiungi dati base WMS"
+        )
+        menuDatiBaseWFS = self.init_geodata_menu_qlr(
+            self.QLR_FILENAME_DATI_BASE_WFS, "ruler.png", "Aggiungi dati base WFS"
+        )
+
+        add_basemaps_action = self.create_action("world.png", "Aggiungi mappe base", self.do_add_basemaps)
+        add_basemaps_action.setMenu(menuMappeBase)
+
+        add_basedatawms_action = self.create_action("ruler.png", "Aggiungi dati base WMS", self.do_add_base_data_wms)
+        add_basedatawms_action.setMenu(menuDatiBaseWMS)
+
+        add_basedatawfs_action = self.create_action("ruler.png", "Aggiungi dati base WFS", self.do_add_base_data_wfs)
+        add_basedatawfs_action.setMenu(menuDatiBaseWFS)
+
+        geodata_menu = QMenu()
+        geodata_menu.addAction(add_basemaps_action)
+        geodata_menu.addAction(add_basedatawms_action)
+        geodata_menu.addAction(add_basedatawfs_action)
+
+        toolButton = QToolButton()
+        toolButton.setDefaultAction(add_basemaps_action)
+        toolButton.setMenu(geodata_menu)
+        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        self.toolbar.addWidget(toolButton)
+
+    def init_geodata_menu_qlr(self, qlr_filename, icon_name, menu_name):
+        menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
+        placeholderMenu = self.create_submenu(icon_name, menu_name, menu_pzp)
+        placeholderMenu.setProperty(self.PROPERTY_QLR_FILENAME, qlr_filename)
+        placeholderMenu.aboutToShow.connect(self.placeholderMenuAboutToShow)
+        return placeholderMenu
+
+    def walk_group(self, group, parent_menu, icon=None):
+        if icon is None:
+            icon = "group.svg"
+
+        submenu = self.create_submenu(icon, group.name(), parent_menu)
+
+        for subgroup in group.findGroups():
+            self.walk_group(subgroup, submenu)
+
+        for layer in group.findLayers():
+            if layer.parent() == group:
+                action = QAction(QgsIconUtils.iconForLayer(layer.layer()), layer.name(), self.iface.mainWindow())
+                action.triggered.connect(self.do_add_layer_node)
+                action.setProperty(self.PROPERTY_LAYER_NODE, layer)
+                submenu.addAction(action)
+
+        # Create action for add all in the group
+        actionAddAll = self.create_action("group.svg", "Aggiungi tutto da questo gruppo", self.do_add_layer_node)
+        actionAddAll.setProperty(self.PROPERTY_LAYER_NODE, group)
+        font = actionAddAll.font()
+        font.setBold(True)
+        actionAddAll.setFont(font)
+        submenu.addAction(actionAddAll)
+
+        return submenu
 
     def create_action(self, icon, name, callback):
-        action = QAction(QIcon(f":/plugins/pzp/icons/{icon}"), name, self.iface.mainWindow())
+        action = QAction(utils.get_icon(icon), name, self.iface.mainWindow())
         action.triggered.connect(callback)
-        self.iface.addPluginToMenu("PZP", action)
         return action
 
-    def unload(self):
-        for action in self.toolbar.actions():
-            self.iface.removePluginMenu("PZP", action)
-            del action
+    def create_submenu(self, icon, name, parent_menu):
+        submenu = parent_menu.addMenu(name)
+        submenu.setIcon(utils.get_icon(icon))
+        return submenu
 
+    def unload(self):
+        # Clear PZP menu
+        menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
+        menu_pzp.clear()
+
+        toolbar_actions = self.toolbar.actions()
+        for action in toolbar_actions:
+            self.toolbar.removeAction(action)
         del self.toolbar
-        self.iface.unregisterOptionsWidgetFactory(self.options_factory)
 
     def do_add_process(self):
         dlg = AddProcessDialog(self.iface)
-        with utils.OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.WaitCursor):
             dlg.exec_()
 
     def do_add_basemaps(self):
-        with utils.OverrideCursor(Qt.WaitCursor):
-            utils.load_qlr_layer("mappe_base")
+        with OverrideCursor(Qt.WaitCursor):
+            utils.load_qlr_layer(self.QLR_FILENAME_MAPPE_BASE)
 
     def do_add_base_data_wms(self):
-        with utils.OverrideCursor(Qt.WaitCursor):
-            utils.load_qlr_layer("dati_base_wms")
+        with OverrideCursor(Qt.WaitCursor):
+            utils.load_qlr_layer(self.QLR_FILENAME_DATI_BASE_WMS)
 
     def do_add_base_data_wfs(self):
-        with utils.OverrideCursor(Qt.WaitCursor):
-            utils.load_qlr_layer("dati_base_wfs")
+        with OverrideCursor(Qt.WaitCursor):
+            utils.load_qlr_layer(self.QLR_FILENAME_DATI_BASE_WFS)
+
+    def do_add_layer_node(self):
+        with OverrideCursor(Qt.WaitCursor):
+            action = self.sender()
+            layerNode = action.property(self.PROPERTY_LAYER_NODE)
+
+            parentGroups = []
+            parentGroup = layerNode.parent()
+            while parentGroup and parentGroup.parent():
+                parentGroups.insert(0, parentGroup)
+                parentGroup = parentGroup.parent()
+
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeGroup:
+                parentGroups.append(layerNode)
+
+            projectParentGroup = QgsProject.instance().layerTreeRoot()
+            for newParentGroup in parentGroups:
+                groupAlreadyExists = False
+                for children in projectParentGroup.children():
+                    if children.name() == newParentGroup.name():
+                        projectParentGroup = children
+                        groupAlreadyExists = True
+                        break
+
+                if not groupAlreadyExists:
+                    projectParentGroup = projectParentGroup.addGroup(newParentGroup.name())
+
+            # We reached the inserting group -> add all subgroups and layers
+            # For group types...
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeGroup:
+                self.do_add_group_recursive(projectParentGroup, layerNode)
+
+            # ... and for layer types
+            else:
+                for children in projectParentGroup.children():
+                    if children.name() == layerNode.name():
+                        # Already existing
+                        return
+
+                # Sublayer
+                newLayer = layerNode.layer().clone()
+                projectParentGroup.addLayer(newLayer)
+                QgsProject.instance().layerStore().addMapLayer(newLayer)
+
+    def do_add_group_recursive(self, projectParentGroup, group):
+        for layerNode in group.children():
+            existingTreeElement = None
+            for children in projectParentGroup.children():
+                if children.name() == layerNode.name():
+                    existingTreeElement = children
+                    break
+
+            # Sublayer
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeLayer and existingTreeElement is None:
+                newLayer = layerNode.layer().clone()
+                projectParentGroup.addLayer(newLayer)
+                QgsProject.instance().layerStore().addMapLayer(newLayer)
+                continue
+
+            # Subgroup
+            if existingTreeElement is None:
+                existingTreeElement = projectParentGroup.addGroup(layerNode.name())
+            self.do_add_group_recursive(existingTreeElement, layerNode)
 
     def do_check_geometries(self):
         self.checks_dock = CheckResultsDock(self.iface)
@@ -113,7 +265,7 @@ class PZP:
         if isinstance(current_node, QgsLayerTreeGroup):
             # TODO: Check we have all the layers in the group
             dlg = PropagationDialog(self.iface, current_node)
-            with utils.OverrideCursor(Qt.WaitCursor):
+            with OverrideCursor(Qt.WaitCursor):
                 dlg.exec_()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
@@ -124,7 +276,7 @@ class PZP:
         if isinstance(current_node, QgsLayerTreeGroup):
             # TODO: Check we have all the layers in the group
             dlg = CalculationDialog(self.iface, current_node)
-            with utils.OverrideCursor(Qt.WaitCursor):
+            with OverrideCursor(Qt.WaitCursor):
                 dlg.exec_()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
@@ -159,21 +311,40 @@ class PZP:
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")
 
+    def placeholderMenuAboutToShow(self):
+        placeholderMenu = self.sender()
+        qlr_filename = placeholderMenu.property(self.PROPERTY_QLR_FILENAME)
 
-class PluginOptionsFactory(QgsOptionsWidgetFactory):
-    def __init__(self):
-        super().__init__()
+        project = None
+        if self.QLR_FILENAME_MAPPE_BASE == qlr_filename:
+            project = self.layerDefinitionProjectMappeBase
+        elif self.QLR_FILENAME_DATI_BASE_WMS == qlr_filename:
+            project = self.layerDefinitionProjectDatiBaseWMF
+        elif self.QLR_FILENAME_DATI_BASE_WFS == qlr_filename:
+            project = self.layerDefinitionProjectDatiBaseWFS
+        else:
+            QMessageBox.critical(self, "Unknown qlr filename", f"Unknown qlr filename {qlr_filename}")
 
-    def icon(self):
-        return QIcon("icons/my_plugin_icon.svg")
+        # Project already loaded
+        if project is not None:
+            return
 
-    def createWidget(self, parent):
-        return ConfigOptionsPage(parent)
+        with OverrideCursor(Qt.WaitCursor):
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_filename}.qlr")
 
+            project = QgsProject()
+            layerTreeRoot = project.layerTreeRoot()
 
-class ConfigOptionsPage(QgsOptionsPageWidget):
-    def __init__(self, parent):
-        super().__init__(parent)
-        layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout)
+            QgsLayerDefinition.loadLayerDefinition(qlr_file_path, project, layerTreeRoot)
+
+            if self.QLR_FILENAME_MAPPE_BASE == qlr_filename:
+                self.layerDefinitionProjectMappeBase = project
+            elif self.QLR_FILENAME_DATI_BASE_WMS == qlr_filename:
+                self.layerDefinitionProjectDatiBaseWMF = project
+            elif self.QLR_FILENAME_DATI_BASE_WFS == qlr_filename:
+                self.layerDefinitionProjectDatiBaseWFS = project
+
+            for group in layerTreeRoot.findGroups():
+                # Only one root group per .qlr is supported (thus return)
+                return self.walk_group(group, placeholderMenu)

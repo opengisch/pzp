@@ -15,7 +15,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QApplication
+from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.uic import loadUiType
 from qgis.utils import iface
 
@@ -82,12 +82,10 @@ def check_project():
                 if pzp_project_version in [
                     "0.0.2",
                 ]:  # TODO: actual version number
-                    return func(
-                        *args[:-1], **kwargs
-                    )  # TODO: Why there is a False as last argument?
+                    return func(*args[:-1], **kwargs)  # TODO: Why there is a False as last argument?
 
             push_error(
-                f"Il progetto corrente non è compatibile con questa versione del plugin:"
+                f"Il progetto corrente ({pzp_project_version}) non è compatibile con questa versione del plugin."
             )
             return
 
@@ -98,15 +96,10 @@ def check_project():
 
 def get_ui_class(ui_file):
     """Get UI Python class from .ui file.
-       Can be filename.ui or subdirectory/filename.ui
-    :param ui_file: The file of the ui in svir.ui
+    :param ui_file: The file of the u
     :type ui_file: str
     """
-    os.path.sep.join(ui_file.split("/"))
-    ui_file_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "ui", ui_file)
-    )
-    return loadUiType(ui_file_path)[0]
+    return loadUiType(ui_file)[0]
 
 
 def add_field_to_layer(layer, name, alias="", variant=QVariant.Int):
@@ -194,9 +187,8 @@ def load_qlr_layer(qlr_name, group=None):
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_name}.qlr")
-    QgsLayerDefinition().loadLayerDefinition(
-        qlr_file_path, QgsProject.instance(), group
-    )
+
+    QgsLayerDefinition.loadLayerDefinition(qlr_file_path, QgsProject.instance(), group)
 
 
 def create_group(name, root=None):
@@ -254,12 +246,6 @@ def create_filtered_layer_from_gpkg(gpkg_layer_name, gpkg_path, substring, name)
     gpkg_layer.setName(name)
     return gpkg_layer
 
-class OverrideCursor:
-    def __init__(self, cursor):
-        self.cursor = cursor
 
-    def __enter__(self):
-        QApplication.setOverrideCursor(self.cursor)
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        QApplication.restoreOverrideCursor()
+def get_icon(filename):
+    return QIcon(f":/plugins/pzp/icons/{filename}")
