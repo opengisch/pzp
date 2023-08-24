@@ -123,6 +123,7 @@ class PZP(QObject):
         placeholderMenu = self.create_submenu(icon_name, menu_name, menu_pzp)
         placeholderMenu.setProperty(self.PROPERTY_QLR_FILENAME, qlr_filename)
         placeholderMenu.aboutToShow.connect(self.placeholderMenuAboutToShow)
+        return placeholderMenu
 
     def walk_group(self, group, parent_menu, icon=None):
         if icon is None:
