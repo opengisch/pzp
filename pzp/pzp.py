@@ -129,9 +129,8 @@ class PZP(QObject):
         if icon is None:
             icon = "group.svg"
 
-        submenu = self.create_submenu(icon, group.name(), parent_menu)
-
         for subgroup in group.findGroups():
+            submenu = self.create_submenu(icon, subgroup.name(), parent_menu)
             self.walk_group(subgroup, submenu)
 
         for layer in group.findLayers():
@@ -139,7 +138,7 @@ class PZP(QObject):
                 action = QAction(QgsIconUtils.iconForLayer(layer.layer()), layer.name(), self.iface.mainWindow())
                 action.triggered.connect(self.do_add_layer_node)
                 action.setProperty(self.PROPERTY_LAYER_NODE, layer)
-                submenu.addAction(action)
+                parent_menu.addAction(action)
 
         # Create action for add all in the group
         actionAddAll = self.create_action("group.svg", "Aggiungi tutto da questo gruppo", self.do_add_layer_node)
@@ -147,9 +146,9 @@ class PZP(QObject):
         font = actionAddAll.font()
         font.setBold(True)
         actionAddAll.setFont(font)
-        submenu.addAction(actionAddAll)
+        parent_menu.addAction(actionAddAll)
 
-        return submenu
+        return parent_menu
 
     def create_action(self, icon, name, callback):
         action = QAction(utils.get_icon(icon), name, self.iface.mainWindow())
