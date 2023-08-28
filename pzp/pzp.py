@@ -212,6 +212,8 @@ class PZP(QObject):
 
                 if not groupAlreadyExists:
                     projectParentGroup = projectParentGroup.addGroup(newParentGroup.name())
+                    projectParentGroup.setItemVisibilityChecked(newParentGroup.itemVisibilityChecked())
+                    projectParentGroup.setExpanded(newParentGroup.isExpanded())
 
             # We reached the inserting group -> add all subgroups and layers
             # For group types...
@@ -227,7 +229,9 @@ class PZP(QObject):
 
                 # Sublayer
                 newLayer = layerNode.layer().clone()
-                projectParentGroup.addLayer(newLayer)
+                newLayerNode = projectParentGroup.addLayer(newLayer)
+                newLayerNode.setItemVisibilityChecked(layerNode.itemVisibilityChecked())
+                newLayerNode.setExpanded(layerNode.isExpanded())
                 QgsProject.instance().layerStore().addMapLayer(newLayer)
 
     def do_add_group_recursive(self, projectParentGroup, group):
@@ -241,13 +245,17 @@ class PZP(QObject):
             # Sublayer
             if layerNode.nodeType() == QgsLayerTreeNode.NodeLayer and existingTreeElement is None:
                 newLayer = layerNode.layer().clone()
-                projectParentGroup.addLayer(newLayer)
+                newLayerNode = projectParentGroup.addLayer(newLayer)
+                newLayerNode.setItemVisibilityChecked(layerNode.itemVisibilityChecked())
+                newLayerNode.setExpanded(layerNode.isExpanded())
                 QgsProject.instance().layerStore().addMapLayer(newLayer)
                 continue
 
             # Subgroup
             if existingTreeElement is None:
                 existingTreeElement = projectParentGroup.addGroup(layerNode.name())
+                projectParentGroup.setItemVisibilityChecked(layerNode.itemVisibilityChecked())
+                existingTreeElement.setExpanded(layerNode.isExpanded())
             self.do_add_group_recursive(existingTreeElement, layerNode)
 
     def do_check_geometries(self):
