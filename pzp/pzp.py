@@ -172,8 +172,7 @@ class PZP(QObject):
 
     def do_add_process(self):
         dlg = AddProcessDialog(self.iface)
-        with OverrideCursor(Qt.WaitCursor):
-            dlg.exec_()
+        dlg.exec_()
 
     def do_add_basemaps(self):
         with OverrideCursor(Qt.WaitCursor):
