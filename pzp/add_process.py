@@ -15,6 +15,10 @@ class AddProcessDialog(QDialog, FORM_CLASS):
     def __init__(self, iface, parent=None):
         QDialog.__init__(self, parent)
         self.setupUi(self)
+
+        self._gpkg_path = str()
+        self._area_gpkg_layer = None
+
         self.buttonBox.accepted.disconnect()
         self.buttonBox.clicked.connect(self.button_box_clicked)
 
@@ -24,58 +28,153 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         self.file_widget.setFilter("*.gpkg;;*.GPKG")
 
     def button_box_clicked(self, button):
-        if self.buttonBox.buttonRole(button) == QDialogButtonBox.ApplyRole:
+        if self.buttonBox.buttonRole(button) == QDialogButtonBox.AcceptRole:
             process_type = self.process_cbox.currentData()
-            add_process(process_type, self.file_widget.filePath())
-        elif self.buttonBox.buttonRole(button) == QDialogButtonBox.AcceptRole:
-            process_type = self.process_cbox.currentData()
-            add_process(process_type, self.file_widget.filePath())
-            self.close()
+            self._add_process(process_type, self.file_widget.filePath())
+
+        self.close()
+
+    def _add_process(self, process_type, gpkg_directory_path):
+        # TODO: docstring process_type is the process code
+        # TODO: manage different process_types
+
+        timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
+        self._gpkg_path = os.path.join(gpkg_directory_path, f"data_{process_type}_{timestamp}.gpkg")
+        group_name = domains.PROCESS_TYPES[process_type]
+
+        project = QgsProject.instance()
+
+        root = QgsProject.instance().layerTreeRoot()
+
+        group = utils.create_group(group_name, root)
+
+        area_layer = utils.create_layer("Area di studio")
+        QgsExpressionContextUtils.setLayerVariable(area_layer, "pzp_layer", "area")
+        QgsExpressionContextUtils.setLayerVariable(area_layer, "pzp_process", process_type)
+
+        utils.add_field_to_layer(area_layer, "commento", "Osservazione o ev. commento", QVariant.String)
+
+        utils.add_field_to_layer(area_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
+        utils.set_value_map_to_field(area_layer, "proc_parz", domains.PROCESS_TYPES)
+
+        utils.add_field_to_layer(area_layer, "fonte_proc", "Fonte del processo (es. nome riale)", QVariant.String)
+
+        utils.set_qml_style(area_layer, "area")
+        utils.set_not_null_constraint_to_field(area_layer, "fonte_proc")
+        utils.set_unique_constraint_to_field(area_layer, "fonte_proc")
+        utils.set_default_value_to_field(area_layer, "proc_parz", "@pzp_process")
+        utils.set_not_null_constraint_to_field(area_layer, "proc_parz")
+        utils.remove_unique_constraint_to_field(area_layer, "proc_parz")
+        utils.add_layer_to_gpkg(area_layer, self._gpkg_path)
+        self._area_gpkg_layer = utils.load_gpkg_layer(area_layer.name(), self._gpkg_path)
+        project.addMapLayer(self._area_gpkg_layer, False)
+        group.addLayer(self._area_gpkg_layer)
+        options = self._area_gpkg_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
+
+        if process_type == 3000:  # Caduta sassi
+            self._add_process_caduta_sassi(process_type, group)
+
         else:
-            self.close()
+            intensity_layer = utils.create_layer("Intensità completa")
 
+            utils.add_field_to_layer(intensity_layer, "commento", "Osservazione o ev. commento", QVariant.String)
+            utils.add_field_to_layer(
+                intensity_layer,
+                "periodo_ritorno",
+                "Periodo di ritorno (es. 30, 100, 300, 99999)",
+                QVariant.Int,
+            )
+            utils.add_field_to_layer(
+                intensity_layer,
+                "classe_intensita",
+                "Intensità/impatto del processo",
+                QVariant.Int,
+            )
+            utils.add_field_to_layer(intensity_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
+            utils.add_field_to_layer(
+                intensity_layer,
+                "fonte_proc",
+                "Fonte del processo (es. nome riale)",
+                QVariant.String,
+            )
 
-def add_process(process_type, gpkg_directory_path):
-    # TODO: docstring process_type is the process code
-    # TODO: manage different process_types
+            utils.set_qml_style(intensity_layer, "intensity")
+            utils.set_expression_constraint_to_field(intensity_layer, "periodo_ritorno", '"periodo_ritorno" > 0')
+            utils.set_value_map_to_field(intensity_layer, "classe_intensita", domains.INTENSITIES)
+            utils.set_not_null_constraint_to_field(intensity_layer, "classe_intensita")
+            utils.set_value_map_to_field(intensity_layer, "proc_parz", domains.PROCESS_TYPES)
+            utils.set_default_value_to_field(intensity_layer, "proc_parz", "@pzp_process")
+            utils.set_not_null_constraint_to_field(intensity_layer, "fonte_proc")
 
-    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
-    gpkg_path = os.path.join(gpkg_directory_path, f"data_{process_type}_{timestamp}.gpkg")
-    group_name = domains.PROCESS_TYPES[process_type]
+            utils.set_value_relation_field(
+                intensity_layer, "fonte_proc", self._area_gpkg_layer, "fonte_proc", "fonte_proc"
+            )
 
-    project = QgsProject.instance()
+            utils.remove_unique_constraint_to_field(intensity_layer, "fonte_proc")
+            utils.remove_unique_constraint_to_field(intensity_layer, "classe_intensita")
+            utils.remove_unique_constraint_to_field(intensity_layer, "periodo_ritorno")
 
-    root = QgsProject.instance().layerTreeRoot()
+            utils.add_layer_to_gpkg(intensity_layer, self._gpkg_path)
+            gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), self._gpkg_path)
+            project.addMapLayer(gpkg_layer, False)
 
-    group = utils.create_group(group_name, root)
+            QgsExpressionContextUtils.setLayerVariable(gpkg_layer, "pzp_layer", "intensity")
+            QgsExpressionContextUtils.setLayerVariable(gpkg_layer, "pzp_process", process_type)
 
-    area_layer = utils.create_layer("Area di studio")
-    QgsExpressionContextUtils.setLayerVariable(area_layer, "pzp_layer", "area")
-    QgsExpressionContextUtils.setLayerVariable(area_layer, "pzp_process", process_type)
+            group.addLayer(gpkg_layer)
+            options = gpkg_layer.geometryOptions()
+            options.setGeometryPrecision(0.001)
+            options.setRemoveDuplicateNodes(True)
+            options.setGeometryChecks(["QgsIsValidCheck"])
 
-    utils.add_field_to_layer(area_layer, "commento", "Osservazione o ev. commento", QVariant.String)
+            group_intensity_filtered = utils.create_group("Intensità (con filtri x visualizzazione scenari)", group)
+            group_intensity_filtered.setExpanded(True)
 
-    utils.add_field_to_layer(area_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
-    utils.set_value_map_to_field(area_layer, "proc_parz", domains.PROCESS_TYPES)
+            if process_type in [2001, 2002, 3000, 4100, 4200]:
+                filter_params = [
+                    ("\"periodo_ritorno\"='30'", "T 30"),
+                    ("\"periodo_ritorno\"='100'", "T 100"),
+                    ("\"periodo_ritorno\"='300'", "T 300"),
+                    ("\"periodo_ritorno\">'300'", "T >300"),
+                ]
+            else:
+                filter_params = [
+                    ("\"periodo_ritorno\"='30'", "HQ 030"),
+                    ("\"periodo_ritorno\"='100'", "HQ 100"),
+                    ("\"periodo_ritorno\"='300'", "HQ 300"),
+                    ("\"periodo_ritorno\">'300'", "HQ >300"),
+                ]
 
-    utils.add_field_to_layer(area_layer, "fonte_proc", "Fonte del processo (es. nome riale)", QVariant.String)
+            for param in filter_params:
+                gpkg_layer = utils.create_filtered_layer_from_gpkg(
+                    intensity_layer.name(),
+                    self._gpkg_path,
+                    param[0],
+                    param[1],
+                )
 
-    utils.set_qml_style(area_layer, "area")
-    utils.set_not_null_constraint_to_field(area_layer, "fonte_proc")
-    utils.set_unique_constraint_to_field(area_layer, "fonte_proc")
-    utils.set_default_value_to_field(area_layer, "proc_parz", "@pzp_process")
-    utils.set_not_null_constraint_to_field(area_layer, "proc_parz")
-    utils.remove_unique_constraint_to_field(area_layer, "proc_parz")
-    utils.add_layer_to_gpkg(area_layer, gpkg_path)
-    area_gpkg_layer = utils.load_gpkg_layer(area_layer.name(), gpkg_path)
-    project.addMapLayer(area_gpkg_layer, False)
-    group.addLayer(area_gpkg_layer)
-    options = area_gpkg_layer.geometryOptions()
-    options.setGeometryPrecision(0.001)
-    options.setRemoveDuplicateNodes(True)
-    options.setGeometryChecks(["QgsIsValidCheck"])
+                project.addMapLayer(gpkg_layer, False)
+                group_intensity_filtered.addLayer(gpkg_layer)
+                layer_node = group.findLayer(gpkg_layer.id())
+                layer_node.setExpanded(False)
+                layer_node.setItemVisibilityChecked(False)
 
-    if process_type == 3000:  # Caduta sassi
+    def _add_process_caduta_sassi(self, process_type, group):
+        zone_di_stacco_layer = utils.create_layer("Zone di stacco")
+
+        utils.add_field_to_layer(zone_di_stacco_layer, "nome", "Nome", QVariant.String)
+        utils.add_field_to_layer(zone_di_stacco_layer, "osservazioni", "Osservazioni", QVariant.String)
+
+        utils.add_layer_to_gpkg(zone_di_stacco_layer, self._gpkg_path)
+        zone_di_stacco_gpkg_layer = utils.load_gpkg_layer(zone_di_stacco_layer.name(), self._gpkg_path)
+
+        project = QgsProject.instance()
+        project.addMapLayer(zone_di_stacco_gpkg_layer, False)
+        group.addLayer(zone_di_stacco_gpkg_layer)
+
         propagation_layer = utils.create_layer("Probabilità di propagazione (tutti gli scenari)", "LineString")
 
         utils.add_field_to_layer(propagation_layer, "osservazioni", "Osservazioni", QVariant.String)
@@ -95,11 +194,12 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_qml_style(propagation_layer, "propagation")
         utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
         utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
-        utils.set_value_relation_field(propagation_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc")
+        utils.set_value_relation_field(propagation_layer, "fonte_proc", zone_di_stacco_gpkg_layer, "nome", "nome")
 
-        utils.add_layer_to_gpkg(propagation_layer, gpkg_path)
-        propagation_gpkg_layer = utils.load_gpkg_layer(propagation_layer.name(), gpkg_path)
+        utils.add_layer_to_gpkg(propagation_layer, self._gpkg_path)
+        propagation_gpkg_layer = utils.load_gpkg_layer(propagation_layer.name(), self._gpkg_path)
 
+        project = QgsProject.instance()
         project.addMapLayer(propagation_gpkg_layer, False)
 
         QgsExpressionContextUtils.setLayerVariable(propagation_gpkg_layer, "pzp_layer", "propagation")
@@ -127,7 +227,7 @@ def add_process(process_type, gpkg_directory_path):
         for param in filter_params:
             gpkg_layer = utils.create_filtered_layer_from_gpkg(
                 propagation_layer.name(),
-                gpkg_path,
+                self._gpkg_path,
                 param[0],
                 param[1],
             )
@@ -163,10 +263,10 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
 
         utils.set_qml_style(breaking_layer, "breaking")
-        utils.set_value_relation_field(breaking_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc")
+        utils.set_value_relation_field(breaking_layer, "fonte_proc", zone_di_stacco_gpkg_layer, "nome", "nome")
 
-        utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
-        breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
+        utils.add_layer_to_gpkg(breaking_layer, self._gpkg_path)
+        breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), self._gpkg_path)
         project.addMapLayer(breaking_gpkg_layer, False)
 
         QgsExpressionContextUtils.setLayerVariable(breaking_gpkg_layer, "pzp_layer", "breaking")
@@ -195,7 +295,7 @@ def add_process(process_type, gpkg_directory_path):
         for param in filter_params:
             gpkg_layer = utils.create_filtered_layer_from_gpkg(
                 breaking_layer.name(),
-                gpkg_path,
+                self._gpkg_path,
                 param[0],
                 param[1],
             )
@@ -205,88 +305,5 @@ def add_process(process_type, gpkg_directory_path):
                 utils.set_qml_style(added_layer, "breaking_without_no_impact")
             group_breaking_filtered.addLayer(added_layer)
             layer_node = group.findLayer(added_layer.id())
-            layer_node.setExpanded(False)
-            layer_node.setItemVisibilityChecked(False)
-
-    else:
-        intensity_layer = utils.create_layer("Intensità completa")
-
-        utils.add_field_to_layer(intensity_layer, "commento", "Osservazione o ev. commento", QVariant.String)
-        utils.add_field_to_layer(
-            intensity_layer,
-            "periodo_ritorno",
-            "Periodo di ritorno (es. 30, 100, 300, 99999)",
-            QVariant.Int,
-        )
-        utils.add_field_to_layer(
-            intensity_layer,
-            "classe_intensita",
-            "Intensità/impatto del processo",
-            QVariant.Int,
-        )
-        utils.add_field_to_layer(intensity_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
-        utils.add_field_to_layer(
-            intensity_layer,
-            "fonte_proc",
-            "Fonte del processo (es. nome riale)",
-            QVariant.String,
-        )
-
-        utils.set_qml_style(intensity_layer, "intensity")
-        utils.set_expression_constraint_to_field(intensity_layer, "periodo_ritorno", '"periodo_ritorno" > 0')
-        utils.set_value_map_to_field(intensity_layer, "classe_intensita", domains.INTENSITIES)
-        utils.set_not_null_constraint_to_field(intensity_layer, "classe_intensita")
-        utils.set_value_map_to_field(intensity_layer, "proc_parz", domains.PROCESS_TYPES)
-        utils.set_default_value_to_field(intensity_layer, "proc_parz", "@pzp_process")
-        utils.set_not_null_constraint_to_field(intensity_layer, "fonte_proc")
-
-        utils.set_value_relation_field(intensity_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc")
-
-        utils.remove_unique_constraint_to_field(intensity_layer, "fonte_proc")
-        utils.remove_unique_constraint_to_field(intensity_layer, "classe_intensita")
-        utils.remove_unique_constraint_to_field(intensity_layer, "periodo_ritorno")
-
-        utils.add_layer_to_gpkg(intensity_layer, gpkg_path)
-        gpkg_layer = utils.load_gpkg_layer(intensity_layer.name(), gpkg_path)
-        project.addMapLayer(gpkg_layer, False)
-
-        QgsExpressionContextUtils.setLayerVariable(gpkg_layer, "pzp_layer", "intensity")
-        QgsExpressionContextUtils.setLayerVariable(gpkg_layer, "pzp_process", process_type)
-
-        group.addLayer(gpkg_layer)
-        options = gpkg_layer.geometryOptions()
-        options.setGeometryPrecision(0.001)
-        options.setRemoveDuplicateNodes(True)
-        options.setGeometryChecks(["QgsIsValidCheck"])
-
-        group_intensity_filtered = utils.create_group("Intensità (con filtri x visualizzazione scenari)", group)
-        group_intensity_filtered.setExpanded(True)
-
-        if process_type in [2001, 2002, 3000, 4100, 4200]:
-            filter_params = [
-                ("\"periodo_ritorno\"='30'", "T 30"),
-                ("\"periodo_ritorno\"='100'", "T 100"),
-                ("\"periodo_ritorno\"='300'", "T 300"),
-                ("\"periodo_ritorno\">'300'", "T >300"),
-            ]
-        else:
-            filter_params = [
-                ("\"periodo_ritorno\"='30'", "HQ 030"),
-                ("\"periodo_ritorno\"='100'", "HQ 100"),
-                ("\"periodo_ritorno\"='300'", "HQ 300"),
-                ("\"periodo_ritorno\">'300'", "HQ >300"),
-            ]
-
-        for param in filter_params:
-            gpkg_layer = utils.create_filtered_layer_from_gpkg(
-                intensity_layer.name(),
-                gpkg_path,
-                param[0],
-                param[1],
-            )
-
-            project.addMapLayer(gpkg_layer, False)
-            group_intensity_filtered.addLayer(gpkg_layer)
-            layer_node = group.findLayer(gpkg_layer.id())
             layer_node.setExpanded(False)
             layer_node.setItemVisibilityChecked(False)
