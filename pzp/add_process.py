@@ -59,9 +59,15 @@ class AddProcessDialog(QDialog, FORM_CLASS):
 
         utils.add_field_to_layer(area_layer, "fonte_proc", "Fonte del processo (es. nome riale)", QVariant.String)
 
-        utils.set_qml_style(area_layer, "area")
-        utils.set_not_null_constraint_to_field(area_layer, "fonte_proc")
-        utils.set_unique_constraint_to_field(area_layer, "fonte_proc")
+        # For caduta sassi fonte_proc are multiple in separate layer
+        if process_type != 3000:  # Caduta sassi
+            utils.set_qml_style(area_layer, "area")
+
+            utils.set_not_null_constraint_to_field(area_layer, "fonte_proc")
+            utils.set_unique_constraint_to_field(area_layer, "fonte_proc")
+        else:
+            utils.set_qml_style(area_layer, "area_caduta_sassi")
+
         utils.set_default_value_to_field(area_layer, "proc_parz", "@pzp_process")
         utils.set_not_null_constraint_to_field(area_layer, "proc_parz")
         utils.remove_unique_constraint_to_field(area_layer, "proc_parz")
@@ -276,10 +282,9 @@ class AddProcessDialog(QDialog, FORM_CLASS):
             QVariant.String,
         )
         utils.add_field_to_layer(propagation_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int)
-        utils.set_qml_style(propagation_layer, "propagation")
+        utils.set_qml_style(propagation_layer, "propagation_caduta_sassi")
         utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
         utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
-        utils.set_value_relation_field(propagation_layer, "fonte_proc", zone_di_stacco_gpkg_layer, "nome", "nome")
 
         utils.add_layer_to_gpkg(propagation_layer, self._gpkg_path)
         propagation_gpkg_layer = utils.load_gpkg_layer(propagation_layer.name(), self._gpkg_path)
@@ -312,8 +317,7 @@ class AddProcessDialog(QDialog, FORM_CLASS):
 
         utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
 
-        utils.set_qml_style(breaking_layer, "breaking")
-        utils.set_value_relation_field(breaking_layer, "fonte_proc", zone_di_stacco_gpkg_layer, "nome", "nome")
+        utils.set_qml_style(breaking_layer, "breaking_caduta_sassi")
 
         utils.add_layer_to_gpkg(breaking_layer, self._gpkg_path)
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), self._gpkg_path)
