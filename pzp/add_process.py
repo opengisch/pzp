@@ -163,44 +163,10 @@ class AddProcessDialog(QDialog, FORM_CLASS):
                 layer_node.setItemVisibilityChecked(False)
 
     def _add_process_caduta_sassi(self, process_type, group):
-        zone_di_stacco_layer = utils.create_layer("Zone di stacco")
-
-        utils.add_field_to_layer(zone_di_stacco_layer, "nome", "Nome", QVariant.String)
-        utils.add_field_to_layer(zone_di_stacco_layer, "osservazioni", "Osservazioni", QVariant.String)
-
-        utils.add_layer_to_gpkg(zone_di_stacco_layer, self._gpkg_path)
-        zone_di_stacco_gpkg_layer = utils.load_gpkg_layer(zone_di_stacco_layer.name(), self._gpkg_path)
-
-        project = QgsProject.instance()
-        project.addMapLayer(zone_di_stacco_gpkg_layer, False)
+        zone_di_stacco_gpkg_layer = self._add_process_caduta_sassi_zone_di_stacco()
         group.addLayer(zone_di_stacco_gpkg_layer)
 
-        propagation_layer = utils.create_layer("Probabilità di propagazione (tutti gli scenari)", "LineString")
-
-        utils.add_field_to_layer(propagation_layer, "osservazioni", "Osservazioni", QVariant.String)
-        utils.add_field_to_layer(
-            propagation_layer,
-            "prob_propagazione",
-            "Probabilità propagazione",
-            QVariant.Int,
-        )
-        utils.add_field_to_layer(
-            propagation_layer,
-            "fonte_proc",
-            "Fonte del processo (es. nome riale)",
-            QVariant.String,
-        )
-        utils.add_field_to_layer(propagation_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int)
-        utils.set_qml_style(propagation_layer, "propagation")
-        utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
-        utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
-        utils.set_value_relation_field(propagation_layer, "fonte_proc", zone_di_stacco_gpkg_layer, "nome", "nome")
-
-        utils.add_layer_to_gpkg(propagation_layer, self._gpkg_path)
-        propagation_gpkg_layer = utils.load_gpkg_layer(propagation_layer.name(), self._gpkg_path)
-
-        project = QgsProject.instance()
-        project.addMapLayer(propagation_gpkg_layer, False)
+        propagation_gpkg_layer = self._add_process_caduta_sassi_propagation(zone_di_stacco_gpkg_layer)
 
         QgsExpressionContextUtils.setLayerVariable(propagation_gpkg_layer, "pzp_layer", "propagation")
         QgsExpressionContextUtils.setLayerVariable(propagation_gpkg_layer, "pzp_process", process_type)
@@ -226,48 +192,19 @@ class AddProcessDialog(QDialog, FORM_CLASS):
 
         for param in filter_params:
             gpkg_layer = utils.create_filtered_layer_from_gpkg(
-                propagation_layer.name(),
+                propagation_gpkg_layer.name(),
                 self._gpkg_path,
                 param[0],
                 param[1],
             )
 
-            project.addMapLayer(gpkg_layer, False)
+            QgsProject.instance().addMapLayer(gpkg_layer, False)
             group_propagation_filtered.addLayer(gpkg_layer)
             layer_node = group.findLayer(gpkg_layer.id())
             layer_node.setExpanded(False)
             layer_node.setItemVisibilityChecked(False)
 
-        breaking_layer = utils.create_layer("Probabilità di rottura (tutti gli scenari)")
-
-        utils.add_field_to_layer(breaking_layer, "osservazioni", "Osservazioni", QVariant.String)
-
-        utils.add_field_to_layer(breaking_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int)
-
-        utils.add_field_to_layer(
-            breaking_layer,
-            "classe_intensita",
-            "Intensità/impatto del processo",
-            QVariant.Int,
-        )
-
-        utils.add_field_to_layer(
-            breaking_layer,
-            "fonte_proc",
-            "Fonte del processo (es. nome riale)",
-            QVariant.String,
-        )
-
-        utils.add_field_to_layer(breaking_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
-
-        utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
-
-        utils.set_qml_style(breaking_layer, "breaking")
-        utils.set_value_relation_field(breaking_layer, "fonte_proc", zone_di_stacco_gpkg_layer, "nome", "nome")
-
-        utils.add_layer_to_gpkg(breaking_layer, self._gpkg_path)
-        breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), self._gpkg_path)
-        project.addMapLayer(breaking_gpkg_layer, False)
+        breaking_gpkg_layer = self._add_process_caduta_sassi_breaking(zone_di_stacco_gpkg_layer)
 
         QgsExpressionContextUtils.setLayerVariable(breaking_gpkg_layer, "pzp_layer", "breaking")
         QgsExpressionContextUtils.setLayerVariable(breaking_gpkg_layer, "pzp_process", process_type)
@@ -294,16 +231,92 @@ class AddProcessDialog(QDialog, FORM_CLASS):
 
         for param in filter_params:
             gpkg_layer = utils.create_filtered_layer_from_gpkg(
-                breaking_layer.name(),
+                breaking_gpkg_layer.name(),
                 self._gpkg_path,
                 param[0],
                 param[1],
             )
 
-            added_layer = project.addMapLayer(gpkg_layer, False)
+            added_layer = QgsProject.instance().addMapLayer(gpkg_layer, False)
             if param[2] is False:
                 utils.set_qml_style(added_layer, "breaking_without_no_impact")
             group_breaking_filtered.addLayer(added_layer)
             layer_node = group.findLayer(added_layer.id())
             layer_node.setExpanded(False)
             layer_node.setItemVisibilityChecked(False)
+
+    def _add_process_caduta_sassi_zone_di_stacco(self):
+        zone_di_stacco_layer = utils.create_layer("Zone di stacco")
+
+        utils.add_field_to_layer(zone_di_stacco_layer, "nome", "Nome", QVariant.String)
+        utils.add_field_to_layer(zone_di_stacco_layer, "osservazioni", "Tipo di scenario", QVariant.String)
+
+        utils.set_qml_style(zone_di_stacco_layer, "detachment_zone")
+
+        utils.add_layer_to_gpkg(zone_di_stacco_layer, self._gpkg_path)
+        zone_di_stacco_gpkg_layer = utils.load_gpkg_layer(zone_di_stacco_layer.name(), self._gpkg_path)
+
+        QgsProject.instance().addMapLayer(zone_di_stacco_gpkg_layer, False)
+        return zone_di_stacco_gpkg_layer
+
+    def _add_process_caduta_sassi_propagation(self, zone_di_stacco_gpkg_layer):
+        propagation_layer = utils.create_layer("Probabilità di propagazione (tutti gli scenari)", "LineString")
+
+        utils.add_field_to_layer(propagation_layer, "osservazioni", "Osservazioni", QVariant.String)
+        utils.add_field_to_layer(
+            propagation_layer,
+            "prob_propagazione",
+            "Probabilità propagazione",
+            QVariant.Int,
+        )
+        utils.add_field_to_layer(
+            propagation_layer,
+            "fonte_proc",
+            "Zona di stacco",
+            QVariant.String,
+        )
+        utils.add_field_to_layer(propagation_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int)
+        utils.set_qml_style(propagation_layer, "propagation")
+        utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
+        utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
+        utils.set_value_relation_field(propagation_layer, "fonte_proc", zone_di_stacco_gpkg_layer, "nome", "nome")
+
+        utils.add_layer_to_gpkg(propagation_layer, self._gpkg_path)
+        propagation_gpkg_layer = utils.load_gpkg_layer(propagation_layer.name(), self._gpkg_path)
+
+        QgsProject.instance().addMapLayer(propagation_gpkg_layer, False)
+        return propagation_gpkg_layer
+
+    def _add_process_caduta_sassi_breaking(self, zone_di_stacco_gpkg_layer):
+        breaking_layer = utils.create_layer("Probabilità di rottura (tutti gli scenari)")
+
+        utils.add_field_to_layer(breaking_layer, "osservazioni", "Osservazioni", QVariant.String)
+
+        utils.add_field_to_layer(breaking_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int)
+
+        utils.add_field_to_layer(
+            breaking_layer,
+            "classe_intensita",
+            "Intensità/impatto del processo",
+            QVariant.Int,
+        )
+
+        utils.add_field_to_layer(
+            breaking_layer,
+            "fonte_proc",
+            "Zone di stacco",
+            QVariant.String,
+        )
+
+        utils.add_field_to_layer(breaking_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
+
+        utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
+
+        utils.set_qml_style(breaking_layer, "breaking")
+        utils.set_value_relation_field(breaking_layer, "fonte_proc", zone_di_stacco_gpkg_layer, "nome", "nome")
+
+        utils.add_layer_to_gpkg(breaking_layer, self._gpkg_path)
+        breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), self._gpkg_path)
+
+        QgsProject.instance().addMapLayer(breaking_gpkg_layer, False)
+        return breaking_gpkg_layer
