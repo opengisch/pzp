@@ -4,7 +4,7 @@ from datetime import datetime
 from pzp_utils.processing import domains
 from qgis.core import QgsExpressionContextUtils, QgsProject
 from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox
+from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QMessageBox
 
 from pzp.utils import utils
 
@@ -30,7 +30,10 @@ class AddProcessDialog(QDialog, FORM_CLASS):
     def button_box_clicked(self, button):
         if self.buttonBox.buttonRole(button) == QDialogButtonBox.AcceptRole:
             process_type = self.process_cbox.currentData()
-            self._add_process(process_type, self.file_widget.filePath())
+            try:
+                self._add_process(process_type, self.file_widget.filePath())
+            except Exception as exception:
+                QMessageBox.critical(self, "Errore durante l'aggiunta del processo", "Dettagli:\n{}".format(exception))
 
         self.close()
 
