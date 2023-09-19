@@ -3,8 +3,9 @@ from datetime import datetime
 
 from pzp_utils.processing import domains
 from qgis.core import QgsExpressionContextUtils, QgsProject
+from qgis.gui import QgsFileWidget
 from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QMessageBox
+from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QMessageBox
 
 from pzp.utils import utils
 
@@ -25,7 +26,8 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         for process in domains.PROCESS_TYPES.items():
             self.process_cbox.addItem(process[1], process[0])
 
-        self.file_widget.setFilter("*.gpkg;;*.GPKG")
+        self.file_widget.setStorageMode(QgsFileWidget.GetDirectory)
+        self.file_widget.setOptions(QFileDialog.ShowDirsOnly)
 
     def button_box_clicked(self, button):
         if self.buttonBox.buttonRole(button) == QDialogButtonBox.AcceptRole:
