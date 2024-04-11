@@ -17,7 +17,7 @@ https://download.opengis.ch/repos/ticino/plugins.xml
 A questo punto è possibile installare il plugin chiamato `pzp`.
 
 !!! Nota
-    Richiede QGIS 3.28 Firenze (LTR) non testato per versioni superiori
+    Richiede QGIS 3.28 Firenze (LTR), non testato per versioni superiori.
 
 
 ## Funzionalità
