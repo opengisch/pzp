@@ -248,7 +248,7 @@ def calculate(process_type, layer_intensity):
         "native:dissolve",
         {
             "INPUT": result["OUTPUT"],
-            "FIELD": "matrice",
+            "FIELD": "matrice;fonte_proc",
             "SEPARATE_DISJOINT": False,
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
