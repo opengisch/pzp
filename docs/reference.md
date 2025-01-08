@@ -3,7 +3,9 @@
 ## Versioni
 
 | Versione | Data pubblicazione | Descrizione                                                                    |
-|----------|--------------------|--------------------------------------------------------------------------------|
+| -------- | ------------------ | ------------------------------------------------------------------------------ |
+| 1.4.0    | 07.01.2025         | Risolto bug soltanto le zone con pericolo elevato vengono sottratte            |
+| 1.3.5    | 15.09.2023         | Aggiornati i gruppi/layer predefiniti per "Mappe base", "Dati base WMS e WFS"  |
 | 1.2.5    | 16.06.2023         | Migliora simbologia                                                            |
 | 1.2.4    | 16.06.2023         | Utilizza algoritmo fondi per area                                              |
 | 1.2.3    | 07.06.2023         | Miglioramento simbologia                                                       |
@@ -60,7 +62,7 @@
 ### Probabilità di evento
 
 | Codice | Descrizione |
-|--------|-------------|
+| ------ | ----------- |
 | 1000   | Molto bassa |
 | 1001   | Bassa       |
 | 1002   | Media       |
@@ -69,7 +71,7 @@
 ### Intensità
 
 | Codice | Descrizione      |
-|--------|------------------|
+| ------ | ---------------- |
 | 1000   | Nessun impatto   |
 | 1001   | Impatto presente |
 | 1002   | Debole           |
@@ -79,7 +81,7 @@
 ### Pericolo
 
 | Codice | Descrizione      |
-|--------|------------------|
+| ------ | ---------------- |
 | 1000   | Non in pericolo  |
 | 1001   | Pericolo residuo |
 | 1002   | Basso            |
@@ -89,7 +91,7 @@
 ### Tipo di processo
 
 | Codice | Descrizione                             |
-|--------|-----------------------------------------|
+| ------ | --------------------------------------- |
 | 1110   | Alluvionamento corso d'acqua minore     |
 | 1120   | Alluvionamento corso d'acqua principale |
 | 1200   | Flusso detrito                          |
@@ -101,9 +103,10 @@
 | 4200   | Valanga polverosa                       |
 
 ## Variabili dei layer
+
 I layer generati dal plugin hanno le seguenti variabili definite:
 
 | Variabile   | Descrizione                              |
-|-------------|------------------------------------------|
+| ----------- | ---------------------------------------- |
 | pzp_layer   | tipo di layer (es. intensity)            |
 | pzp_process | codice del processo del layer (es. 1110) |
