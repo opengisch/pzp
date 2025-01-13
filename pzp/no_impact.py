@@ -25,7 +25,7 @@ def guess_params(group):
 
 def calculate(process_type, layer_intensity, layer_area):
     result = processing.run(
-        "pzp:no_impact",
+        "pzp_utils:no_impact",
         {
             "AREA_LAYER": layer_area.id(),
             "AREA_PROCESS_SOURCE_FIELD": "fonte_proc",
@@ -38,7 +38,7 @@ def calculate(process_type, layer_intensity, layer_area):
     )
 
     result = processing.run(
-        "pzp:fix_geometries",
+        "pzp_utils:fix_geometries",
         {
             "INPUT": result["OUTPUT"],
             "OUTPUT": "TEMPORARY_OUTPUT",

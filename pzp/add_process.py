@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from pzp_utils.processing import domains
+from pzp.processing import domains
 from qgis.core import QgsExpressionContextUtils, QgsProject
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox

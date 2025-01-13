@@ -2,6 +2,7 @@ import os
 import webbrowser
 
 from qgis.core import (
+    QgsApplication,
     QgsExpressionContextUtils,
     QgsIconUtils,
     QgsLayerDefinition,
@@ -16,6 +17,7 @@ from pzp import a_b, no_impact
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationDialog, PropagationDialog
 from pzp.check_dock import CheckResultsDock
+from pzp.processing.provider import Provider
 from pzp.ui.resources import *  # noqa
 from pzp.utils import utils
 from pzp.utils.override_cursor import OverrideCursor
@@ -36,11 +38,15 @@ class PZP(QObject):
         self.iface = iface
         self.toolbar = None
 
+        self._provider = Provider()  # Processing provider
+
         self.layerDefinitionProjectMappeBase = None
         self.layerDefinitionProjectDatiBaseWMF = None
         self.layerDefinitionProjectDatiBaseWFS = None
 
     def initGui(self):
+        self.initProcessing()
+
         self.toolbar = self.iface.addToolBar(PLUGIN_NAME)
         self.toolbar.setObjectName("PZPToolbar")
         self.toolbar.setToolTip(f"{PLUGIN_NAME} Toolbar")
@@ -88,6 +94,10 @@ class PZP(QObject):
 
         menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
         menu_pzp.setIcon(utils.get_icon("landslide.png"))
+
+    def initProcessing(self):
+        """Create the Processing provider"""
+        QgsApplication.processingRegistry().addProvider(self._provider)
 
     def init_geodata_menu(self):
         menuMappeBase = self.init_geodata_menu_qlr(self.QLR_FILENAME_MAPPE_BASE, "world.png", "Aggiungi mappe base")
@@ -169,6 +179,8 @@ class PZP(QObject):
         for action in toolbar_actions:
             self.toolbar.removeAction(action)
         del self.toolbar
+
+        QgsApplication.processingRegistry().removeProvider(self._provider)
 
     def do_add_process(self):
         dlg = AddProcessDialog(self.iface)
