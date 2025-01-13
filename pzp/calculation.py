@@ -2,7 +2,7 @@ import datetime
 import os
 import traceback
 
-from pzp_utils.processing import domains
+from pzp.processing import domains
 from qgis import processing
 from qgis.core import (
     QgsApplication,
@@ -61,7 +61,7 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
     data_provider = None
     data_provider = layer_breaking.dataProvider()
     result = processing.run(
-        "pzp:propagation",
+        "pzp_utils:propagation",
         {
             "BREAKING_LAYER": layer_breaking.id(),
             "BREAKING_FIELD": "prob_rottura",
@@ -84,7 +84,7 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
 
     # Clippa per periodo di ritorno
     result = processing.run(
-        "pzp:remove_overlappings",
+        "pzp_utils:remove_overlappings",
         {
             "INPUT": result["OUTPUT"],
             "INTENSITY_FIELD": "classe_intensita",
@@ -226,7 +226,7 @@ def calculate(process_type, layer_intensity):
     )
 
     result = processing.run(
-        "pzp:fix_geometries",
+        "pzp_utils:fix_geometries",
         {
             "INPUT": result["OUTPUT"],
             "OUTPUT": "TEMPORARY_OUTPUT",
@@ -234,7 +234,7 @@ def calculate(process_type, layer_intensity):
     )
 
     result = processing.run(
-        "pzp:apply_matrix",
+        "pzp_utils:apply_matrix",
         {
             "INPUT": result["OUTPUT"],
             "PERIOD_FIELD": "periodo_ritorno",
@@ -255,7 +255,7 @@ def calculate(process_type, layer_intensity):
     )
 
     result = processing.run(
-        "pzp:danger_zones",
+        "pzp_utils:danger_zones",
         {
             "INPUT": result["OUTPUT"],
             "MATRIX_FIELD": "matrice",

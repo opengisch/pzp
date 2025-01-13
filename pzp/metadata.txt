@@ -9,6 +9,7 @@ email=info@opengis.ch
 repository=https://github.com/opengisch/pzp
 homepage=https://github.com/opengisch/pzp
 tracker=https://github.com/opengisch/pzp/issues
-hasProcessingProvider=no
 
-plugin_dependencies=pzp utils==v1.4.0
+hasProcessingProvider=yes
+experimental=False
+tags=pzp,pericolo,ticino,ch
