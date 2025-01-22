@@ -16,5 +16,6 @@ ENV LANG=C.UTF-8
 
 COPY ./ /usr/src/
 RUN chmod a+x /usr/src/.docker/run-docker-tests.sh
+RUN chmod a+x /usr/src/.docker/run-docker-tests-old.sh
 
 WORKDIR /
