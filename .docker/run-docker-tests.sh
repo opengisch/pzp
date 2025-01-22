@@ -18,5 +18,5 @@
 set -e
 
 pushd /usr/src/
-xvfb-run nose2
+xvfb-run pytest
 popd

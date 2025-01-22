@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        qgis_version: [latest,3.34.14-noble]  # QGIS 3.34.x and latest
+        qgis_version: [latest,3.34.14-noble,final-3_28_15]  # QGIS 3.28, 3.34.x and latest
     env:
       QGIS_TEST_VERSION: ${{ matrix.qgis_version }}
     steps:
@@ -26,21 +26,3 @@ jobs:
         run: docker build . -f .docker/Dockerfile -t docker_qgis --build-arg QGIS_TEST_VERSION=${QGIS_TEST_VERSION}
       - name: Test on QGIS
         run: docker run --rm -v $GITHUB_WORKSPACE:/usr/src docker_qgis bash /usr/src/.docker/run-docker-tests.sh
-
-  test-on-ubuntu-22-04:
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        qgis_version: [final-3_28_15]  # QGIS 3.28
-    env:
-      QGIS_TEST_VERSION: ${{ matrix.qgis_version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: Build docker image
-        run: docker build . -f .docker/Dockerfile -t docker_qgis --build-arg QGIS_TEST_VERSION=${QGIS_TEST_VERSION}
-      - name: Test on QGIS
-        run: docker run --rm -v $GITHUB_WORKSPACE:/usr/src docker_qgis bash /usr/src/.docker/run-docker-tests-old.sh
