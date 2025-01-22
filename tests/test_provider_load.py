@@ -1,5 +1,3 @@
-import nose2
-
 from qgis.core import QgsApplication
 from qgis.testing import unittest, start_app
 from pzp.processing.provider import Provider
@@ -23,7 +21,3 @@ class TestProviderLoad(unittest.TestCase):
     def tearDownClass(cls):
         print('INFO: Tear down test_provider_load')
         QgsApplication.processingRegistry().removeProvider(cls.provider)
-
-
-if __name__ == '__main__':
-    nose2.main()
