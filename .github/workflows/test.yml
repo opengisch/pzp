@@ -8,21 +8,28 @@ on:
     branches:
       - main
 
+env:
+  QGIS_TEST_VERSION: latest
+
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        qgis_version: [latest,3.34.14-noble,final-3_28_15]  # QGIS 3.28, 3.34.x and latest
+        qgis_version: [ latest,3.34.14-noble,final-3_28_15 ]  # QGIS 3.28, 3.34.x and latest
     env:
       QGIS_TEST_VERSION: ${{ matrix.qgis_version }}
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          submodules: recursive
-      - name: Build docker image
-        run: docker build . -f .docker/Dockerfile -t docker_qgis --build-arg QGIS_TEST_VERSION=${QGIS_TEST_VERSION}
-      - name: Test on QGIS
-        run: docker run --rm -v $GITHUB_WORKSPACE:/usr/src docker_qgis bash /usr/src/.docker/run-docker-tests.sh
+          submodules: true
+
+      - name: Unit tests
+        run: >-  # The pip install instruction was only added to support QGIS 3.28.x. It can be removed when removing that QGIS version.
+          docker run
+          -e PYTHONPATH=/usr/share/qgis/python/plugins
+          -v $(pwd):/usr/src
+          -w /usr/src qgis/qgis:${QGIS_TEST_VERSION}
+          sh -c 'pip3 install -r requirements.txt || pip3 install -r requirements.txt --break-system-packages;xvfb-run pytest'
