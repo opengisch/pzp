@@ -43,10 +43,9 @@ class PZP(QObject):
         self.layerDefinitionProjectMappeBase = None
         self.layerDefinitionProjectDatiBaseWMF = None
         self.layerDefinitionProjectDatiBaseWFS = None
-
-    def initGui(self):
         self.initProcessing()
 
+    def initGui(self):
         self.toolbar = self.iface.addToolBar(PLUGIN_NAME)
         self.toolbar.setObjectName("PZPToolbar")
         self.toolbar.setToolTip(f"{PLUGIN_NAME} Toolbar")
@@ -180,6 +179,9 @@ class PZP(QObject):
             self.toolbar.removeAction(action)
         del self.toolbar
 
+        self.unload_provider()
+
+    def unload_provider(self):
         QgsApplication.processingRegistry().removeProvider(self._provider)
 
     def do_add_process(self):
