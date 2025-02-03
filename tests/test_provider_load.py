@@ -18,6 +18,7 @@ def processing_provider():
     QgsApplication.processingRegistry().removeProvider(_provider)
 
 
+@pytest.mark.basic
 def test_provider_load(processing_provider):
     print(" [INFO] Validating provider load...")
     assert "PZP_UTILS" in [provider.name() for provider in QgsApplication.processingRegistry().providers()]
