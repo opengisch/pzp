@@ -4,7 +4,7 @@ from qgis.testing import start_app
 from qgis.testing.mocked import get_iface
 
 from pzp.calculation import CalculationDialog
-from tests.utils import get_copy_path, get_data_path, get_expected_path
+from tests.utils import get_copy_path, get_data_path
 
 start_app()
 import processing
@@ -21,8 +21,9 @@ def initialize_processing():
 @pytest.fixture(scope="module")
 def flusso_detrito_layer():
     print("\nINFO: Get layer copy")
-    yield QgsVectorLayer(
-        str(get_copy_path(get_data_path("riali_gambarogno_1200.gpkg"))) + "|layername=Intensità completa",
+    return QgsVectorLayer(
+        str(get_copy_path(get_data_path("riali_gambarogno_intensities.gpkg", "flusso_detritico")))
+        + "|layername=Intensità completa",
         "layer",
         "ogr",
     )
@@ -31,8 +32,9 @@ def flusso_detrito_layer():
 @pytest.fixture(scope="module")
 def flusso_detrito_expected_layer():
     print("\nINFO: Get read-only expected layer")
-    yield QgsVectorLayer(
-        str(get_expected_path("riali_gambarogno_1200.gpkg")) + "|layername=Pericolo 1200 20250204170251",
+    return QgsVectorLayer(
+        str(get_data_path("riali_gambarogno_zone_pericolo_expected.gpkg", "flusso_detritico"))
+        + "|layername=Pericolo 1200 20250204170251",
         "expected layer",
         "ogr",
     )
@@ -52,7 +54,7 @@ def plugin_instance():
 
 @pytest.mark.flusso_detrito
 def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_expected_layer):
-    print(" [INFO] Validating flusso detrito...")
+    print(" [INFO] Validating flusso di detrito...")
     process_type = 1200
 
     # Make sure we have valid input/expected data layers

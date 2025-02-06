@@ -5,20 +5,21 @@ from tempfile import gettempdir
 from typing import Optional
 
 
-def get_data_path(file_name: Optional[str] = "") -> Path:
+def get_data_path(file_name: Optional[str] = "", process_type: Optional[str] = "") -> Path:
     """
     Returns the path of the "data" dir for tests, or, if file_name is
     given, returns the file_name appended to the data dir for tests.
-    """
-    return Path.cwd() / "tests" / "data" / file_name if file_name else Path.cwd() / "tests" / "data"
 
+    In case that process_type is given, the file_name will be returned
+    as belonging to the process_type folder. A path to the process_type
+    folder may also be returned if process_type is the only parameter
+    given.
+    """
+    file_path = file_name if file_name else ""
+    if process_type:
+        file_path = Path(process_type) / file_name
 
-def get_expected_path(file_name: Optional[str] = "") -> Path:
-    """
-    Returns the path of the "expected" dir for tests, or, if file_name is
-    given, returns the file_name appended to the expected dir for tests.
-    """
-    return Path.cwd() / "tests" / "expected" / file_name if file_name else Path.cwd() / "tests" / "expected"
+    return Path.cwd() / "tests" / "data" / file_path
 
 
 def get_copy_path(file_path: Path) -> Path:
