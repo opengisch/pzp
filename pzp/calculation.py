@@ -2,7 +2,6 @@ import datetime
 import os
 import traceback
 
-from pzp.processing import domains
 from qgis import processing
 from qgis.core import (
     QgsApplication,
@@ -12,6 +11,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
+from pzp.processing import domains
 from pzp.utils import utils
 
 
@@ -175,7 +175,30 @@ class CalculationDialog:
         self.group = group
 
     def exec_(self):
-        guess_params(self.group)
+        process_type, layer_intensity = guess_params(self.group)
+        self.do_exec(process_type, layer_intensity)
+
+    def do_exec(self, process_type, layer_intensity):
+        try:
+            layer_pericolo = calculate(process_type, layer_intensity)
+        except QgsProcessingException as processingException:
+            utils.push_error(
+                "Errore di processing: {0}".format(str(processingException)), showMore=traceback.format_exc()
+            )
+            return None
+
+        except Exception as exception:
+            utils.push_error("Errore sconosciuto: {0}".format(str(exception)), showMore=traceback.format_exc())
+            return None
+
+        gpkg_path = layer_intensity.dataProvider().dataSourceUri().split("|")[0]
+        layer_name = f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+        save_layer(layer_pericolo, layer_name, gpkg_path)
+
+        new_layer = load_layer_to_project(process_type, gpkg_path, layer_name)
+        post_layer_configuration(process_type, new_layer)
+
+        return new_layer
 
 
 def guess_params(group):
@@ -192,30 +215,19 @@ def guess_params(group):
 
     if not layer_intensity:
         utils.push_error("Layer con le intensità non trovato", 3)
-        return
+        return None, None
 
     if not process_type:
         utils.push_error("Impossibile determinare il tipo di processo", 3)
-        return
+        return None, None
 
-    try:
-        calculate(process_type, layer_intensity)
-
-    except QgsProcessingException as processingException:
-        utils.push_error("Errore di processing: {0}".format(str(processingException)), showMore=traceback.format_exc())
-
-    except Exception as exception:
-        utils.push_error("Errore sconosciuto: {0}".format(str(exception)), showMore=traceback.format_exc())
+    return process_type, layer_intensity
 
 
 def calculate(process_type, layer_intensity):
     print(f"{process_type=}")
     print(f"{layer_intensity=}")
 
-    result = None
-    data_provider = None
-
-    data_provider = layer_intensity.dataProvider()
     result = processing.run(
         "native:extractbyexpression",
         {
@@ -272,11 +284,11 @@ def calculate(process_type, layer_intensity):
         },
     )
 
-    layer = result["OUTPUT"]
-    layer_name = f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-    layer.setName(layer_name)
+    return result["OUTPUT"]
 
-    gpkg_path = data_provider.dataSourceUri().split("|")[0]
+
+def save_layer(layer, layer_name, gpkg_path):
+    layer.setName(layer_name)
 
     # Save output layer to gpkg
     params = {
@@ -289,18 +301,25 @@ def calculate(process_type, layer_intensity):
     }
     processing.run("native:package", params)
 
+
+def load_layer_to_project(process_type, gpkg_path, layer_name):
     # Load layer from gpkg
     new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
     new_layer.setName(f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}")
 
     QgsProject.instance().layerTreeRoot()
-
     QgsProject.instance().addMapLayer(new_layer, True)
 
+    # Apply layer style
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
     new_layer.loadNamedStyle(qml_file_path)
 
+    return new_layer
+
+
+def post_layer_configuration(process_type, new_layer):
+    # Set geometry options and layer variables
     options = new_layer.geometryOptions()
     options.setGeometryPrecision(0.001)
     options.setRemoveDuplicateNodes(True)

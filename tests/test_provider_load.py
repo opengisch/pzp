@@ -1,23 +1,24 @@
+import pytest
 from qgis.core import QgsApplication
-from qgis.testing import unittest, start_app
+from qgis.testing import start_app
+
 from pzp.processing.provider import Provider
 
 start_app()
 
 
-class TestProviderLoad(unittest.TestCase):
+@pytest.fixture(scope="module")
+def processing_provider():
+    print("\n [INFO] Setting up test_provider_load")
+    _provider = Provider()  # Processing provider
+    QgsApplication.processingRegistry().addProvider(_provider)
+    yield _provider
 
-    @classmethod
-    def setUpClass(cls):
-        print('\nINFO: Set up test_provider_load')
-        cls.provider = Provider()  # Processing provider
-        QgsApplication.processingRegistry().addProvider(cls.provider)
+    print(" [INFO] Tearing down test_provider_load")
+    QgsApplication.processingRegistry().removeProvider(_provider)
 
-    def test_provider_load(self):
-        print('INFO: Validating provider load...')
-        self.assertIn("PZP_UTILS", [provider.name() for provider in QgsApplication.processingRegistry().providers()])
 
-    @classmethod
-    def tearDownClass(cls):
-        print('INFO: Tear down test_provider_load')
-        QgsApplication.processingRegistry().removeProvider(cls.provider)
+@pytest.mark.basic
+def test_provider_load(processing_provider):
+    print(" [INFO] Validating provider load...")
+    assert "PZP_UTILS" in [provider.name() for provider in QgsApplication.processingRegistry().providers()]
