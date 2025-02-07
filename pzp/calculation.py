@@ -182,8 +182,11 @@ class CalculationDialog:
         try:
             layer_pericolo = calculate(process_type, layer_intensity)
         except QgsProcessingException as processingException:
-            utils.push_error(
-                "Errore di processing: {0}".format(str(processingException)), showMore=traceback.format_exc()
+            utils.push_error_report(
+                "Calcula zone di pericolo",
+                "Process: {}".format(domains.PROCESS_TYPES.get(process_type, "Unknown process!")),
+                f"Description: \n{processingException}" if "traceback" not in str(processingException).lower() else "",
+                traceback.format_exc(),
             )
             return None
 
@@ -228,7 +231,7 @@ def calculate(process_type, layer_intensity):
     print(f"{process_type=}")
     print(f"{layer_intensity=}")
 
-    result = processing.run(
+    result_01 = processing.run(
         "native:extractbyexpression",
         {
             "INPUT": layer_intensity.id(),
@@ -237,54 +240,58 @@ def calculate(process_type, layer_intensity):
         },
     )
 
-    result = processing.run(
+    result_02 = processing.run(
         "pzp_utils:fix_geometries",
         {
-            "INPUT": result["OUTPUT"],
+            "INPUT": result_01["OUTPUT"],
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
 
-    result = processing.run(
-        "pzp_utils:apply_matrix",
-        {
-            "INPUT": result["OUTPUT"],
-            "PERIOD_FIELD": "periodo_ritorno",
-            "INTENSITY_FIELD": "classe_intensita",
-            "MATRIX": domains.MATRICES[process_type],
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
+    try:
+        result_03 = processing.run(
+            "pzp_utils:apply_matrix",
+            {
+                "INPUT": result_02["OUTPUT"],
+                "PERIOD_FIELD": "periodo_ritorno",
+                "INTENSITY_FIELD": "classe_intensita",
+                "MATRIX": domains.MATRICES[process_type],
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
+    except (QgsProcessingException, Exception) as e:
+        # from None overrides the first exception to avoid a duplicate exception being raised
+        raise QgsProcessingException("The algorithm 'pzp_utils:apply_matrix' failed! " + str(e)) from None
 
-    result = processing.run(
+    result_04 = processing.run(
         "native:dissolve",
         {
-            "INPUT": result["OUTPUT"],
+            "INPUT": result_03["OUTPUT"],
             "FIELD": "matrice;fonte_proc",
             "SEPARATE_DISJOINT": False,
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
 
-    result = processing.run(
+    result_05 = processing.run(
         "pzp_utils:danger_zones",
         {
-            "INPUT": result["OUTPUT"],
+            "INPUT": result_04["OUTPUT"],
             "MATRIX_FIELD": "matrice",
             "PROCESS_SOURCE_FIELD": "fonte_proc",
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
 
-    result = processing.run(
+    result_06 = processing.run(
         "native:fixgeometries",
         {
-            "INPUT": result["OUTPUT"],
+            "INPUT": result_05["OUTPUT"],
             "OUTPUT": "TEMPORARY_OUTPUT",
         },
     )
 
-    return result["OUTPUT"]
+    return result_06["OUTPUT"]
 
 
 def save_layer(layer, layer_name, gpkg_path):
