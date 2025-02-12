@@ -1,5 +1,6 @@
 import os
-from functools import wraps
+from functools import partial, wraps
+from pathlib import Path
 
 from qgis import processing
 from qgis.core import (
@@ -16,6 +17,7 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QPushButton
 from qgis.PyQt.uic import loadUiType
 from qgis.utils import iface
 
@@ -30,6 +32,24 @@ def push_warning(message, time=0, showMore=""):
 
 def push_error(message, time=0, showMore=""):
     _get_iface().messageBar().pushMessage("pzp", message, showMore, Qgis.Critical, time)
+
+
+def push_error_report(title, subtitle="", description="", traceback=""):
+    widget = iface.messageBar().createMessage("PZP", f"There was a problem running the <b>'{title}'</b> tool.")
+
+    button = QPushButton(widget)
+    button.setText("Show more...")
+    button.pressed.connect(partial(_show_error_dialog, title, subtitle, description, traceback))
+    widget.layout().addWidget(button)
+
+    iface.messageBar().pushWidget(widget, Qgis.Critical, 0)
+
+
+def _show_error_dialog(title, subtitle="", description="", traceback=""):
+    from pzp.gui.error_dialog import ErrorDialog
+
+    dlg = ErrorDialog(title, subtitle, description, traceback)
+    dlg.exec_()
 
 
 def _get_iface():
@@ -249,3 +269,7 @@ def create_filtered_layer_from_gpkg(gpkg_layer_name, gpkg_path, substring, name)
 
 def get_icon(filename):
     return QIcon(f":/plugins/pzp/icons/{filename}")
+
+
+def get_plugin_path() -> Path:
+    return Path(__file__).parent.parent

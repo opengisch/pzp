@@ -1,47 +1,47 @@
 <RCC>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/check.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/gear.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/settings.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/help.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/green_check.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/red_cross.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/world.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/ruler.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/landslide.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/process.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/propagation.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/ok_hand.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/no_impact.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/a_b.png</file>
-    </qresource>
-    <qresource prefix="/plugins/pzp/" >
-        <file>../icons/b_a.png</file>
-    </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/check.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/gear.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/settings.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/help.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/green_check.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/red_cross.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/world.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/ruler.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/landslide.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/process.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/propagation.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/ok_hand.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/no_impact.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/a_b.png</file>
+  </qresource>
+  <qresource prefix="/plugins/pzp/">
+    <file>../icons/b_a.png</file>
+  </qresource>
 </RCC>
