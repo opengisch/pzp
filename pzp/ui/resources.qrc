@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="/plugins/pzp/">
-    <file>../icons/error.png</file>
     <file>../icons/check.png</file>
   </qresource>
   <qresource prefix="/plugins/pzp/">

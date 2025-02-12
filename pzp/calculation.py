@@ -183,7 +183,7 @@ class CalculationDialog:
             layer_pericolo = calculate(process_type, layer_intensity)
         except QgsProcessingException as processingException:
             utils.push_error_report(
-                "Calcula zone di pericolo",
+                "Calcolo zone di pericolo",
                 "Process: {}".format(domains.PROCESS_TYPES.get(process_type, "Unknown process!")),
                 f"Description: \n{processingException}" if "traceback" not in str(processingException).lower() else "",
                 traceback.format_exc(),
@@ -260,8 +260,7 @@ def calculate(process_type, layer_intensity):
             },
         )
     except (QgsProcessingException, Exception) as e:
-        # from None overrides the first exception to avoid a duplicate exception being raised
-        raise QgsProcessingException("The algorithm 'pzp_utils:apply_matrix' failed! " + str(e)) from None
+        raise QgsProcessingException("The algorithm 'pzp_utils:apply_matrix' failed! " + str(e))
 
     result_04 = processing.run(
         "native:dissolve",

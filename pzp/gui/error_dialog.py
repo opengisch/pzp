@@ -1,5 +1,6 @@
 from qgis.core import QgsApplication
-from qgis.PyQt.QtWidgets import QApplication, QDialog
+from qgis.PyQt.QtCore import QSize
+from qgis.PyQt.QtWidgets import QApplication, QDialog, QStyle
 
 from pzp.utils import utils
 
@@ -20,6 +21,10 @@ class ErrorDialog(QDialog, FORM_CLASS):
         self.lbl_subtitle.setText(subtitle)
         self.lbl_description.setText(description)
         self.txt_traceback.setText(traceback)
+
+        size = QSize(64, 64)
+        pixmap = QApplication.style().standardIcon(QStyle.SP_MessageBoxCritical).pixmap(size)
+        self.lbl_icon.setPixmap(pixmap)
 
         self.btn_copy.setIcon(QgsApplication.getThemeIcon("/mActionEditCopy.svg"))
         self.btn_copy.clicked.connect(self._copy_to_clipboard)
