@@ -173,17 +173,24 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
 class CalculationDialog:
     def __init__(self, iface, group, parent=None):
         self.group = group
+        self.tool_name = "Calcolo zone di pericolo"
 
-    def exec_(self):
+    def exec_(self, force=False):
         process_type, layer_intensity = guess_params(self.group)
-        self.do_exec(process_type, layer_intensity)
+
+        check_ok = False
+        if not force:
+            check_ok = utils.check_inputs(self.tool_name, layer_intensity, self.exec_)
+
+        if force or check_ok:
+            self.do_exec(process_type, layer_intensity)
 
     def do_exec(self, process_type, layer_intensity):
         try:
             layer_pericolo = calculate(process_type, layer_intensity)
         except QgsProcessingException as processingException:
             utils.push_error_report(
-                "Calcolo zone di pericolo",
+                self.tool_name,
                 "Process: {}".format(domains.PROCESS_TYPES.get(process_type, "Unknown process!")),
                 f"Description: \n{processingException}" if "traceback" not in str(processingException).lower() else "",
                 traceback.format_exc(),
