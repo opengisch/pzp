@@ -15,11 +15,13 @@ from qgis.core import (
     QgsProject,
     QgsVectorLayer,
 )
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QPushButton
 from qgis.PyQt.uic import loadUiType
 from qgis.utils import iface
+
+from pzp.utils.override_cursor import OverrideCursor
 
 
 def push_info(message, showMore=""):
@@ -50,6 +52,71 @@ def _show_error_dialog(title, subtitle="", description="", traceback=""):
 
     dlg = ErrorDialog(title, subtitle, description, traceback)
     dlg.exec_()
+
+
+def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
+    parameters = {
+        "INPUT_LAYER": input.id(),
+        "METHOD": 1,  # 1: QGIS, 2: GEOS
+        "IGNORE_RING_SELF_INTERSECTION": False,
+        "VALID_OUTPUT": "TEMPORARY_OUTPUT",
+        "INVALID_OUTPUT": "TEMPORARY_OUTPUT",
+        "ERROR_OUTPUT": "TEMPORARY_OUTPUT",
+    }
+    results = processing.run("qgis:checkvalidity", parameters)
+
+    check_ok = results["ERROR_COUNT"] == 0
+
+    if not check_ok:
+        # Show message bar with two options:
+        # 1) See errors
+        # 2) Run with errors
+        _push_input_error_report(tool_name, input.name(), results["ERROR_COUNT"], results["ERROR_OUTPUT"], callback)
+
+    return check_ok
+
+
+def _push_input_error_report(
+    tool_name: str, input_layer_name: str, error_count: int, error_output: QgsVectorLayer, callback
+):
+    widget = iface.messageBar().createMessage(
+        tool_name, f"{error_count} geometry errors in the layer '{input_layer_name}' found!"
+    )
+
+    def _see_geometry_errors(error_layer: QgsVectorLayer, tool_name: str, input_name: str):
+        # Style errors
+        set_qml_style(error_layer, "point_error")
+
+        # Add layer to ToC
+        QgsProject.instance().addMapLayer(error_layer)
+
+        # Show attribute table
+        iface.showAttributeTable(error_layer)
+
+        # Inform users about what just happened to QGIS GUI
+        iface.messageBar().clearWidgets()
+        iface.messageBar().pushMessage(tool_name, f"Showing errors in input layer '{input_name}'", Qgis.Info, 0)
+
+    button = QPushButton(widget)
+    button.setText("See more...")
+    button.pressed.connect(partial(_see_geometry_errors, error_output, tool_name, input_layer_name))
+    widget.layout().addWidget(button)
+
+    def _run_with_errors(callback, tool_name, input_name, count):
+        log_warning(
+            "'{}' is running with {} geometry errors in its input layer ('{}')...".format(tool_name, count, input_name)
+        )
+        iface.messageBar().clearWidgets()
+        # QCoreApplication.processEvents()  # Uncomment to see the messagebar closed
+        with OverrideCursor(Qt.WaitCursor):
+            callback(True)  # force=True
+
+    button = QPushButton(widget)
+    button.setText("Run with geometry errors...")
+    button.pressed.connect(partial(_run_with_errors, callback, tool_name, input_layer_name, error_count))
+    widget.layout().addWidget(button)
+
+    iface.messageBar().pushWidget(widget, Qgis.Critical, 0)
 
 
 def _get_iface():
