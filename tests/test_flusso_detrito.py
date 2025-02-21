@@ -67,7 +67,7 @@ def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_ex
     QgsProject.instance().addMapLayer(flusso_detrito_layer)
 
     dlg = CalculationTool(get_iface(), None)
-    pericolo_layer = dlg.run_witn_parameters(process_type, flusso_detrito_layer)
+    pericolo_layer = dlg.run_with_parameters(process_type, flusso_detrito_layer)
 
     assert isinstance(pericolo_layer, QgsMapLayer)
     assert pericolo_layer.featureCount() == 101
