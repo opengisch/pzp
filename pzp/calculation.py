@@ -170,173 +170,165 @@ def calculate_propagation(process_type, layer_propagation, layer_breaking, group
         layer_node.setItemVisibilityChecked(False)
 
 
-class CalculationDialog:
+class CalculationTool:
     def __init__(self, iface, group, parent=None):
-        self.group = group
-        self.tool_name = "Calcolo zone di pericolo"
+        self._group = group
+        self._tool_name = "Calcolo zone di pericolo"
 
-    def exec_(self, force=False):
-        process_type, layer_intensity = guess_params(self.group)
+    def run(self, force=False):
+        process_type, layer_intensity = self._guess_params()
 
         check_ok = False
         if not force:
-            check_ok = utils.check_inputs(self.tool_name, layer_intensity, self.exec_)
+            check_ok = utils.check_inputs(self._tool_name, layer_intensity, self.run)
 
         if force or check_ok:
-            self.do_exec(process_type, layer_intensity)
+            self.run_witn_parameters(process_type, layer_intensity)
 
-    def do_exec(self, process_type, layer_intensity):
+    def run_witn_parameters(self, process_type, layer_intensity):
         try:
-            layer_pericolo = calculate(process_type, layer_intensity)
-        except QgsProcessingException as processingException:
+            layer_pericolo = self._calculate(process_type, layer_intensity)
+        except (QgsProcessingException, Exception) as exc:
             utils.push_error_report(
-                self.tool_name,
+                self._tool_name,
                 "Process: {}".format(domains.PROCESS_TYPES.get(process_type, "Unknown process!")),
-                f"Description: \n{processingException}" if "traceback" not in str(processingException).lower() else "",
+                f"Description: \n{exc}" if "traceback" not in str(exc).lower() else "",
                 traceback.format_exc(),
             )
             return None
 
-        except Exception as exception:
-            utils.push_error("Errore sconosciuto: {0}".format(str(exception)), showMore=traceback.format_exc())
-            return None
-
         gpkg_path = layer_intensity.dataProvider().dataSourceUri().split("|")[0]
         layer_name = f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-        save_layer(layer_pericolo, layer_name, gpkg_path)
+        self._save_layer(layer_pericolo, layer_name, gpkg_path)
 
-        new_layer = load_layer_to_project(process_type, gpkg_path, layer_name)
-        post_layer_configuration(process_type, new_layer)
+        new_layer = self._load_layer_to_project(process_type, gpkg_path, layer_name)
+        self._post_layer_configuration(process_type, new_layer)
 
         return new_layer
 
+    def _guess_params(self):
+        # process and layers
+        layer_nodes = self._group.findLayers()
+        layer_intensity = None
+        process_type = None
 
-def guess_params(group):
-    # process and layers
-    layer_nodes = group.findLayers()
-    layer_intensity = None
-    process_type = None
+        for layer_node in layer_nodes:
+            pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable("pzp_layer")
+            if pzp_layer == "intensity":
+                layer_intensity = layer_node.layer()
+                process_type = int(QgsExpressionContextUtils.layerScope(layer_intensity).variable("pzp_process"))
 
-    for layer_node in layer_nodes:
-        pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable("pzp_layer")
-        if pzp_layer == "intensity":
-            layer_intensity = layer_node.layer()
-            process_type = int(QgsExpressionContextUtils.layerScope(layer_intensity).variable("pzp_process"))
+        if not layer_intensity:
+            utils.push_error("Layer con le intensità non trovato", 3)
+            return None, None
 
-    if not layer_intensity:
-        utils.push_error("Layer con le intensità non trovato", 3)
-        return None, None
+        if not process_type:
+            utils.push_error("Impossibile determinare il tipo di processo", 3)
+            return None, None
 
-    if not process_type:
-        utils.push_error("Impossibile determinare il tipo di processo", 3)
-        return None, None
+        return process_type, layer_intensity
 
-    return process_type, layer_intensity
+    def _calculate(self, process_type, layer_intensity):
+        print(f"{process_type=}")
+        print(f"{layer_intensity=}")
 
-
-def calculate(process_type, layer_intensity):
-    print(f"{process_type=}")
-    print(f"{layer_intensity=}")
-
-    result_01 = processing.run(
-        "native:extractbyexpression",
-        {
-            "INPUT": layer_intensity.id(),
-            "EXPRESSION": f'"proc_parz" = {process_type}',
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
-
-    result_02 = processing.run(
-        "pzp_utils:fix_geometries",
-        {
-            "INPUT": result_01["OUTPUT"],
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
-
-    try:
-        result_03 = processing.run(
-            "pzp_utils:apply_matrix",
+        result_01 = processing.run(
+            "native:extractbyexpression",
             {
-                "INPUT": result_02["OUTPUT"],
-                "PERIOD_FIELD": "periodo_ritorno",
-                "INTENSITY_FIELD": "classe_intensita",
-                "MATRIX": domains.MATRICES[process_type],
+                "INPUT": layer_intensity.id(),
+                "EXPRESSION": f'"proc_parz" = {process_type}',
                 "OUTPUT": "TEMPORARY_OUTPUT",
             },
         )
-    except (QgsProcessingException, Exception) as e:
-        raise QgsProcessingException("The algorithm 'pzp_utils:apply_matrix' failed! " + str(e))
 
-    result_04 = processing.run(
-        "native:dissolve",
-        {
-            "INPUT": result_03["OUTPUT"],
-            "FIELD": "matrice;fonte_proc",
-            "SEPARATE_DISJOINT": False,
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
+        result_02 = processing.run(
+            "pzp_utils:fix_geometries",
+            {
+                "INPUT": result_01["OUTPUT"],
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
 
-    result_05 = processing.run(
-        "pzp_utils:danger_zones",
-        {
-            "INPUT": result_04["OUTPUT"],
-            "MATRIX_FIELD": "matrice",
-            "PROCESS_SOURCE_FIELD": "fonte_proc",
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
+        try:
+            result_03 = processing.run(
+                "pzp_utils:apply_matrix",
+                {
+                    "INPUT": result_02["OUTPUT"],
+                    "PERIOD_FIELD": "periodo_ritorno",
+                    "INTENSITY_FIELD": "classe_intensita",
+                    "MATRIX": domains.MATRICES[process_type],
+                    "OUTPUT": "TEMPORARY_OUTPUT",
+                },
+            )
+        except (QgsProcessingException, Exception) as e:
+            # Sample on how to add more context to a processing error
+            raise QgsProcessingException("The algorithm 'pzp_utils:apply_matrix' failed! " + str(e))
 
-    result_06 = processing.run(
-        "native:fixgeometries",
-        {
-            "INPUT": result_05["OUTPUT"],
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
+        result_04 = processing.run(
+            "native:dissolve",
+            {
+                "INPUT": result_03["OUTPUT"],
+                "FIELD": "matrice;fonte_proc",
+                "SEPARATE_DISJOINT": False,
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
 
-    return result_06["OUTPUT"]
+        result_05 = processing.run(
+            "pzp_utils:danger_zones",
+            {
+                "INPUT": result_04["OUTPUT"],
+                "MATRIX_FIELD": "matrice",
+                "PROCESS_SOURCE_FIELD": "fonte_proc",
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
 
+        result_06 = processing.run(
+            "native:fixgeometries",
+            {
+                "INPUT": result_05["OUTPUT"],
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
 
-def save_layer(layer, layer_name, gpkg_path):
-    layer.setName(layer_name)
+        return result_06["OUTPUT"]
 
-    # Save output layer to gpkg
-    params = {
-        "LAYERS": [layer],
-        "OUTPUT": gpkg_path,
-        "OVERWRITE": False,  # Important!
-        "SAVE_STYLES": False,
-        "SAVE_METADATA": False,
-        "SELECTED_FEATURES_ONLY": False,
-    }
-    processing.run("native:package", params)
+    def _save_layer(self, layer, layer_name, gpkg_path):
+        layer.setName(layer_name)
 
+        # Save output layer to gpkg
+        params = {
+            "LAYERS": [layer],
+            "OUTPUT": gpkg_path,
+            "OVERWRITE": False,  # Important!
+            "SAVE_STYLES": False,
+            "SAVE_METADATA": False,
+            "SELECTED_FEATURES_ONLY": False,
+        }
+        processing.run("native:package", params)
 
-def load_layer_to_project(process_type, gpkg_path, layer_name):
-    # Load layer from gpkg
-    new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
-    new_layer.setName(f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}")
+    def _load_layer_to_project(self, process_type, gpkg_path, layer_name):
+        # Load layer from gpkg
+        new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
+        new_layer.setName(f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}")
 
-    QgsProject.instance().layerTreeRoot()
-    QgsProject.instance().addMapLayer(new_layer, True)
+        QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(new_layer, True)
 
-    # Apply layer style
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
-    new_layer.loadNamedStyle(qml_file_path)
+        # Apply layer style
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
+        new_layer.loadNamedStyle(qml_file_path)
 
-    return new_layer
+        return new_layer
 
+    def _post_layer_configuration(self, process_type, new_layer):
+        # Set geometry options and layer variables
+        options = new_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
 
-def post_layer_configuration(process_type, new_layer):
-    # Set geometry options and layer variables
-    options = new_layer.geometryOptions()
-    options.setGeometryPrecision(0.001)
-    options.setRemoveDuplicateNodes(True)
-    options.setGeometryChecks(["QgsIsValidCheck"])
-
-    QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_layer", "danger_zones")
-    QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)
+        QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_layer", "danger_zones")
+        QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)

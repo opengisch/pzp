@@ -3,7 +3,7 @@ from qgis.core import QgsExpressionContextUtils, QgsMapLayer, QgsProject, QgsVec
 from qgis.testing import start_app
 from qgis.testing.mocked import get_iface
 
-from pzp.calculation import CalculationDialog
+from pzp.calculation import CalculationTool
 from tests.utils import get_copy_path, get_data_path
 
 start_app()
@@ -66,8 +66,8 @@ def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_ex
     # Add layer to project so that Processing can find it and use it
     QgsProject.instance().addMapLayer(flusso_detrito_layer)
 
-    dlg = CalculationDialog(get_iface(), None)
-    pericolo_layer = dlg.do_exec(process_type, flusso_detrito_layer)
+    dlg = CalculationTool(get_iface(), None)
+    pericolo_layer = dlg.run_witn_parameters(process_type, flusso_detrito_layer)
 
     assert isinstance(pericolo_layer, QgsMapLayer)
     assert pericolo_layer.featureCount() == 101
