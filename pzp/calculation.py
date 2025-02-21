@@ -15,159 +15,190 @@ from pzp.processing import domains
 from pzp.utils import utils
 
 
-class PropagationDialog:
+class PropagationTool:
     def __init__(self, iface, group, parent=None):
-        self.group = group
+        self._group = group or QgsProject.instance().layerTreeRoot()
+        self._tool_name = "Calcolo propagazione"
 
-    def exec_(self):
-        guess_params_propagation(self.group)
+    def _guess_params(self):
+        # process and layers
+        layer_nodes = self._group.findLayers()
+        process_type = None
+        layer_propagation = None
+        layer_breaking = None
 
+        for layer_node in layer_nodes:
+            pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable("pzp_layer")
+            if pzp_layer == "propagation":
+                layer_propagation = layer_node.layer()
+                process_type = int(QgsExpressionContextUtils.layerScope(layer_propagation).variable("pzp_process"))
+            elif pzp_layer == "breaking":
+                layer_breaking = layer_node.layer()
+                process_type = int(QgsExpressionContextUtils.layerScope(layer_breaking).variable("pzp_process"))
 
-def guess_params_propagation(group):
-    # process and layers
-    layer_nodes = group.findLayers()
-    process_type = None
-    layer_propagation = None
-    layer_breaking = None
+        if not layer_propagation:
+            utils.push_error("Layer con le probabilità di propagazione non trovato", 3)
+            return (False,)
+        if not layer_breaking:
+            utils.push_error("Layer con le probabilità di rottura non trovato", 3)
+            return (False,)
+        if not process_type:
+            utils.push_error("Impossibile determinare il tipo di processo", 3)
+            return (False,)
 
-    for layer_node in layer_nodes:
-        pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable("pzp_layer")
-        if pzp_layer == "propagation":
-            layer_propagation = layer_node.layer()
-            process_type = int(QgsExpressionContextUtils.layerScope(layer_propagation).variable("pzp_process"))
-        elif pzp_layer == "breaking":
-            layer_breaking = layer_node.layer()
-            process_type = int(QgsExpressionContextUtils.layerScope(layer_breaking).variable("pzp_process"))
+        return True, process_type, layer_propagation, layer_breaking
 
-    if not layer_propagation:
-        utils.push_error("Layer con le probabilità di propagazione non trovato", 3)
-        return
-    if not layer_breaking:
-        utils.push_error("Layer con le probabilità di rottura non trovato", 3)
-        return
-    if not process_type:
-        utils.push_error("Impossibile determinare il tipo di processo", 3)
-        return
+    def run(self, force=False):
+        result = self._guess_params()
+        if not result[0]:
+            return
 
-    calculate_propagation(process_type, layer_propagation, layer_breaking, group)
+        ok, process_type, layer_propagation, layer_breaking = result
 
+        check_ok = False
+        if not force:
+            check_ok = utils.check_inputs(self._tool_name, layer_propagation, self.run)
 
-def calculate_propagation(process_type, layer_propagation, layer_breaking, group):
-    print(f"{process_type=}")
-    print(f"{layer_propagation=}")
-    print(f"{layer_breaking=}")
+        if force or check_ok:
+            self.run_with_parameters(process_type, layer_propagation, layer_breaking)
 
-    result = None
-    data_provider = None
-    data_provider = layer_breaking.dataProvider()
-    result = processing.run(
-        "pzp_utils:propagation",
-        {
-            "BREAKING_LAYER": layer_breaking.id(),
-            "BREAKING_FIELD": "prob_rottura",
-            "SOURCE_FIELD": "fonte_proc",
-            "PROPAGATION_LAYER": layer_propagation.id(),
-            "PROPAGATION_FIELD": "prob_propagazione",
-            "BREAKING_FIELD_PROP": "prob_rottura",
-            "SOURCE_FIELD_PROP": "fonte_proc",
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
-    result = processing.run(
-        "native:extractbyexpression",
-        {
-            "INPUT": result["OUTPUT"],
-            "EXPRESSION": f'"proc_parz" = {process_type}',
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
+    def run_with_parameters(self, process_type, layer_propagation, layer_breaking):
+        try:
+            layer_intensity = self._calculate(process_type, layer_propagation, layer_breaking)
+        except (QgsProcessingException, Exception) as exc:
+            utils.push_error_report(
+                self._tool_name,
+                "Process: {}".format(domains.PROCESS_TYPES.get(process_type, "Unknown process!")),
+                f"Description: \n{exc}" if "traceback" not in str(exc).lower() else "",
+                traceback.format_exc(),
+            )
+            return None
 
-    # Clippa per periodo di ritorno
-    result = processing.run(
-        "pzp_utils:remove_overlappings",
-        {
-            "INPUT": result["OUTPUT"],
-            "INTENSITY_FIELD": "classe_intensita",
-            "PERIOD_FIELD": "periodo_ritorno",
-            "SOURCE_FIELD": "fonte_proc",
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
+        gpkg_path = layer_breaking.dataProvider().dataSourceUri().split("|")[0]
+        layer_name = "Intensità completa"
+        self._save_layer(layer_intensity, layer_name, gpkg_path)
 
-    # qgis:deletecolumn has been renamed native:deletecolumn after qgis 3.16
-    deletecolumn_id = "qgis:deletecolumn"
-    if "qgis:deletecolumn" not in [x.id() for x in QgsApplication.processingRegistry().algorithms()]:
-        deletecolumn_id = "native:deletecolumn"
+        new_layer = self._load_layer_to_project(process_type, gpkg_path, layer_name)
+        self._post_layer_configuration(process_type, new_layer)
 
-    result = processing.run(
-        deletecolumn_id,
-        {
-            "INPUT": result["OUTPUT"],
-            "COLUMN": ["fid"],
-            "OUTPUT": "TEMPORARY_OUTPUT",
-        },
-    )
+        return new_layer
 
-    layer = result["OUTPUT"]
-    layer_name = "Intensità completa"
-    layer.setName(layer_name)
+    def _calculate(self, process_type, layer_propagation, layer_breaking):
+        print(f"{process_type=}")
+        print(f"{layer_propagation=}")
+        print(f"{layer_breaking=}")
 
-    gpkg_path = data_provider.dataSourceUri().split("|")[0]
-
-    # Save output layer to gpkg
-    params = {
-        "LAYERS": [layer],
-        "OUTPUT": gpkg_path,
-        "OVERWRITE": False,  # Important!
-        "SAVE_STYLES": False,
-        "SAVE_METADATA": False,
-        "SELECTED_FEATURES_ONLY": False,
-    }
-    processing.run("native:package", params)
-
-    # Load layer from gpkg
-    new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
-    new_layer.setName("Intensità completa")
-
-    utils.set_qml_style(new_layer, "intensity")
-
-    project = QgsProject.instance()
-    project.addMapLayer(new_layer, False)
-
-    group_intensity_filtered = utils.create_group("Intensità (con filtri x visualizzazione scenari)", group)
-    group_intensity_filtered.setExpanded(True)
-
-    group_intensity_filtered.addLayer(new_layer)
-
-    options = new_layer.geometryOptions()
-    options.setGeometryPrecision(0.001)
-    options.setRemoveDuplicateNodes(True)
-    options.setGeometryChecks(["QgsIsValidCheck"])
-
-    QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_layer", "intensity")
-    QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)
-
-    filter_params = [
-        ("\"periodo_ritorno\"='30'", "T 30"),
-        ("\"periodo_ritorno\"='100'", "T 100"),
-        ("\"periodo_ritorno\"='300'", "T 300"),
-        ("\"periodo_ritorno\">'300'", "T >300"),
-    ]
-
-    for param in filter_params:
-        gpkg_layer = utils.create_filtered_layer_from_gpkg(
-            layer.name(),
-            gpkg_path,
-            param[0],
-            param[1],
+        result_01 = processing.run(
+            "pzp_utils:propagation",
+            {
+                "BREAKING_LAYER": layer_breaking.id(),
+                "BREAKING_FIELD": "prob_rottura",
+                "SOURCE_FIELD": "fonte_proc",
+                "PROPAGATION_LAYER": layer_propagation.id(),
+                "PROPAGATION_FIELD": "prob_propagazione",
+                "BREAKING_FIELD_PROP": "prob_rottura",
+                "SOURCE_FIELD_PROP": "fonte_proc",
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
         )
-        utils.set_qml_style(gpkg_layer, "intensity")
+        result_02 = processing.run(
+            "native:extractbyexpression",
+            {
+                "INPUT": result_01["OUTPUT"],
+                "EXPRESSION": f'"proc_parz" = {process_type}',
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
 
-        project.addMapLayer(gpkg_layer, False)
-        group_intensity_filtered.addLayer(gpkg_layer)
-        layer_node = group.findLayer(gpkg_layer.id())
-        layer_node.setExpanded(False)
-        layer_node.setItemVisibilityChecked(False)
+        # Clippa per periodo di ritorno
+        result_03 = processing.run(
+            "pzp_utils:remove_overlappings",
+            {
+                "INPUT": result_02["OUTPUT"],
+                "INTENSITY_FIELD": "classe_intensita",
+                "PERIOD_FIELD": "periodo_ritorno",
+                "SOURCE_FIELD": "fonte_proc",
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
+
+        # qgis:deletecolumn has been renamed native:deletecolumn after qgis 3.16
+        deletecolumn_id = "qgis:deletecolumn"
+        if "qgis:deletecolumn" not in [x.id() for x in QgsApplication.processingRegistry().algorithms()]:
+            deletecolumn_id = "native:deletecolumn"
+
+        result = processing.run(
+            deletecolumn_id,
+            {
+                "INPUT": result_03["OUTPUT"],
+                "COLUMN": ["fid"],
+                "OUTPUT": "TEMPORARY_OUTPUT",
+            },
+        )
+
+        return result["OUTPUT"]
+
+    def _save_layer(self, layer, layer_name, gpkg_path):
+        layer.setName(layer_name)
+
+        # Save output layer to gpkg
+        params = {
+            "LAYERS": [layer],
+            "OUTPUT": gpkg_path,
+            "OVERWRITE": False,  # Important!
+            "SAVE_STYLES": False,
+            "SAVE_METADATA": False,
+            "SELECTED_FEATURES_ONLY": False,
+        }
+        processing.run("native:package", params)
+
+    def _load_layer_to_project(self, process_type, gpkg_path, layer_name):
+        # Load layer from gpkg
+        new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
+        new_layer.setName(layer_name)
+
+        utils.set_qml_style(new_layer, "intensity")
+
+        project = QgsProject.instance()
+        project.addMapLayer(new_layer, False)
+
+        group_intensity_filtered = utils.create_group("Intensità (con filtri x visualizzazione scenari)", self._group)
+        group_intensity_filtered.setExpanded(True)
+
+        group_intensity_filtered.addLayer(new_layer)
+
+        filter_params = [
+            ("\"periodo_ritorno\"='30'", "T 30"),
+            ("\"periodo_ritorno\"='100'", "T 100"),
+            ("\"periodo_ritorno\"='300'", "T 300"),
+            ("\"periodo_ritorno\">'300'", "T >300"),
+        ]
+
+        for param in filter_params:
+            gpkg_layer = utils.create_filtered_layer_from_gpkg(
+                new_layer.name(),
+                gpkg_path,
+                param[0],
+                param[1],
+            )
+            utils.set_qml_style(gpkg_layer, "intensity")
+
+            project.addMapLayer(gpkg_layer, False)
+            group_intensity_filtered.addLayer(gpkg_layer)
+            layer_node = self._group.findLayer(gpkg_layer.id())
+            layer_node.setExpanded(False)
+            layer_node.setItemVisibilityChecked(False)
+
+        return new_layer
+
+    def _post_layer_configuration(self, process_type, new_layer):
+        options = new_layer.geometryOptions()
+        options.setGeometryPrecision(0.001)
+        options.setRemoveDuplicateNodes(True)
+        options.setGeometryChecks(["QgsIsValidCheck"])
+
+        QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_layer", "intensity")
+        QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)
 
 
 class CalculationTool:
@@ -183,9 +214,9 @@ class CalculationTool:
             check_ok = utils.check_inputs(self._tool_name, layer_intensity, self.run)
 
         if force or check_ok:
-            self.run_witn_parameters(process_type, layer_intensity)
+            self.run_with_parameters(process_type, layer_intensity)
 
-    def run_witn_parameters(self, process_type, layer_intensity):
+    def run_with_parameters(self, process_type, layer_intensity):
         try:
             layer_pericolo = self._calculate(process_type, layer_intensity)
         except (QgsProcessingException, Exception) as exc:
@@ -313,7 +344,6 @@ class CalculationTool:
         new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
         new_layer.setName(f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}")
 
-        QgsProject.instance().layerTreeRoot()
         QgsProject.instance().addMapLayer(new_layer, True)
 
         # Apply layer style
