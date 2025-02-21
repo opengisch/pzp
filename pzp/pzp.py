@@ -13,10 +13,11 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QObject, Qt
 from qgis.PyQt.QtWidgets import QAction, QMenu, QMessageBox, QToolButton
 
-from pzp import a_b, no_impact
+from pzp import a_b
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationDialog, PropagationDialog
 from pzp.check_dock import CheckResultsDock
+from pzp.no_impact import ToolNessunImpatto
 from pzp.processing.provider import Provider
 from pzp.ui.resources import *  # noqa
 from pzp.utils import utils
@@ -306,7 +307,9 @@ class PZP(QObject):
         current_node = self.iface.layerTreeView().currentNode()
         if isinstance(current_node, QgsLayerTreeGroup):
             # TODO: Check we have all the layers in the group
-            no_impact.calculate(*no_impact.guess_params(current_node))
+            tool = ToolNessunImpatto(current_node)
+            with OverrideCursor(Qt.WaitCursor):
+                tool.run()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
 
