@@ -24,16 +24,19 @@ from qgis.utils import iface
 from pzp.utils.override_cursor import OverrideCursor
 
 
-def push_info(message, showMore=""):
-    _get_iface().messageBar().pushInfo("pzp", message, showMore)
+def push_info(message, time=0, showMore=""):
+    args = [message, showMore, Qgis.Info, time] if showMore else [message, Qgis.Info, time]
+    _get_iface().messageBar().pushMessage("pzp", *args)
 
 
 def push_warning(message, time=0, showMore=""):
-    _get_iface().messageBar().pushMessage("pzp", message, showMore, Qgis.Warning, time)
+    args = [message, showMore, Qgis.Warning, time] if showMore else [message, Qgis.Warning, time]
+    _get_iface().messageBar().pushMessage("pzp", *args)
 
 
 def push_error(message, time=0, showMore=""):
-    _get_iface().messageBar().pushMessage("pzp", message, showMore, Qgis.Critical, time)
+    args = [message, showMore, Qgis.Critical, time] if showMore else [message, Qgis.Critical, time]
+    _get_iface().messageBar().pushMessage("pzp", *args)
 
 
 def push_error_report(title, subtitle="", description="", traceback=""):
@@ -98,7 +101,7 @@ def _push_input_error_report(
         iface.messageBar().pushMessage(tool_name, f"Showing errors in input layer '{input_name}'", Qgis.Info, 0)
 
     button = QPushButton(widget)
-    button.setText("See more...")
+    button.setText("Inspect the errors...")
     button.pressed.connect(partial(_see_geometry_errors, error_output, tool_name, input_layer_name))
     widget.layout().addWidget(button)
 
@@ -112,7 +115,7 @@ def _push_input_error_report(
             callback(True)  # force=True
 
     button = QPushButton(widget)
-    button.setText("Run with geometry errors...")
+    button.setText("Ignore and continue...")
     button.pressed.connect(partial(_run_with_errors, callback, tool_name, input_layer_name, error_count))
     widget.layout().addWidget(button)
 
