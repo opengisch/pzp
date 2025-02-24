@@ -1,24 +1,20 @@
 from qgis import processing
 from qgis.core import (
     Qgis,
-    QgsPoint,
-    QgsField,
-    QgsFields,
     QgsFeature,
-    QgsGeometryUtils,
+    QgsField,
     QgsProcessing,
     QgsProcessingAlgorithm,
-    QgsProcessingException,
+    QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
-    QgsProcessingParameterFeatureSink,
 )
 from qgis.PyQt.QtCore import QVariant
+
 from . import domains
 
 
 class Propagation(QgsProcessingAlgorithm):
-
     BREAKING_LAYER = "BREAKING_LAYER"
     BREAKING_FIELD = "BREAKING_FIELD"
     SOURCE_FIELD = "SOURCE_FIELD"
@@ -108,8 +104,7 @@ class Propagation(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(QgsProcessingParameterFeatureSink(
-            self.OUTPUT, "Output layer"))
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer"))
 
     def processAlgorithm(self, parameters, context, feedback):
         breaking_layer = self.parameterAsVectorLayer(parameters, self.BREAKING_LAYER, context)
@@ -142,12 +137,12 @@ class Propagation(QgsProcessingAlgorithm):
         )[0]
 
         breaking_field_idx = -1
-        one_feature = next(breaking_layer.getFeatures())
+        one_feature = next(breaking_layer.getFeatures()) if breaking_layer.featureCount() > 0 else None
         if one_feature:
             breaking_field_idx = one_feature.fieldNameIndex(breaking_field)
 
         propagation_field_idx = -1
-        one_feature = next(propagation_layer.getFeatures())
+        one_feature = next(propagation_layer.getFeatures()) if propagation_layer.featureCount() > 0 else None
         if one_feature:
             propagation_field_idx = one_feature.fieldNameIndex(propagation_field)
 
@@ -203,9 +198,9 @@ class Propagation(QgsProcessingAlgorithm):
                 result = processing.run(
                     "native:splitwithlines",
                     {
-                        'INPUT': subset_breaking["OUTPUT"],
-                        'LINES': subset_propagation["OUTPUT"],
-                        'OUTPUT': "memory:",
+                        "INPUT": subset_breaking["OUTPUT"],
+                        "LINES": subset_propagation["OUTPUT"],
+                        "OUTPUT": "memory:",
                     },
                     context=context,
                     feedback=feedback,
@@ -223,7 +218,7 @@ class Propagation(QgsProcessingAlgorithm):
                             continue
 
                         left = self.left_of_line(polygon, line)
-                        if left == False:
+                        if not left:
                             new_feature = QgsFeature(fields)
                             new_feature.setGeometry(polygon.geometry())
                             attributes = polygon.attributes()
@@ -248,6 +243,6 @@ class Propagation(QgsProcessingAlgorithm):
         # singleSidedBuffer changed from QGIS 3.16 to 3.22 (the side args is not an int anymore)
         try:
             buf = line.geometry().singleSidedBuffer(1000000, 4, Qgis.BufferSide.Left)
-        except:
+        except Exception:
             buf = line.geometry().singleSidedBuffer(1000000, 4, 0)
         return buf.contains(poly.geometry().pointOnSurface())
