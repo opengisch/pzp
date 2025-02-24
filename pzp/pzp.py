@@ -284,7 +284,6 @@ class PZP(QObject):
         # Get selected group
         current_node = self.iface.layerTreeView().currentNode()
         if isinstance(current_node, QgsLayerTreeGroup):
-            # TODO: Check we have all the layers in the group
             tool = PropagationTool(self.iface, current_node)
             with OverrideCursor(Qt.WaitCursor):
                 tool.run()
@@ -295,7 +294,6 @@ class PZP(QObject):
         # Get selected group
         current_node = self.iface.layerTreeView().currentNode()
         if isinstance(current_node, QgsLayerTreeGroup):
-            # TODO: Check we have all the layers in the group
             tool = CalculationTool(self.iface, current_node)
             with OverrideCursor(Qt.WaitCursor):
                 tool.run()
@@ -306,7 +304,6 @@ class PZP(QObject):
         # Get selected group
         current_node = self.iface.layerTreeView().currentNode()
         if isinstance(current_node, QgsLayerTreeGroup):
-            # TODO: Check we have all the layers in the group
             tool = ToolNessunImpatto(current_node)
             with OverrideCursor(Qt.WaitCursor):
                 tool.run()
