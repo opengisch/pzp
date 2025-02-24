@@ -209,6 +209,9 @@ class CalculationTool:
     def run(self, force=False):
         process_type, layer_intensity = self._guess_params()
 
+        if process_type is None or layer_intensity is None:
+            return
+
         check_ok = False
         if not force:
             check_ok = utils.check_inputs(self._tool_name, layer_intensity, self.run)

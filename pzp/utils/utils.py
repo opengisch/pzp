@@ -83,7 +83,7 @@ def _push_input_error_report(
     tool_name: str, input_layer_name: str, error_count: int, error_output: QgsVectorLayer, callback
 ):
     widget = iface.messageBar().createMessage(
-        tool_name, f"{error_count} geometry errors in the layer '{input_layer_name}' found!"
+        tool_name, f"{error_count} geometry errors found in the layer '{input_layer_name}'!"
     )
 
     def _see_geometry_errors(error_layer: QgsVectorLayer, tool_name: str, input_name: str):
