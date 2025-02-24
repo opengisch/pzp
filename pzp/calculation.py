@@ -251,6 +251,7 @@ class CalculationTool:
             if pzp_layer == "intensity":
                 layer_intensity = layer_node.layer()
                 process_type = int(QgsExpressionContextUtils.layerScope(layer_intensity).variable("pzp_process"))
+                break
 
         if not layer_intensity:
             utils.push_error("Layer con le intensità non trovato", 3)

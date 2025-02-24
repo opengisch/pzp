@@ -22,17 +22,29 @@ class ToolNessunImpatto:
         for layer_node in layer_nodes:
             if layer_node.name() == "Intensità completa":
                 layer_intensity = layer_node.layer()
-                process_type = int(QgsExpressionContextUtils.layerScope(layer_intensity).variable("pzp_process"))
+                var_process = QgsExpressionContextUtils.layerScope(layer_intensity).variable("pzp_process")
+                process_type = int(var_process) if var_process else None
             elif layer_node.name() == "Area di studio":
                 layer_area = layer_node.layer()
 
-        return process_type, layer_intensity, layer_area
+        if not layer_intensity:
+            utils.push_error("Layer con le intensità non trovato", 3)
+            return (False,)
+        if not layer_area:
+            utils.push_error("Layer con le area di studio non trovato", 3)
+            return (False,)
+        if not process_type:
+            utils.push_error("Impossibile determinare il tipo di processo", 3)
+            return (False,)
+
+        return True, process_type, layer_intensity, layer_area
 
     def run(self, force=False):
-        process_type, layer_intensity, layer_area = self._guess_params()
-
-        if process_type is None or layer_intensity is None or layer_area is None:
+        result = self._guess_params()
+        if not result[0]:
             return
+
+        ok, process_type, layer_intensity, layer_area = result
 
         check_ok = False
         if not force:
