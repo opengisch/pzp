@@ -12,6 +12,7 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QVariant
 
 from pzp.processing.merge_by_area import MergeByArea
+from pzp.processing.merge_by_form_factor import MergeByFormFactor
 
 
 class DangerZones(QgsProcessingAlgorithm):
@@ -230,6 +231,31 @@ class DangerZones(QgsProcessingAlgorithm):
                     {
                         "INPUT": result["OUTPUT"],
                         "MODE": MergeByArea.MODE_BOUNDARY,
+                        "OUTPUT": "memory:",
+                    },
+                    context=context,
+                    feedback=feedback,
+                    is_child_algorithm=True,
+                )
+
+                result = processing.run(
+                    "native:multiparttosingleparts",
+                    {
+                        "INPUT": result["OUTPUT"],
+                        "OUTPUT": "memory:",
+                    },
+                    context=context,
+                    feedback=feedback,
+                    is_child_algorithm=True,
+                )
+
+                result = processing.run(
+                    "pzp_utils:merge_by_form_factor",
+                    {
+                        "INPUT": result["OUTPUT"],
+                        "MODE": MergeByFormFactor.MODE_BOUNDARY,
+                        "FORM_FACTOR": 0.1,
+                        "AREA_TRESHOLD": 10,
                         "OUTPUT": "memory:",
                     },
                     context=context,
