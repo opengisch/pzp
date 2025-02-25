@@ -83,7 +83,7 @@ def _push_input_error_report(
     tool_name: str, input_layer_name: str, error_count: int, error_output: QgsVectorLayer, callback
 ):
     widget = iface.messageBar().createMessage(
-        tool_name, f"{error_count} geometry errors found in the layer '{input_layer_name}'!"
+        tool_name, f"{error_count} errori trovati nelle geometrie del layer '{input_layer_name}'!"
     )
 
     def _see_geometry_errors(error_layer: QgsVectorLayer, tool_name: str, input_name: str):
@@ -101,7 +101,7 @@ def _push_input_error_report(
         iface.messageBar().pushMessage(tool_name, f"Showing errors in input layer '{input_name}'", Qgis.Info, 0)
 
     button = QPushButton(widget)
-    button.setText("Inspect the errors...")
+    button.setText("Ispeziona gli errori...")
     button.pressed.connect(partial(_see_geometry_errors, error_output, tool_name, input_layer_name))
     widget.layout().addWidget(button)
 
@@ -115,7 +115,7 @@ def _push_input_error_report(
             callback(True)  # force=True
 
     button = QPushButton(widget)
-    button.setText("Ignore and continue...")
+    button.setText("Ignora e continua...")
     button.pressed.connect(partial(_run_with_errors, callback, tool_name, input_layer_name, error_count))
     widget.layout().addWidget(button)
 
