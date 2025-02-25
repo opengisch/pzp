@@ -65,7 +65,7 @@ class ToolNessunImpatto:
             )
             return False
 
-        utils.push_info(f"The tool '{self._tool_name}' has run successfully!", 5)
+        utils.push_info(f"The tool '{self._tool_name}' has finished successfully!", 5)
         return True
 
     def _calculate(self, process_type, layer_intensity, layer_area):

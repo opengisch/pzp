@@ -57,7 +57,7 @@ class PropagationTool:
 
         check_ok = False
         if not force:
-            check_ok = utils.check_inputs(self._tool_name, layer_propagation, self.run)
+            check_ok = utils.check_inputs(self._tool_name, layer_breaking, self.run)
 
         if force or check_ok:
             self.run_with_parameters(process_type, layer_propagation, layer_breaking)
@@ -80,6 +80,8 @@ class PropagationTool:
 
         new_layer = self._load_layer_to_project(process_type, gpkg_path, layer_name)
         self._post_layer_configuration(process_type, new_layer)
+
+        utils.push_info(f"The tool '{self._tool_name}' has finished successfully!", 5)
 
         return new_layer
 
@@ -237,6 +239,8 @@ class CalculationTool:
 
         new_layer = self._load_layer_to_project(process_type, gpkg_path, layer_name)
         self._post_layer_configuration(process_type, new_layer)
+
+        utils.push_info(f"The tool '{self._tool_name}' has finished successfully!", 5)
 
         return new_layer
 
