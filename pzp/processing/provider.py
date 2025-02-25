@@ -4,6 +4,7 @@ from pzp.processing.apply_matrix import ApplyMatrix
 from pzp.processing.danger_zones import DangerZones
 from pzp.processing.fix_geometries import FixGeometries
 from pzp.processing.merge_by_area import MergeByArea
+from pzp.processing.merge_by_form_factor import MergeByFormFactor
 from pzp.processing.merge_intensity_layers import MergeIntensityLayers
 from pzp.processing.no_impact import NoImpact
 from pzp.processing.propagation import Propagation
@@ -24,6 +25,7 @@ class Provider(QgsProcessingProvider):
         self.addAlgorithm(RemoveOverlappings())
         self.addAlgorithm(MergeByArea())
         self.addAlgorithm(RemoveByArea())
+        self.addAlgorithm(MergeByFormFactor())
 
     def id(self, *args, **kwargs):
         return "pzp_utils"
