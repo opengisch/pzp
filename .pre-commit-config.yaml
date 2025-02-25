@@ -1,6 +1,5 @@
 exclude: |
   (?x)^(
-      pzp/ui/resources.py|
       pzp/data/.*
   )$
 
