@@ -54,7 +54,7 @@ class CheckResultsDock(QDockWidget, FORM_CLASS):
         item = QTableWidgetItem(row[1])
         item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         self.table.setItem(row_position, 1, item)
-        button = QPushButton(QIcon(":/plugins/Veriti/images/play.png"), "")
+        button = QPushButton(QIcon(utils.get_icon("play.png")), "")
         button.setObjectName(row[0])
         button.clicked.connect(partial(self.on_button_clicked, row[0]))
         self.table.setCellWidget(row_position, 2, button)
@@ -83,10 +83,10 @@ class CheckResultsDock(QDockWidget, FORM_CLASS):
         result_item = self.table.item(found_item.row(), 3)
         if is_correct:
             result_item.setText("OK")
-            result_item.setIcon(QIcon(":/plugins/pzp/icons/green_check.png"))
+            result_item.setIcon(QIcon(utils.get_icon("green_check.png")))
         else:
             result_item.setText("NO ({})".format(message))
-            result_item.setIcon(QIcon(":/plugins/pzp/icons/red_cross.png"))
+            result_item.setIcon(QIcon(utils.get_icon("red_cross.png")))
 
     def select_features(self, id_list):
         pass
