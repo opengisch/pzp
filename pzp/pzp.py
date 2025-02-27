@@ -19,7 +19,6 @@ from pzp.calculation import CalculationTool, PropagationTool
 from pzp.check_dock import CheckResultsDock
 from pzp.no_impact import ToolNessunImpatto
 from pzp.processing.provider import Provider
-from pzp.ui.resources import *  # noqa
 from pzp.utils import utils
 from pzp.utils.override_cursor import OverrideCursor
 

@@ -338,7 +338,7 @@ def create_filtered_layer_from_gpkg(gpkg_layer_name, gpkg_path, substring, name)
 
 
 def get_icon(filename):
-    return QIcon(f":/plugins/pzp/icons/{filename}")
+    return QIcon(str(get_plugin_path() / "icons" / filename))
 
 
 def get_plugin_path() -> Path:
