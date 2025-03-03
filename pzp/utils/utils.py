@@ -89,9 +89,13 @@ def _push_input_error_report(
     def _see_geometry_errors(error_layer: QgsVectorLayer, tool_name: str, input_name: str):
         # Style errors
         set_qml_style(error_layer, "point_error")
+        error_layer.setName("Errori Geometrici")
 
-        # Add layer to ToC
-        QgsProject.instance().addMapLayer(error_layer)
+        # Add layer to ToC, in its own group
+        QgsProject.instance().addMapLayer(error_layer, False)
+        group = create_group("Errori", to_the_top=True)
+        group.setExpanded(True)
+        group.addLayer(error_layer)
 
         # Show attribute table
         iface.showAttributeTable(error_layer)
@@ -281,10 +285,14 @@ def load_qlr_layer(qlr_name, group=None):
     QgsLayerDefinition.loadLayerDefinition(qlr_file_path, QgsProject.instance(), group)
 
 
-def create_group(name, root=None):
+def create_group(name, root=None, to_the_top=False):
     if not root:
         root = QgsProject.instance().layerTreeRoot()
-    group = root.addGroup(name)
+
+    if to_the_top:
+        group = root.insertGroup(0, name)
+    else:
+        group = root.addGroup(name)
 
     return group
 
