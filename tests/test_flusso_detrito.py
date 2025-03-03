@@ -52,8 +52,22 @@ def plugin_instance():
     plugin.unload_provider()
 
 
+@pytest.fixture(scope="module")
+def project():
+    print("\nINFO: Make sure the project has no layers")
+    project = QgsProject.instance()
+
+    def clear_project():
+        project.layerTreeRoot().clear()
+        assert len(project.layerTreeRoot().children()) == 0
+
+    clear_project()
+    yield project
+    clear_project()
+
+
 @pytest.mark.flusso_detrito
-def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_expected_layer):
+def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_expected_layer, project):
     print(" [INFO] Validating flusso di detrito...")
     process_type = 1200
 
@@ -64,7 +78,7 @@ def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_ex
     assert flusso_detrito_expected_layer.featureCount() == 101
 
     # Add layer to project so that Processing can find it and use it
-    QgsProject.instance().addMapLayer(flusso_detrito_layer)
+    project.addMapLayer(flusso_detrito_layer)
 
     dlg = CalculationTool(get_iface(), None)
     pericolo_layer = dlg.run_with_parameters(process_type, flusso_detrito_layer)
@@ -136,3 +150,21 @@ def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_ex
     assert layer_comparison["UNCHANGED"].featureCount() == 101  # THe obtained layer matches the expected one
     assert layer_comparison["ADDED"].featureCount() == 0
     assert layer_comparison["DELETED"].featureCount() == 0
+
+    # Test expected groups
+    assert len(project.layerTreeRoot().children()) == 2  # Group + layer intensity
+    groups = project.layerTreeRoot().findGroups()
+    assert len(groups) == 1
+    group = groups[0]
+    assert group.name().startswith("Pericolo 1200")
+    assert len(group.children()) == 7
+
+    # Test filtered layers are there
+    # 'MAG-018', 'MAG-019', 'MAG-020', 'MAG-021', 'MAG-022', 'MAG-023'
+    idx = pericolo_layer.fields().indexOf("fonte_proc")
+    sources = pericolo_layer.uniqueValues(idx) if idx != -1 else []
+    assert len(sources) == 6
+    names = {layer.name() for layer in group.children()}
+    filtered_names = names.intersection(sources)
+    assert len(filtered_names) == 6
+    assert "Pericolo" in names  # The unfiltered layer is there as well
