@@ -281,10 +281,14 @@ def load_qlr_layer(qlr_name, group=None):
     QgsLayerDefinition.loadLayerDefinition(qlr_file_path, QgsProject.instance(), group)
 
 
-def create_group(name, root=None):
+def create_group(name, root=None, to_the_top=False):
     if not root:
         root = QgsProject.instance().layerTreeRoot()
-    group = root.addGroup(name)
+
+    if to_the_top:
+        group = root.insertGroup(0, name)
+    else:
+        group = root.addGroup(name)
 
     return group
 
