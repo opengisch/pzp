@@ -1,5 +1,4 @@
 import datetime
-import os
 import traceback
 
 from qgis import processing
@@ -350,14 +349,40 @@ class CalculationTool:
     def _load_layer_to_project(self, process_type, gpkg_path, layer_name):
         # Load layer from gpkg
         new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
-        new_layer.setName(f"Pericolo {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}")
+        new_layer.setName("Pericolo")
 
-        QgsProject.instance().addMapLayer(new_layer, True)
+        utils.set_qml_style(new_layer, "danger_level")
 
-        # Apply layer style
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        qml_file_path = os.path.join(current_dir, "qml", "danger_level.qml")
-        new_layer.loadNamedStyle(qml_file_path)
+        project = QgsProject.instance()
+        project.addMapLayer(new_layer, False)
+
+        group_danger_filtered = utils.create_group(layer_name, self._group, to_the_top=True)
+        group_danger_filtered.setExpanded(True)
+
+        group_danger_filtered.addLayer(new_layer)
+
+        # Get unique values from fonte processo
+        idx = new_layer.fields().indexOf("fonte_proc")
+        sources = new_layer.uniqueValues(idx) if idx != -1 else []
+
+        if len(sources) > 1:
+            sources = sorted(sources)
+            filter_params = [(f"\"fonte_proc\"='{source}'", f"{source}") for source in sources]
+
+            for param in filter_params:
+                gpkg_layer = utils.create_filtered_layer_from_gpkg(
+                    layer_name,
+                    gpkg_path,
+                    param[0],
+                    param[1],
+                )
+                utils.set_qml_style(gpkg_layer, "danger_level")
+
+                project.addMapLayer(gpkg_layer, False)
+                group_danger_filtered.addLayer(gpkg_layer)
+                layer_node = group_danger_filtered.findLayer(gpkg_layer.id())
+                layer_node.setExpanded(False)
+                layer_node.setItemVisibilityChecked(False)
 
         return new_layer
 
