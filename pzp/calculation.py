@@ -349,23 +349,28 @@ class CalculationTool:
     def _load_layer_to_project(self, process_type, gpkg_path, layer_name):
         # Load layer from gpkg
         new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
-        new_layer.setName("Pericolo")
 
         utils.set_qml_style(new_layer, "danger_level")
 
         project = QgsProject.instance()
-        project.addMapLayer(new_layer, False)
-
-        group_danger_filtered = utils.create_group(layer_name, self._group, to_the_top=True)
-        group_danger_filtered.setExpanded(True)
-
-        group_danger_filtered.addLayer(new_layer)
 
         # Get unique values from fonte processo
         idx = new_layer.fields().indexOf("fonte_proc")
         sources = new_layer.uniqueValues(idx) if idx != -1 else []
 
-        if len(sources) > 1:
+        if len(sources) <= 1:
+            new_layer.setName(layer_name)
+            project.addMapLayer(new_layer, True)
+        else:
+            # Add layer inside a group and add filtered layers below
+            new_layer.setName("Pericolo")
+            project.addMapLayer(new_layer, False)
+
+            group_danger_filtered = utils.create_group(layer_name, self._group, to_the_top=True)
+            group_danger_filtered.setExpanded(True)
+
+            group_danger_filtered.addLayer(new_layer)
+
             sources = sorted(sources)
             filter_params = [(f"\"fonte_proc\"='{source}'", f"{source}") for source in sources]
 
