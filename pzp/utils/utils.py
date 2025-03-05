@@ -8,6 +8,7 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsDefaultValue,
     QgsEditorWidgetSetup,
+    QgsFeatureRequest,
     QgsField,
     QgsFieldConstraints,
     QgsLayerDefinition,
@@ -71,10 +72,51 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
     check_ok = results["ERROR_COUNT"] == 0
 
     if not check_ok:
+        # Add feature id to each error in the Error Output layer
+        error_output = results["ERROR_OUTPUT"]
+        pks_idxs = input.primaryKeyAttributes()
+
+        if len(pks_idxs) == 1:
+            pk_idx = pks_idxs[0]
+
+            # Get mappings from input and error layers, so that we can then
+            # perform a join to bring input's pk into error output layer.
+            # Note that _errors from a single feature in input layer are separated by '\n'.
+            request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
+            mapping_pk_msgs = {
+                feature[pk_idx]: feature["_errors"].split("\n")
+                for feature in results["INVALID_OUTPUT"].getFeatures(request)
+            }
+            mapping_error_msg = {feature["message"]: feature.id() for feature in error_output.getFeatures(request)}
+
+            # Add field to output_layer
+            error_output.dataProvider().addAttributes([input.fields().field(pk_idx)])
+            error_output.updateFields()
+            error_pk_idx = error_output.fields().indexOf(input.fields().field(pk_idx).name())
+            attrs = {}  # fid: {error_pk_idx: pk}
+
+            for pk, msgs in mapping_pk_msgs.items():
+                for msg in msgs:
+                    fid = mapping_error_msg.get(msg, -1)
+                    if fid != -1:
+                        attrs[fid] = {error_pk_idx: pk}
+
+            if attrs:
+                error_output.dataProvider().changeAttributeValues(attrs)
+
+        elif len(pks_idxs) > 1:
+            log_warning(
+                f"Feature ids won't be shown in Error Output layer: multiple PK fields found in layer '{input.name()}'!"
+            )
+        else:
+            log_warning(
+                f"Feature ids won't be shown in Error Output layer: PK field not found in layer '{input.name()}'!"
+            )
+
         # Show message bar with two options:
         # 1) See errors
         # 2) Run with errors
-        _push_input_error_report(tool_name, input.name(), results["ERROR_COUNT"], results["ERROR_OUTPUT"], callback)
+        _push_input_error_report(tool_name, input.name(), results["ERROR_COUNT"], error_output, callback)
 
     return check_ok
 
@@ -89,9 +131,13 @@ def _push_input_error_report(
     def _see_geometry_errors(error_layer: QgsVectorLayer, tool_name: str, input_name: str):
         # Style errors
         set_qml_style(error_layer, "point_error")
+        error_layer.setName("Errori Geometrici")
 
-        # Add layer to ToC
-        QgsProject.instance().addMapLayer(error_layer)
+        # Add layer to ToC, in its own group
+        QgsProject.instance().addMapLayer(error_layer, False)
+        group = create_group("Errori", to_the_top=True)
+        group.setExpanded(True)
+        group.addLayer(error_layer)
 
         # Show attribute table
         iface.showAttributeTable(error_layer)
@@ -281,10 +327,14 @@ def load_qlr_layer(qlr_name, group=None):
     QgsLayerDefinition.loadLayerDefinition(qlr_file_path, QgsProject.instance(), group)
 
 
-def create_group(name, root=None):
+def create_group(name, root=None, to_the_top=False):
     if not root:
         root = QgsProject.instance().layerTreeRoot()
-    group = root.addGroup(name)
+
+    if to_the_top:
+        group = root.insertGroup(0, name)
+    else:
+        group = root.addGroup(name)
 
     return group
 
