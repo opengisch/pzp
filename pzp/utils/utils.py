@@ -69,11 +69,23 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
     }
     results = processing.run("qgis:checkvalidity", parameters)
 
-    check_ok = results["ERROR_COUNT"] == 0
+    def _clean_error_outputs(error_layer: QgsVectorLayer) -> QgsVectorLayer:
+        # Remove 'Duplicate nodes' error, since it will be fixed
+        # by pzp_utils:fix_geometries alg.
+        parameters = {
+            # Filter by searching 'duplicate nodes'. 0 means not found.
+            "EXPRESSION": "strpos(\"message\",'duplicate nodes') = 0",
+            "INPUT": error_layer,
+            "OUTPUT": "TEMPORARY_OUTPUT",
+        }
+        result = processing.run("native:extractbyexpression", parameters)
+        return result["OUTPUT"]
+
+    error_output = _clean_error_outputs(results["ERROR_OUTPUT"])
+    check_ok = error_output.featureCount() == 0
 
     if not check_ok:
         # Add feature id to each error in the Error Output layer
-        error_output = results["ERROR_OUTPUT"]
         pks_idxs = input.primaryKeyAttributes()
 
         if len(pks_idxs) == 1:
@@ -116,7 +128,7 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
         # Show message bar with two options:
         # 1) See errors
         # 2) Run with errors
-        _push_input_error_report(tool_name, input.name(), results["ERROR_COUNT"], error_output, callback)
+        _push_input_error_report(tool_name, input.name(), error_output.featureCount(), error_output, callback)
 
     return check_ok
 
