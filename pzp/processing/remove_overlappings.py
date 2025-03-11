@@ -1,20 +1,15 @@
 from qgis import processing
 from qgis.core import (
-    QgsField,
-    QgsFields,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
+    QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
-    QgsProcessingParameterFeatureSink,
-    QgsApplication,
 )
-from qgis.PyQt.QtCore import QVariant
 
 
 class RemoveOverlappings(QgsProcessingAlgorithm):
-
     INPUT = "INPUT"
     INTENSITY_FIELD = "INTENSITY_FIELD"
     PERIOD_FIELD = "PERIOD_FIELD"
@@ -41,9 +36,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
 
     def initAlgorithm(self, config=None):
         self.addParameter(
-            QgsProcessingParameterFeatureSource(
-                self.INPUT, "Input layer", [QgsProcessing.TypeVectorPolygon]
-            )
+            QgsProcessingParameterFeatureSource(self.INPUT, "Input layer", [QgsProcessing.TypeVectorPolygon])
         )
 
         self.addParameter(
@@ -73,17 +66,13 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Senza sovrapposizioni")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Senza sovrapposizioni"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
 
         if source is None:
-            raise QgsProcessingException(
-                self.invalidSourceError(parameters, self.INPUT)
-            )
+            raise QgsProcessingException(self.invalidSourceError(parameters, self.INPUT))
 
         intensity_field = self.parameterAsFields(
             parameters,
@@ -127,7 +116,8 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
                     source_field,
                     parameters,
                     context,
-                    feedback)
+                    feedback,
+                )
                 if final_layer:
                     result = processing.run(
                         "native:mergevectorlayers",
@@ -143,8 +133,9 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
 
         return {self.OUTPUT: final_layer}
 
-    def prepare_period(self, intensities, intensity_field, period, period_field, source, source_field, parameters, context, feedback):
-
+    def prepare_period(
+        self, intensities, intensity_field, period, period_field, source, source_field, parameters, context, feedback
+    ):
         final_layer = None
         for intensity in intensities:
             result = processing.run(
@@ -242,7 +233,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
         result = processing.run(
             "native:multiparttosingleparts",
             {
-                'INPUT': result["OUTPUT"],
+                "INPUT": result["OUTPUT"],
                 "OUTPUT": "memory:",
             },
             context=context,
@@ -250,17 +241,13 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
             is_child_algorithm=True,
         )
 
-        # qgis:deletecolumn has been renamed native:deletecolumn after qgis 3.16
-        deletecolumn_id = "qgis:deletecolumn"
-        if "qgis:deletecolumn" not in [x.id() for x in QgsApplication.processingRegistry().algorithms()]:
-            deletecolumn_id = "native:deletecolumn"
-
         result = processing.run(
-            deletecolumn_id,
-            {'INPUT': result["OUTPUT"],
-             'COLUMN':['fid', 'layer', 'path'],
-             "OUTPUT": parameters[self.OUTPUT],
-             },
+            "native:deletecolumn",
+            {
+                "INPUT": result["OUTPUT"],
+                "COLUMN": ["fid", "layer", "path"],
+                "OUTPUT": parameters[self.OUTPUT],
+            },
             context=context,
             feedback=feedback,
             is_child_algorithm=True,

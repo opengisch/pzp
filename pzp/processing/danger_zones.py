@@ -1,6 +1,5 @@
 from qgis import processing
 from qgis.core import (
-    QgsApplication,
     QgsField,
     QgsFields,
     QgsProcessing,
@@ -274,13 +273,8 @@ class DangerZones(QgsProcessingAlgorithm):
             is_child_algorithm=True,
         )
 
-        # qgis:deletecolumn has been renamed native:deletecolumn after qgis 3.16
-        deletecolumn_id = "qgis:deletecolumn"
-        if "qgis:deletecolumn" not in [x.id() for x in QgsApplication.processingRegistry().algorithms()]:
-            deletecolumn_id = "native:deletecolumn"
-
         result = processing.run(
-            deletecolumn_id,
+            "native:deletecolumn",
             {
                 "INPUT": result["OUTPUT"],
                 "COLUMN": ["fid", "layer", "path"],
