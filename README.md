@@ -1,3 +1,5 @@
+![Unit tests](https://github.com/opengisch/pzp/actions/workflows/test.yml/badge.svg) [![Release](https://img.shields.io/github/v/release/opengisch/pzp.svg)](https://github.com/opengisch/pzp/releases)
+
 # Plugin Piani Zone di Pericolo
 
 Processing provider plugin.

@@ -3,7 +3,6 @@ import traceback
 
 from qgis import processing
 from qgis.core import (
-    QgsApplication,
     QgsExpressionContextUtils,
     QgsProcessingException,
     QgsProject,
@@ -123,13 +122,8 @@ class PropagationTool:
             },
         )
 
-        # qgis:deletecolumn has been renamed native:deletecolumn after qgis 3.16
-        deletecolumn_id = "qgis:deletecolumn"
-        if "qgis:deletecolumn" not in [x.id() for x in QgsApplication.processingRegistry().algorithms()]:
-            deletecolumn_id = "native:deletecolumn"
-
         result = processing.run(
-            deletecolumn_id,
+            "native:deletecolumn",
             {
                 "INPUT": result_03["OUTPUT"],
                 "COLUMN": ["fid"],
