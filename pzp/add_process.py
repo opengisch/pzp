@@ -76,6 +76,31 @@ def add_process(process_type, gpkg_directory_path):
     options.setGeometryChecks(["QgsIsValidCheck"])
 
     if process_type == 3000:  # Caduta sassi
+        # Layer zone sorgente
+        source_zones_layer = utils.create_layer("Zona sorgente (fonte processo)")
+        QgsExpressionContextUtils.setLayerVariable(source_zones_layer, "pzp_layer", "source_zones")
+        QgsExpressionContextUtils.setLayerVariable(source_zones_layer, "pzp_process", process_type)
+
+        utils.add_field_to_layer(source_zones_layer, "commento", "Osservazioni", QVariant.String)
+        utils.add_field_to_layer(source_zones_layer, "fonte_proc", "Settore/i (fonte processo)", QVariant.String)
+
+        utils.add_field_to_layer(source_zones_layer, "scenario", "Scenario", QVariant.Int)
+        utils.set_value_map_to_field(source_zones_layer, "scenario", domains.SOURCE_ZONES)
+
+        utils.set_qml_style(source_zones_layer, "source_zones")
+        utils.add_layer_to_gpkg(source_zones_layer, gpkg_path)
+        source_zones_gpkg_layer = utils.load_gpkg_layer(source_zones_layer.name(), gpkg_path)
+        project.addMapLayer(source_zones_gpkg_layer, False)
+        group.addLayer(source_zones_gpkg_layer)
+
+        # Link area layer with source zones layer
+        utils.set_value_relation_field(
+            area_gpkg_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc"
+        )
+        utils.remove_not_null_constraint_to_field(area_gpkg_layer, "fonte_proc")
+        utils.remove_unique_constraint_to_field(area_gpkg_layer, "fonte_proc")
+
+        # Propagation layer
         propagation_layer = utils.create_layer("Probabilità di propagazione (tutti gli scenari)", "LineString")
 
         utils.add_field_to_layer(propagation_layer, "osservazioni", "Osservazioni", QVariant.String)
@@ -95,7 +120,9 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_qml_style(propagation_layer, "propagation")
         utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
         utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
-        utils.set_value_relation_field(propagation_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc")
+        utils.set_value_relation_field(
+            propagation_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc"
+        )
 
         utils.add_layer_to_gpkg(propagation_layer, gpkg_path)
         propagation_gpkg_layer = utils.load_gpkg_layer(propagation_layer.name(), gpkg_path)
@@ -138,6 +165,7 @@ def add_process(process_type, gpkg_directory_path):
             layer_node.setExpanded(False)
             layer_node.setItemVisibilityChecked(False)
 
+        # Breaking layer
         breaking_layer = utils.create_layer("Probabilità di rottura (tutti gli scenari)")
 
         utils.add_field_to_layer(breaking_layer, "osservazioni", "Osservazioni", QVariant.String)
@@ -163,7 +191,9 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
 
         utils.set_qml_style(breaking_layer, "breaking")
-        utils.set_value_relation_field(breaking_layer, "fonte_proc", area_gpkg_layer, "fonte_proc", "fonte_proc")
+        utils.set_value_relation_field(
+            breaking_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc"
+        )
 
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
@@ -201,7 +231,7 @@ def add_process(process_type, gpkg_directory_path):
             )
 
             added_layer = project.addMapLayer(gpkg_layer, False)
-            if param[2] is False:
+            if not param[2]:
                 utils.set_qml_style(added_layer, "breaking_without_no_impact")
             group_breaking_filtered.addLayer(added_layer)
             layer_node = group.findLayer(added_layer.id())
