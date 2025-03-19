@@ -5,6 +5,7 @@ from pathlib import Path
 from qgis import processing
 from qgis.core import (
     Qgis,
+    QgsCategorizedSymbolRenderer,
     QgsCoordinateReferenceSystem,
     QgsDefaultValue,
     QgsEditorWidgetSetup,
@@ -317,6 +318,22 @@ def set_qml_style(layer, qml_name):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qml_file_path = os.path.join(current_dir, "../qml", f"{qml_name}.qml")
     layer.loadNamedStyle(qml_file_path)
+
+
+def remove_renderer_category(layer: QgsVectorLayer, category_value: str) -> bool:
+    renderer = layer.renderer()
+    res = False
+
+    if isinstance(layer.renderer(), QgsCategorizedSymbolRenderer):
+        index = renderer.categoryIndexForValue(category_value)
+
+        if index != -1:
+            res = renderer.deleteCategory(index)
+            layer.triggerRepaint()
+            _get_iface().layerTreeView().refreshLayerSymbology(layer.id())
+            layer.emitStyleChanged()  # Update symbology in layer styling panel
+
+    return res
 
 
 def create_layer(name, path="MultiPolygon"):

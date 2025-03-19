@@ -217,6 +217,9 @@ End
         QgsExpressionContextUtils.setLayerVariable(breaking_gpkg_layer, "pzp_layer", "breaking")
         QgsExpressionContextUtils.setLayerVariable(breaking_gpkg_layer, "pzp_process", process_type)
 
+        # Remove 'impatto presente' category
+        utils.remove_renderer_category(breaking_gpkg_layer, "1001")
+
         group_breaking_filtered = utils.create_group("Probabilità di rottura", group)
         group_breaking_filtered.setExpanded(True)
 
@@ -227,14 +230,10 @@ End
         options.setGeometryChecks(["QgsIsValidCheck"])
 
         filter_params = [
-            ("\"prob_rottura\"='1003'", "Probabilità di rottura alta (0-30)", True),
-            ("\"prob_rottura\"='1002'", "Probabilità di rottura media (30-100)", True),
-            ("\"prob_rottura\"='1001'", "Probabilità di rottura bassa (100-300)", True),
-            (
-                "\"prob_rottura\"='1000'",
-                "Probabilità di rottura molto bassa (>300)",
-                False,
-            ),
+            ("\"prob_rottura\"='1003'", "Probabilità di rottura alta (0-30)", True, True),
+            ("\"prob_rottura\"='1002'", "Probabilità di rottura media (30-100)", True, True),
+            ("\"prob_rottura\"='1001'", "Probabilità di rottura bassa (100-300)", True, True),
+            ("\"prob_rottura\"='1000'", "Probabilità di rottura molto bassa (>300)", False, False),
         ]
 
         for param in filter_params:
@@ -244,15 +243,18 @@ End
                 param[0],
                 param[1],
             )
-
             added_layer = project.addMapLayer(gpkg_layer, False)
+
             if not param[2]:
                 utils.set_qml_style(added_layer, "breaking_without_no_impact")
+
+            if param[3]:  # Remove 'impatto presente' category
+                utils.remove_renderer_category(added_layer, "1001")
+
             group_breaking_filtered.addLayer(added_layer)
             layer_node = group.findLayer(added_layer.id())
             layer_node.setExpanded(False)
             layer_node.setItemVisibilityChecked(False)
-
     else:
         intensity_layer = utils.create_layer("Intensità completa")
 
