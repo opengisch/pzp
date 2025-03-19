@@ -120,8 +120,16 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_qml_style(propagation_layer, "propagation")
         utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
         utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
+
+        description = """Case
+    when "scenario"  = 0 then 'Sconosciuto'
+    when "scenario"  = 1001 then 'Scenario puntuale'
+    when "scenario"  = 1000 then 'Scenario diffuso'
+    else '_'
+End
+        """
         utils.set_value_relation_field(
-            propagation_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc"
+            propagation_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc", description
         )
 
         utils.add_layer_to_gpkg(propagation_layer, gpkg_path)
@@ -191,8 +199,15 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
 
         utils.set_qml_style(breaking_layer, "breaking")
+        description = """Case
+    when "scenario"  = 0 then 'Sconosciuto'
+    when "scenario"  = 1001 then 'Scenario puntuale'
+    when "scenario"  = 1000 then 'Scenario diffuso'
+    else '_'
+End
+        """
         utils.set_value_relation_field(
-            breaking_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc"
+            breaking_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc", description
         )
 
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)

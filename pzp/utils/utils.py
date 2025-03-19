@@ -369,7 +369,7 @@ def load_gpkg_layer(layer_name, gpkg_path):
     return layer
 
 
-def set_value_relation_field(layer, field_name, other_layer, key_field, value_field):
+def set_value_relation_field(layer, field_name, other_layer, key_field, value_field, description=""):
     widget = QgsEditorWidgetSetup(
         "ValueRelation",
         {
@@ -381,6 +381,7 @@ def set_value_relation_field(layer, field_name, other_layer, key_field, value_fi
             "OrderByValue": False,
             "UseCompleter": False,
             "Value": value_field,
+            "Description": description,
         },
     )
 
