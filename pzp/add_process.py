@@ -53,19 +53,19 @@ def add_process(process_type, gpkg_directory_path):
     QgsExpressionContextUtils.setLayerVariable(area_layer, "pzp_layer", "area")
     QgsExpressionContextUtils.setLayerVariable(area_layer, "pzp_process", process_type)
 
-    utils.add_field_to_layer(area_layer, "commento", "Osservazione o ev. commento", QVariant.String)
-
-    utils.add_field_to_layer(area_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
+    utils.add_field_to_layer(area_layer, "commento", "Nome", QVariant.String)
+    utils.add_field_to_layer(area_layer, "proc_parz", "Processo", QVariant.Int)
     utils.set_value_map_to_field(area_layer, "proc_parz", domains.PROCESS_TYPES)
-
-    utils.add_field_to_layer(area_layer, "fonte_proc", "Fonte del processo (es. nome riale)", QVariant.String)
+    utils.add_field_to_layer(area_layer, "fonte_proc", "Fonte processo", QVariant.String)
 
     utils.set_qml_style(area_layer, "area")
+
     utils.set_not_null_constraint_to_field(area_layer, "fonte_proc")
     utils.set_unique_constraint_to_field(area_layer, "fonte_proc")
     utils.set_default_value_to_field(area_layer, "proc_parz", "@pzp_process")
     utils.set_not_null_constraint_to_field(area_layer, "proc_parz")
     utils.remove_unique_constraint_to_field(area_layer, "proc_parz")
+
     utils.add_layer_to_gpkg(area_layer, gpkg_path)
     area_gpkg_layer = utils.load_gpkg_layer(area_layer.name(), gpkg_path)
     project.addMapLayer(area_gpkg_layer, False)
