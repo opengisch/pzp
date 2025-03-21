@@ -97,8 +97,6 @@ def add_process(process_type, gpkg_directory_path):
         utils.set_value_relation_field(
             area_gpkg_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc"
         )
-        utils.remove_not_null_constraint_to_field(area_gpkg_layer, "fonte_proc")
-        utils.remove_unique_constraint_to_field(area_gpkg_layer, "fonte_proc")
 
         # Propagation layer
         propagation_layer = utils.create_layer("Probabilità di propagazione (tutti gli scenari)", "LineString")
@@ -135,6 +133,8 @@ End
 
         utils.set_qml_style(propagation_layer, "propagation", True)
         utils.set_default_value_to_field(propagation_layer, "proc_parz", "@pzp_process")
+        utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
+        utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
 
         utils.add_layer_to_gpkg(propagation_layer, gpkg_path)
         propagation_gpkg_layer = utils.load_gpkg_layer(propagation_layer.name(), gpkg_path)
