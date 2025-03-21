@@ -17,7 +17,7 @@ from qgis.core import (
     QgsProject,
     QgsVectorLayer,
 )
-from qgis.PyQt.QtCore import Qt, QVariant
+from qgis.PyQt.QtCore import QMetaType, Qt, QVariant
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QPushButton
 from qgis.PyQt.uic import loadUiType
@@ -251,12 +251,31 @@ def get_ui_class(ui_file):
     return loadUiType(ui_file)[0]
 
 
-def add_field_to_layer(layer, name, alias="", variant=QVariant.Int):
+def add_field_to_layer(layer: QgsVectorLayer, name: str, alias: str = "", variant: QVariant = QVariant.Int) -> None:
     field = QgsField(name, variant)
     field.setAlias(alias)
     pr = layer.dataProvider()
     pr.addAttributes([field])
     layer.updateFields()
+
+
+def add_virtual_field_to_layer(
+    layer: QgsVectorLayer, name: str, alias: str = "", variant: QMetaType = QMetaType.Int, expression: str = ""
+) -> None:
+    field = QgsField(name, variant)
+    layer.addExpressionField(expression, field)
+    set_field_alias(layer, alias, field_name=name)
+
+
+def set_field_alias(layer: QgsVectorLayer, field_alias: str, field_index: int = -1, field_name: str = "") -> None:
+    if field_index == -1 and not field_name.strip():
+        return
+
+    if field_index == -1:
+        field_index = layer.fields().indexOf(field_name)
+
+    if field_index != -1:
+        layer.setFieldAlias(field_index, field_alias)
 
 
 def set_value_map_to_field(layer, field_name, domain_map):
@@ -314,10 +333,11 @@ def set_expression_constraint_to_field(layer, field_name, expression, descriptio
     layer.setConstraintExpression(index, expression, description)
 
 
-def set_qml_style(layer, qml_name):
+def set_qml_style(layer, qml_name, load_from_local_db=False):
+    # load_from_local_db=True forces to load from the given QML, regardless of the GPKG style
     current_dir = os.path.dirname(os.path.abspath(__file__))
     qml_file_path = os.path.join(current_dir, "../qml", f"{qml_name}.qml")
-    layer.loadNamedStyle(qml_file_path)
+    layer.loadNamedStyle(qml_file_path, load_from_local_db)
 
 
 def remove_renderer_category(layer: QgsVectorLayer, category_value: str) -> bool:
@@ -402,6 +422,12 @@ def set_value_relation_field(layer, field_name, other_layer, key_field, value_fi
         },
     )
 
+    index = layer.fields().indexOf(field_name)
+    layer.setEditorWidgetSetup(index, widget)
+
+
+def set_range_to_field(layer: QgsVectorLayer, field_name: str, config: dict) -> None:
+    widget = QgsEditorWidgetSetup("Range", config)
     index = layer.fields().indexOf(field_name)
     layer.setEditorWidgetSetup(index, widget)
 
