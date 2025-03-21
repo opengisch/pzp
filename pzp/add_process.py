@@ -203,64 +203,79 @@ End
         # Breaking layer
         breaking_layer = utils.create_layer("Probabilità di rottura (tutti gli scenari)")
 
-        utils.add_field_to_layer(breaking_layer, "osservazioni", "Osservazioni", QVariant.String)
-
         utils.add_field_to_layer(breaking_layer, "prob_rottura", "Probabilità di rottura", QVariant.Int)
+        utils.set_value_map_to_field(breaking_layer, "prob_rottura", domains.EVENT_PROBABILITIES)
 
-        utils.add_field_to_layer(
-            breaking_layer,
-            "classe_intensita",
-            "Intensità/impatto del processo",
-            QVariant.Int,
-        )
+        utils.add_field_to_layer(breaking_layer, "classe_intensita", "Intensità", QVariant.Int)
+        utils.set_value_map_to_field(breaking_layer, "classe_intensita", domains.INTENSITIES)
 
         utils.add_field_to_layer(
             breaking_layer,
             "fonte_proc",
-            "Fonte del processo (es. nome riale)",
+            "Zona sorgente (fonte processo)",
             QVariant.String,
         )
-
-        utils.add_field_to_layer(breaking_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
-
-        utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
-
-        utils.set_qml_style(breaking_layer, "breaking")
         description = """Case
-    when "scenario"  = 0 then 'Sconosciuto'
-    when "scenario"  = 1001 then 'Scenario puntuale'
-    when "scenario"  = 1000 then 'Scenario diffuso'
-    else '_'
-End
-        """
+            when "scenario"  = 0 then 'Sconosciuto'
+            when "scenario"  = 1001 then 'Scenario puntuale'
+            when "scenario"  = 1000 then 'Scenario diffuso'
+            else '_'
+        End
+                """
         utils.set_value_relation_field(
             breaking_layer, "fonte_proc", source_zones_gpkg_layer, "fonte_proc", "fonte_proc", description
         )
+
+        utils.add_field_to_layer(breaking_layer, "proc_parz", "Processo rappresentato TI", QVariant.Int)
+        utils.add_field_to_layer(breaking_layer, "commento", "Osservazione o ev. commento", QVariant.String)
+
+        utils.set_qml_style(breaking_layer, "breaking")
+        utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
 
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
         project.addMapLayer(breaking_gpkg_layer, False)
 
-        QgsExpressionContextUtils.setLayerVariable(breaking_gpkg_layer, "pzp_layer", "breaking")
-        QgsExpressionContextUtils.setLayerVariable(breaking_gpkg_layer, "pzp_process", process_type)
+        def post_configurations_breaking_layers(_layer):
+            utils.set_field_alias(_layer, "No. identificativo", field_name="fid")
 
-        # Remove 'impatto presente' category
-        utils.remove_renderer_category(breaking_gpkg_layer, "1001")
+            # Virtual field should be set on the loaded layer from GPKG
+            # (and the QML style should not contain the Fields category when exported,
+            # otherwise the virtual field would be stored as a normal field in the GPKG)
+            utils.add_virtual_field_to_layer(_layer, "area", "Area in m2", QMetaType.Double, "$area")
+
+            # Configure widget for virtual field (not included in the QML)
+            _config = {
+                "AllowNull": True,
+                "Max": 1.7976931348623157e308,
+                "Min": -1.7976931348623157e308,
+                "Precision": 1,
+                "Step": 1.0,
+                "Style": "SpinBox",
+            }
+            utils.set_range_to_field(_layer, "area", _config)
+
+            options = _layer.geometryOptions()
+            options.setGeometryPrecision(0.001)
+            options.setRemoveDuplicateNodes(True)
+            options.setGeometryChecks([])
+
+            QgsExpressionContextUtils.setLayerVariable(_layer, "pzp_process", process_type)
+
+        post_configurations_breaking_layers(breaking_gpkg_layer)
+
+        QgsExpressionContextUtils.setLayerVariable(breaking_gpkg_layer, "pzp_layer", "breaking")
 
         group_breaking_filtered = utils.create_group("Probabilità di rottura", group)
         group_breaking_filtered.setExpanded(True)
 
         group_breaking_filtered.addLayer(breaking_gpkg_layer)
-        options = breaking_gpkg_layer.geometryOptions()
-        options.setGeometryPrecision(0.001)
-        options.setRemoveDuplicateNodes(True)
-        options.setGeometryChecks(["QgsIsValidCheck"])
 
         filter_params = [
-            ("\"prob_rottura\"='1003'", "Probabilità di rottura alta (0-30)", True, True),
-            ("\"prob_rottura\"='1002'", "Probabilità di rottura media (30-100)", True, True),
-            ("\"prob_rottura\"='1001'", "Probabilità di rottura bassa (100-300)", True, True),
-            ("\"prob_rottura\"='1000'", "Probabilità di rottura molto bassa (>300)", False, False),
+            ("\"prob_rottura\"='1003'", "Probabilità di rottura alta (0-30)", True),
+            ("\"prob_rottura\"='1002'", "Probabilità di rottura media (30-100)", True),
+            ("\"prob_rottura\"='1001'", "Probabilità di rottura bassa (100-300)", True),
+            ("\"prob_rottura\"='1000'", "Probabilità di rottura molto bassa (>300)", False),
         ]
 
         for param in filter_params:
@@ -271,14 +286,11 @@ End
                 param[1],
             )
             added_layer = project.addMapLayer(gpkg_layer, False)
-
             if not param[2]:
                 utils.set_qml_style(added_layer, "breaking_without_no_impact")
 
-            if param[3]:  # Remove 'impatto presente' category
-                utils.remove_renderer_category(added_layer, "1001")
-
             group_breaking_filtered.addLayer(added_layer)
+            post_configurations_breaking_layers(added_layer)
             layer_node = group.findLayer(added_layer.id())
             layer_node.setExpanded(False)
             layer_node.setItemVisibilityChecked(False)
