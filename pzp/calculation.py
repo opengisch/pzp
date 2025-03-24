@@ -163,10 +163,10 @@ class PropagationTool:
         group_intensity_filtered.addLayer(new_layer)
 
         filter_params = [
-            ("\"periodo_ritorno\"='30'", "T 30"),
-            ("\"periodo_ritorno\"='100'", "T 100"),
-            ("\"periodo_ritorno\"='300'", "T 300"),
-            ("\"periodo_ritorno\">'300'", "T >300"),
+            ("\"periodo_ritorno\"='30'", "T 30", True),
+            ("\"periodo_ritorno\"='100'", "T 100", True),
+            ("\"periodo_ritorno\"='300'", "T 300", True),
+            ("\"periodo_ritorno\">'300'", "T >300", False),
         ]
 
         for param in filter_params:
@@ -177,6 +177,9 @@ class PropagationTool:
                 param[1],
             )
             utils.set_qml_style(gpkg_layer, "intensity")
+
+            if param[2]:  # Remove 'impatto presente' category
+                utils.remove_renderer_category(gpkg_layer, "1001")
 
             project.addMapLayer(gpkg_layer, False)
             group_intensity_filtered.addLayer(gpkg_layer)
