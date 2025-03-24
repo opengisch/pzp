@@ -76,7 +76,7 @@ class PropagationTool:
         layer_name = "Intensità completa"
         self._save_layer(layer_intensity, layer_name, gpkg_path)
 
-        new_layer = self._load_layer_to_project(process_type, gpkg_path, layer_name)
+        new_layer = self._load_layer_to_project(process_type, gpkg_path, layer_name, layer_propagation)
         self._post_layer_configuration(process_type, new_layer)
 
         utils.push_info(f"The tool '{self._tool_name}' has finished successfully!", 5)
@@ -147,7 +147,7 @@ class PropagationTool:
         }
         processing.run("native:package", params)
 
-    def _load_layer_to_project(self, process_type, gpkg_path, layer_name):
+    def _load_layer_to_project(self, process_type, gpkg_path, layer_name, base_layer):
         # Load layer from gpkg
         new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
         new_layer.setName(layer_name)
@@ -156,6 +156,16 @@ class PropagationTool:
 
         project = QgsProject.instance()
         project.addMapLayer(new_layer, False)
+
+        def _set_common_post_configurations(_layer, _base_layer):
+            _idx = _base_layer.fields().indexOf("fonte_proc")
+            _widget = _base_layer.editorWidgetSetup(_idx)
+            _idx = _layer.fields().indexOf("fonte_proc")
+            _layer.setEditorWidgetSetup(_idx, _widget)
+
+            QgsExpressionContextUtils.setLayerVariable(_layer, "pzp_process", process_type)
+
+        _set_common_post_configurations(new_layer, base_layer)
 
         group_intensity_filtered = utils.create_group("Intensità (con filtri x visualizzazione scenari)", self._group)
         group_intensity_filtered.setExpanded(True)
@@ -183,6 +193,7 @@ class PropagationTool:
 
             project.addMapLayer(gpkg_layer, False)
             group_intensity_filtered.addLayer(gpkg_layer)
+            _set_common_post_configurations(gpkg_layer, base_layer)
             layer_node = self._group.findLayer(gpkg_layer.id())
             layer_node.setExpanded(False)
             layer_node.setItemVisibilityChecked(False)
@@ -196,7 +207,6 @@ class PropagationTool:
         options.setGeometryChecks(["QgsIsValidCheck"])
 
         QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_layer", "intensity")
-        QgsExpressionContextUtils.setLayerVariable(new_layer, "pzp_process", process_type)
 
 
 class CalculationTool:
