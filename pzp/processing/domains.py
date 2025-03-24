@@ -54,6 +54,13 @@ DANGER_LEVELS = OrderedDict(
     }
 )
 
+SOURCE_ZONES = OrderedDict(
+    {
+        1000: "Diffuso",
+        1001: "Puntuale",
+    }
+)
+
 PROCESS_TYPES = OrderedDict(
     {
         1110: "Alluvionamento corso d'acqua minore",
