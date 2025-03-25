@@ -17,7 +17,7 @@ from qgis.core import (
     QgsProject,
     QgsVectorLayer,
 )
-from qgis.PyQt.QtCore import QMetaType, Qt, QVariant
+from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QPushButton
 from qgis.PyQt.uic import loadUiType
@@ -260,7 +260,7 @@ def add_field_to_layer(layer: QgsVectorLayer, name: str, alias: str = "", varian
 
 
 def add_virtual_field_to_layer(
-    layer: QgsVectorLayer, name: str, alias: str = "", variant: QMetaType = QMetaType.Int, expression: str = ""
+    layer: QgsVectorLayer, name: str, alias: str = "", variant: QVariant = QVariant.Int, expression: str = ""
 ) -> None:
     field = QgsField(name, variant)
     layer.addExpressionField(expression, field)
