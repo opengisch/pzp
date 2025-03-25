@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from qgis.core import QgsExpressionContextUtils, QgsProject
-from qgis.PyQt.QtCore import QMetaType, QVariant
+from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox
 
 from pzp.processing import domains
@@ -148,7 +148,7 @@ End
             # Virtual field should be set on the loaded layer from GPKG
             # (and the QML style should not contain the Fields category when exported,
             # otherwise the virtual field would be stored as a normal field in the GPKG)
-            utils.add_virtual_field_to_layer(_layer, "lunghezza", "Lunghezza in metri", QMetaType.Double, "$length")
+            utils.add_virtual_field_to_layer(_layer, "lunghezza", "Lunghezza in metri", QVariant.Double, "$length")
 
             # Configure widget for virtual field (not included in the QML)
             _config = {
@@ -242,7 +242,7 @@ End
             # Virtual field should be set on the loaded layer from GPKG
             # (and the QML style should not contain the Fields category when exported,
             # otherwise the virtual field would be stored as a normal field in the GPKG)
-            utils.add_virtual_field_to_layer(_layer, "area", "Area in m2", QMetaType.Double, "$area")
+            utils.add_virtual_field_to_layer(_layer, "area", "Area in m2", QVariant.Double, "$area")
 
             # Configure widget for virtual field (not included in the QML)
             _config = {
