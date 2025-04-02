@@ -17,12 +17,12 @@ from pzp import a_b
 from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationTool, PropagationTool
 from pzp.check_dock import CheckResultsDock
+from pzp.gui.settings_dialog import SettingsDialog
 from pzp.no_impact import ToolNessunImpatto
 from pzp.processing.provider import Provider
 from pzp.utils import utils
 from pzp.utils.override_cursor import OverrideCursor
-
-PLUGIN_NAME = "PZP"
+from pzp.utils.settings import PLUGIN_NAME, Settings
 
 
 class PZP(QObject):
@@ -50,27 +50,27 @@ class PZP(QObject):
         self.toolbar.setObjectName("PZPToolbar")
         self.toolbar.setToolTip(f"{PLUGIN_NAME} Toolbar")
 
-        action = self.create_action("landslide.png", "Aggiungi processo", self.do_add_process)
-        self.toolbar.addAction(action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+        help_action = self.create_action("landslide.png", "Aggiungi processo", self.do_add_process)
+        self.toolbar.addAction(help_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
 
         self.init_geodata_menu()
 
-        action = self.create_action(
+        help_action = self.create_action(
             "no_impact.png",
             "Aggiungi zone nessun impatto",
             self.do_calculate_no_impact,
         )
-        self.toolbar.addAction(action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+        self.toolbar.addAction(help_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
 
-        action = self.create_action("propagation.png", "Calcola propagazione", self.do_calculate_propagation)
-        self.toolbar.addAction(action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+        help_action = self.create_action("propagation.png", "Calcola propagazione", self.do_calculate_propagation)
+        self.toolbar.addAction(help_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
 
-        action = self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones)
-        self.toolbar.addAction(action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+        help_action = self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones)
+        self.toolbar.addAction(help_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
 
         a_b_menu = QMenu()
         a_b_action = self.create_action("a_b.png", "A->B", self.do_a_b)
@@ -87,9 +87,13 @@ class PZP(QObject):
         toolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
-        action = self.create_action("help.png", "Aiuto", self.do_help)
-        self.toolbar.addAction(action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, action)
+        settings_action = self.create_action("gear.png", "Ipostazioni", self.do_settings)
+        self.toolbar.addAction(settings_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, settings_action)
+
+        help_action = self.create_action("help.png", "Aiuto", self.do_help)
+        self.toolbar.addAction(help_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
 
         menu_pzp = self.iface.mainWindow().getPluginMenu(PLUGIN_NAME)
         menu_pzp.setIcon(utils.get_icon("landslide.png"))
@@ -180,6 +184,8 @@ class PZP(QObject):
         del self.toolbar
 
         self.unload_provider()
+
+        Settings.unload()
 
     def unload_provider(self):
         QgsApplication.processingRegistry().removeProvider(self._provider)
@@ -326,6 +332,10 @@ class PZP(QObject):
                 return
 
         utils.push_error("Selezionare il layer con le zone di pericolo", 3)
+
+    def do_settings(self):
+        settingsDialog = SettingsDialog()
+        settingsDialog.exec_()
 
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")
