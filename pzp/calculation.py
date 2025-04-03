@@ -4,6 +4,7 @@ import traceback
 from qgis import processing
 from qgis.core import (
     QgsExpressionContextUtils,
+    QgsLayerTreeLayer,
     QgsProcessingException,
     QgsProject,
     QgsVectorLayer,
@@ -19,11 +20,34 @@ class PropagationTool:
         self._tool_name = "Calcolo propagazione"
 
     def _guess_params(self):
+        def _archive_previous_intensity_layers(intensity_group):
+            # Create or get Archivio group
+            archive_group_name = "Intensità completa - Archivio"
+            archive_group = intensity_group.findGroup(archive_group_name)
+            if not archive_group:
+                archive_group = intensity_group.addGroup(archive_group_name)
+
+            # Get all intensity group (layer) children, actually their clones, to be moved
+            children_layers = [
+                child.clone() for child in intensity_group.children() if isinstance(child, QgsLayerTreeLayer)
+            ]
+
+            # Move them to the top of the group (so we always end up with the newest first)
+            archive_group.insertChildNodes(0, children_layers)
+            for child in [child for child in intensity_group.children() if isinstance(child, QgsLayerTreeLayer)]:
+                intensity_group.removeChildNode(child)
+
+            # Collapse and turn off the group
+            archive_group.setExpanded(False)
+            archive_group.setItemVisibilityChecked(False)
+
         # process and layers
         layer_nodes = self._group.findLayers()
         process_type = None
         layer_propagation = None
         layer_breaking = None
+        previous_intensity_layer_found = False
+        previous_intensity_group = None
 
         for layer_node in layer_nodes:
             pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable("pzp_layer")
@@ -33,6 +57,15 @@ class PropagationTool:
             elif pzp_layer == "breaking":
                 layer_breaking = layer_node.layer()
                 process_type = int(QgsExpressionContextUtils.layerScope(layer_breaking).variable("pzp_process"))
+            elif pzp_layer == "intensity":
+                # Intensity layer was found from previous executions: Update its pzp_variable
+                # and move it (and its filtered layers) to a group 'Archivio'
+                QgsExpressionContextUtils.setLayerVariable(layer_node.layer(), "pzp_layer", "intensity_old")
+                previous_intensity_group = layer_node.parent()
+                previous_intensity_layer_found = True
+
+        if previous_intensity_layer_found:
+            _archive_previous_intensity_layers(previous_intensity_group)
 
         if not layer_propagation:
             utils.push_error("Layer con le probabilità di propagazione non trovato", 3)
@@ -73,7 +106,7 @@ class PropagationTool:
             return None
 
         gpkg_path = layer_breaking.dataProvider().dataSourceUri().split("|")[0]
-        layer_name = "Intensità completa"
+        layer_name = f"Intensità completa {process_type} {datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
         self._save_layer(layer_intensity, layer_name, gpkg_path)
 
         new_layer = self._load_layer_to_project(process_type, gpkg_path, layer_name, layer_propagation)
@@ -167,10 +200,16 @@ class PropagationTool:
 
         _set_common_post_configurations(new_layer, base_layer)
 
-        group_intensity_filtered = utils.create_group("Intensità (con filtri x visualizzazione scenari)", self._group)
+        intensity_group_name = "Intensità (con filtri x visualizzazione scenari)"
+        group_intensity_filtered = self._group.findGroup(intensity_group_name)
+        if not group_intensity_filtered:
+            group_intensity_filtered = utils.create_group(intensity_group_name, self._group)
+
         group_intensity_filtered.setExpanded(True)
 
-        group_intensity_filtered.addLayer(new_layer)
+        intensity_children_count = len(group_intensity_filtered.children())
+        position = 0 if intensity_children_count == 0 else intensity_children_count - 1
+        group_intensity_filtered.insertLayer(position, new_layer)  # Just before an eventual archive group
 
         filter_params = [
             ("\"periodo_ritorno\"='30'", "T 30", True),
@@ -192,7 +231,8 @@ class PropagationTool:
                 utils.remove_renderer_category(gpkg_layer, "1001")
 
             project.addMapLayer(gpkg_layer, False)
-            group_intensity_filtered.addLayer(gpkg_layer)
+            position += 1
+            group_intensity_filtered.insertLayer(position, gpkg_layer)
             _set_common_post_configurations(gpkg_layer, base_layer)
             layer_node = self._group.findLayer(gpkg_layer.id())
             layer_node.setExpanded(False)
