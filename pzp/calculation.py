@@ -196,8 +196,6 @@ class PropagationTool:
             _idx = _layer.fields().indexOf("fonte_proc")
             _layer.setEditorWidgetSetup(_idx, _widget)
 
-            # pzp_layer variable could come from QML, it should be reset (removed), but no current API to do so
-            QgsExpressionContextUtils.setLayerVariable(_layer, "pzp_layer", None)
             QgsExpressionContextUtils.setLayerVariable(_layer, "pzp_process", process_type)
 
         _set_common_post_configurations(new_layer, base_layer)
