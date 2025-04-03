@@ -12,12 +12,14 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QVariant
 
 from pzp.processing.merge_by_area import MergeByArea
+from pzp.processing.merge_by_form_factor import MergeByFormFactor
 
 
 class DangerZones(QgsProcessingAlgorithm):
     INPUT = "INPUT"
     MATRIX_FIELD = "MATRIX_FIELD"
     PROCESS_SOURCE_FIELD = "PROCESS_SOURCE_FIELD"
+    MERGE_FORM_FACTOR = "MERGE_FORM_FACTOR"
     OUTPUT = "OUTPUT"
 
     def createInstance(self):
@@ -61,6 +63,17 @@ class DangerZones(QgsProcessingAlgorithm):
             )
         )
 
+        self.addParameter(
+            QgsProcessingParameterField(
+                name=self.MERGE_FORM_FACTOR,
+                description="Fusiona le geometrie con superficie inferiore a 10m2 se rispondono al fattore di forma."
+                "Ad esempio con un fattore di 0.1 le geometrie di 1x10m o più allungate verranno fusionate."
+                "Un fattore di 0 o negativo viene ignorato.",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric,
+            )
+        )
+
         self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Zone di pericolo"))
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -83,6 +96,8 @@ class DangerZones(QgsProcessingAlgorithm):
             self.PROCESS_SOURCE_FIELD,
             context,
         )[0]
+
+        merge_form_factor = self.parameterAsDouble(parameters, self.MERGE_FORM_FACTOR, context)
 
         # # Send some information to the user
         # feedback.pushInfo(f"CRS is {source.sourceCrs().authid()}")
@@ -133,6 +148,7 @@ class DangerZones(QgsProcessingAlgorithm):
                 process_source,
                 matrix_field,
                 process_source_field,
+                merge_form_factor,
                 parameters,
                 context,
                 feedback,
@@ -160,6 +176,7 @@ class DangerZones(QgsProcessingAlgorithm):
         process_source,
         matrix_field,
         process_source_field,
+        merge_form_factor,
         parameters,
         context,
         feedback,
@@ -247,6 +264,32 @@ class DangerZones(QgsProcessingAlgorithm):
                     feedback=feedback,
                     is_child_algorithm=True,
                 )
+
+                if merge_form_factor > 0:
+                    result = processing.run(
+                        "pzp_utils:merge_by_form_factor",
+                        {
+                            "INPUT": result["OUTPUT"],
+                            "MODE": MergeByFormFactor.MODE_BOUNDARY,
+                            "FORM_FACTOR": merge_form_factor,
+                            "AREA_TRESHOLD": 10,
+                            "OUTPUT": "memory:",
+                        },
+                        context=context,
+                        feedback=feedback,
+                        is_child_algorithm=True,
+                    )
+
+                    result = processing.run(
+                        "native:multiparttosingleparts",
+                        {
+                            "INPUT": result["OUTPUT"],
+                            "OUTPUT": "memory:",
+                        },
+                        context=context,
+                        feedback=feedback,
+                        is_child_algorithm=True,
+                    )
 
                 # Workaround to re-remove small invalid parts that comes back after multi to single
                 result = processing.run(
