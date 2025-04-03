@@ -50,27 +50,29 @@ class PZP(QObject):
         self.toolbar.setObjectName("PZPToolbar")
         self.toolbar.setToolTip(f"{PLUGIN_NAME} Toolbar")
 
-        help_action = self.create_action("landslide.png", "Aggiungi processo", self.do_add_process)
-        self.toolbar.addAction(help_action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
+        landslide_action = self.create_action("landslide.png", "Aggiungi processo", self.do_add_process)
+        self.toolbar.addAction(landslide_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, landslide_action)
 
         self.init_geodata_menu()
 
-        help_action = self.create_action(
+        no_impact_action = self.create_action(
             "no_impact.png",
             "Aggiungi zone nessun impatto",
             self.do_calculate_no_impact,
         )
-        self.toolbar.addAction(help_action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
+        self.toolbar.addAction(no_impact_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, no_impact_action)
 
-        help_action = self.create_action("propagation.png", "Calcola propagazione", self.do_calculate_propagation)
-        self.toolbar.addAction(help_action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
+        propagation_action = self.create_action(
+            "propagation.png", "Calcola propagazione", self.do_calculate_propagation
+        )
+        self.toolbar.addAction(propagation_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, propagation_action)
 
-        help_action = self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones)
-        self.toolbar.addAction(help_action)
-        self.iface.addPluginToMenu(PLUGIN_NAME, help_action)
+        calculate_zones_action = self.create_action("process.png", "Calcola zone di pericolo", self.do_calculate_zones)
+        self.toolbar.addAction(calculate_zones_action)
+        self.iface.addPluginToMenu(PLUGIN_NAME, calculate_zones_action)
 
         a_b_menu = QMenu()
         a_b_action = self.create_action("a_b.png", "A->B", self.do_a_b)
