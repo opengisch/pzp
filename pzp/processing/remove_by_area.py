@@ -74,7 +74,7 @@ class RemoveByArea(QgisAlgorithm):
                 break
 
             if feature.geometry().area() <= 1:
-                print(f"Remove feature: {feature.attributes()}")
+                feedback.pushInfo(f"Remove feature: {feature.attributes()}")
                 continue
 
             # write the others to output

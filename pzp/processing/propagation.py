@@ -228,7 +228,7 @@ class Propagation(QgsProcessingAlgorithm):
 
                             acca_prob = domains.MATRIX_BREAKING[propagation_probability][breaking_probability]
 
-                            print(f"{breaking_probability=}, {propagation_probability=}, {acca_prob=}")
+                            feedback.pushInfo(f"{breaking_probability=}, {propagation_probability=}, {acca_prob=}")
                             attributes.append(acca_prob)
                             new_feature.setAttributes(attributes)
                             features_to_add.append(new_feature)

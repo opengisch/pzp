@@ -1,23 +1,3 @@
-"""
-Derived from:
-
-***************************************************************************
-    EliminateSelection.py
-    ---------------------
-    Date                 : January 2017
-    Copyright         : (C) 2017 by Bernhard Ströbl
-    Email                : bernhard.stroebl@jena.de
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
-"""
-
-
 import os
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
@@ -31,22 +11,23 @@ from qgis.core import (
     QgsProcessingParameterEnum,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterNumber,
     QgsProcessingUtils,
 )
 
 pluginPath = os.path.split(os.path.split(os.path.dirname(__file__))[0])[0]
 
 
-class MergeByArea(QgisAlgorithm):
+class MergeByFormFactor(QgisAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
     MODE = "MODE"
+    FORM_FACTOR = "FORM_FACTOR"
+    AREA_THRESHOLD = "AREA_THRESHOLD"
 
     MODE_LARGEST_AREA = 0
     MODE_SMALLEST_AREA = 1
     MODE_BOUNDARY = 2
-    MODE_HIGHEST_VALUE = 3
-    MODE_HIGHEST_MATRIX_VALUE = 4
 
     def group(self):
         return "Algoritmi"
@@ -71,18 +52,28 @@ class MergeByArea(QgisAlgorithm):
         )
 
         self.addParameter(
+            QgsProcessingParameterNumber(self.FORM_FACTOR, self.tr("Minimum form factor to keep the geometry"))
+        )
+
+        self.addParameter(
+            QgsProcessingParameterNumber(self.AREA_THRESHOLD, self.tr("Minimum area to keep the geometry"))
+        )
+
+        self.addParameter(
             QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr("Eliminated"), QgsProcessing.TypeVectorPolygon)
         )
 
     def name(self):
-        return "merge_by_area"
+        return "merge_by_form_factor"
 
     def displayName(self):
-        return "Fondi per area"
+        return "Fondi per fattore di forma"
 
     def processAlgorithm(self, parameters, context, feedback):
         inLayer = self.parameterAsSource(parameters, self.INPUT, context)
         mode = self.parameterAsEnum(parameters, self.MODE, context)
+        formFactor = self.parameterAsDouble(parameters, self.FORM_FACTOR, context)
+        areaThreshold = self.parameterAsDouble(parameters, self.AREA_THRESHOLD, context)
 
         featToEliminate = []
 
@@ -96,7 +87,10 @@ class MergeByArea(QgisAlgorithm):
             if feedback.isCanceled():
                 break
 
-            if feature.geometry().area() <= 1:
+            # Check area treshold and form factor
+            if self._checkArea(feature.geometry(), areaThreshold) and self._checkFormFactor(
+                feature.geometry(), formFactor
+            ):
                 featToEliminate.append(feature)
             else:
                 # write the others to output
@@ -211,6 +205,7 @@ class MergeByArea(QgisAlgorithm):
 
         # End while
         if not processLayer.commitChanges():
+            processLayer.rollBack()
             raise QgsProcessingException(self.tr("Could not commit changes"))
 
         for feature in featNotEliminated:
@@ -222,3 +217,13 @@ class MergeByArea(QgisAlgorithm):
             processLayer.dataProvider().addFeature(feature, QgsFeatureSink.FastInsert)
 
         return {self.OUTPUT: dest_id}
+
+    def _checkArea(self, geometry, areaTreshold):
+        return geometry.area() <= areaTreshold
+
+    def _checkFormFactor(self, geometry, formFactorThreshold):
+        minimumBoundingBox, area, angle, width, height = geometry.orientedMinimumBoundingBox()
+
+        formFactor = min(height, width) / max(height, width)
+
+        return formFactor <= formFactorThreshold

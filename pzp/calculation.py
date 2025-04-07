@@ -12,6 +12,7 @@ from qgis.core import (
 
 from pzp.processing import domains
 from pzp.utils import utils
+from pzp.utils.settings import Settings
 
 
 class PropagationTool:
@@ -365,6 +366,7 @@ class CalculationTool:
                 "INPUT": result_04["OUTPUT"],
                 "MATRIX_FIELD": "matrice",
                 "PROCESS_SOURCE_FIELD": "fonte_proc",
+                "MERGE_FORM_FACTOR": Settings().merge_form_factor.value(),
                 "OUTPUT": "TEMPORARY_OUTPUT",
             },
         )
