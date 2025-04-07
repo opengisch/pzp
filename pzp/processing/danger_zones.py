@@ -65,13 +65,18 @@ class DangerZones(QgsProcessingAlgorithm):
             )
         )
 
+        type = None
+        if Qgis.QGIS_VERSION_INT >= 33600:
+            type = Qgis.ProcessingNumberParameterType.Double
+        else:
+            type = QgsProcessingParameterNumber.Double
         self.addParameter(
             QgsProcessingParameterNumber(
                 name=self.MERGE_FORM_FACTOR,
                 description="Fusiona le geometrie con superficie inferiore a 10m2 se rispondono al fattore di forma."
                 "Ad esempio con un fattore di 0.1 le geometrie di 1x10m o più allungate verranno fusionate."
                 "Un fattore di 0 o negativo viene ignorato.",
-                type=Qgis.ProcessingNumberParameterType.Double,
+                type=type,
             )
         )
 
