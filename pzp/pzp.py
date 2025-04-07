@@ -89,7 +89,7 @@ class PZP(QObject):
         toolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
-        settings_action = self.create_action("gear.png", "Ipostazioni", self.do_settings)
+        settings_action = self.create_action("gear.png", "Impostazioni", self.do_settings)
         self.toolbar.addAction(settings_action)
         self.iface.addPluginToMenu(PLUGIN_NAME, settings_action)
 

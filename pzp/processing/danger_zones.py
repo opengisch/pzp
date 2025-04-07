@@ -1,5 +1,6 @@
 from qgis import processing
 from qgis.core import (
+    Qgis,
     QgsField,
     QgsFields,
     QgsProcessing,
@@ -8,6 +9,7 @@ from qgis.core import (
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
+    QgsProcessingParameterNumber,
 )
 from qgis.PyQt.QtCore import QVariant
 
@@ -64,13 +66,12 @@ class DangerZones(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterField(
+            QgsProcessingParameterNumber(
                 name=self.MERGE_FORM_FACTOR,
                 description="Fusiona le geometrie con superficie inferiore a 10m2 se rispondono al fattore di forma."
                 "Ad esempio con un fattore di 0.1 le geometrie di 1x10m o più allungate verranno fusionate."
                 "Un fattore di 0 o negativo viene ignorato.",
-                parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=Qgis.ProcessingNumberParameterType.Double,
             )
         )
 
@@ -272,7 +273,7 @@ class DangerZones(QgsProcessingAlgorithm):
                             "INPUT": result["OUTPUT"],
                             "MODE": MergeByFormFactor.MODE_BOUNDARY,
                             "FORM_FACTOR": merge_form_factor,
-                            "AREA_TRESHOLD": 10,
+                            "AREA_THRESHOLD": 10,
                             "OUTPUT": "memory:",
                         },
                         context=context,

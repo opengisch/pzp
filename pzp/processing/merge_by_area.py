@@ -31,7 +31,6 @@ from qgis.core import (
     QgsProcessingParameterEnum,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
-    QgsProcessingParameterField,
     QgsProcessingUtils,
 )
 
@@ -42,7 +41,6 @@ class MergeByArea(QgisAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
     MODE = "MODE"
-    VALUE_FIELD = "VALUE_FIELD"
 
     MODE_LARGEST_AREA = 0
     MODE_SMALLEST_AREA = 1
@@ -60,11 +58,7 @@ class MergeByArea(QgisAlgorithm):
         super().__init__()
 
     def initAlgorithm(self, config=None):
-        self.modes = [
-            self.tr("Largest Area"),
-            self.tr("Smallest Area"),
-            self.tr("Largest Common Boundary")
-        ]
+        self.modes = [self.tr("Largest Area"), self.tr("Smallest Area"), self.tr("Largest Common Boundary")]
 
         self.addParameter(
             QgsProcessingParameterFeatureSource(self.INPUT, self.tr("Input layer"), [QgsProcessing.TypeVectorPolygon])
@@ -89,7 +83,6 @@ class MergeByArea(QgisAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         inLayer = self.parameterAsSource(parameters, self.INPUT, context)
         mode = self.parameterAsEnum(parameters, self.MODE, context)
-        valueField = self.parameterAsFields(parameters, self.VALUE_FIELD, context)
 
         featToEliminate = []
 
@@ -224,7 +217,7 @@ class MergeByArea(QgisAlgorithm):
             if feedback.isCanceled():
                 break
 
-            print("Error: could not merge feature: {}".format(feature.id()))
+            feedback.reportError("Could not merge feature: {}".format(feature.id()))
 
             processLayer.dataProvider().addFeature(feature, QgsFeatureSink.FastInsert)
 
