@@ -1,28 +1,14 @@
-from collections import OrderedDict
-
 from qgis import processing
 from qgis.core import (
-    QgsFeature,
-    QgsFeatureSink,
-    QgsField,
-    QgsFields,
     QgsProcessing,
     QgsProcessingAlgorithm,
-    QgsProcessingException,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
-    QgsProcessingParameterMatrix,
-    QgsProcessingParameterEnum,
-    edit,
 )
-from qgis.PyQt.QtCore import QVariant
-
-from . import domains
 
 
 class NoImpact(QgsProcessingAlgorithm):
-
     AREA_LAYER = "AREA_LAYER"
     INTENSITY_LAYER = "INTENSITY_LAYER"
     PERIOD_FIELD = "PERIOD_FIELD"
@@ -67,7 +53,6 @@ class NoImpact(QgsProcessingAlgorithm):
             )
         )
 
-
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INTENSITY_LAYER,
@@ -103,13 +88,11 @@ class NoImpact(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Nessun impatto")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Nessun impatto"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INTENSITY_LAYER, context)
-        intensity_layer = self.parameterAsVectorLayer(parameters, self.INTENSITY_LAYER, context)
+        self.parameterAsVectorLayer(parameters, self.INTENSITY_LAYER, context)
         period_field = self.parameterAsFields(
             parameters,
             self.PERIOD_FIELD,
@@ -135,7 +118,7 @@ class NoImpact(QgsProcessingAlgorithm):
         )[0]
 
         used_periods = set()
-        process_sources  = set()
+        process_sources = set()
 
         attributes = None
 
@@ -169,7 +152,6 @@ class NoImpact(QgsProcessingAlgorithm):
         )
 
         for process_source in process_sources:
-
             # Escape ' in process_source
             process_source = process_source.replace("'", "''")
 
@@ -190,7 +172,7 @@ class NoImpact(QgsProcessingAlgorithm):
                     "native:extractbyexpression",
                     {
                         "INPUT": parameters[self.AREA_LAYER],
-                        "EXPRESSION": f'"{area_process_source_field}" = \'{process_source}\'',
+                        "EXPRESSION": f"\"{area_process_source_field}\" = '{process_source}'",
                         "OUTPUT": "memory:",
                     },
                     context=context,
@@ -201,10 +183,10 @@ class NoImpact(QgsProcessingAlgorithm):
                 result = processing.run(
                     "native:difference",
                     {
-                        'INPUT': area["OUTPUT"],
-                        'OVERLAY': result["OUTPUT"],
-                        'OUTPUT': "memory:",
-                        'GRID_SIZE':None,
+                        "INPUT": area["OUTPUT"],
+                        "OVERLAY": result["OUTPUT"],
+                        "OUTPUT": "memory:",
+                        "GRID_SIZE": None,
                     },
                     context=context,
                     feedback=feedback,
@@ -214,8 +196,8 @@ class NoImpact(QgsProcessingAlgorithm):
                 result = processing.run(
                     "native:multiparttosingleparts",
                     {
-                        'INPUT': result["OUTPUT"],
-                        'OUTPUT': "memory:",
+                        "INPUT": result["OUTPUT"],
+                        "OUTPUT": "memory:",
                     },
                     context=context,
                     feedback=feedback,

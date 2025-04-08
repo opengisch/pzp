@@ -6,18 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>444</width>
-    <height>202</height>
+    <width>516</width>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>An error occurred</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0">
    <item row="2" column="0">
     <widget class="QgsCollapsibleGroupBox" name="grp_traceback">
      <property name="title">
-      <string>Technical details</string>
+      <string>Dettagli tecnici</string>
      </property>
      <property name="flat">
       <bool>true</bool>
@@ -25,10 +25,10 @@
      <property name="checkable">
       <bool>false</bool>
      </property>
-     <property name="collapsed">
+     <property name="collapsed" stdset="0">
       <bool>true</bool>
      </property>
-     <property name="saveCollapsedState">
+     <property name="saveCollapsedState" stdset="0">
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
@@ -67,6 +67,16 @@
        </layout>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="lbl_description">
+     <property name="text">
+      <string>Description</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item row="0" column="0">
@@ -188,16 +198,6 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="lbl_description">
-     <property name="text">
-      <string>Description</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
    <item row="3" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
@@ -207,6 +207,19 @@
       <set>QDialogButtonBox::Ok</set>
      </property>
     </widget>
+   </item>
+   <item row="2" column="1">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
@@ -218,6 +231,7 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
