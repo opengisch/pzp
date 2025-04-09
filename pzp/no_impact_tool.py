@@ -20,11 +20,12 @@ class ToolNessunImpatto:
         process_type = None
 
         for layer_node in layer_nodes:
-            if layer_node.name() == "Intensità completa":
+            pzp_layer = QgsExpressionContextUtils.layerScope(layer_node.layer()).variable("pzp_layer")
+            if pzp_layer == "intensity":
                 layer_intensity = layer_node.layer()
                 var_process = QgsExpressionContextUtils.layerScope(layer_intensity).variable("pzp_process")
                 process_type = int(var_process) if var_process else None
-            elif layer_node.name() == "Area di studio":
+            elif pzp_layer == "area":
                 layer_area = layer_node.layer()
 
         if not layer_intensity:

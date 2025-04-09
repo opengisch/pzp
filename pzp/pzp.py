@@ -18,7 +18,7 @@ from pzp.add_process import AddProcessDialog
 from pzp.calculation import CalculationTool, PropagationTool
 from pzp.check_dock import CheckResultsDock
 from pzp.gui.settings_dialog import SettingsDialog
-from pzp.no_impact import ToolNessunImpatto
+from pzp.no_impact_tool import ToolNessunImpatto
 from pzp.processing.provider import Provider
 from pzp.utils import utils
 from pzp.utils.override_cursor import OverrideCursor
