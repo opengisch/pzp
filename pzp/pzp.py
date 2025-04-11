@@ -275,7 +275,7 @@ class PZP(QObject):
             # Subgroup
             if existingTreeElement is None:
                 existingTreeElement = projectParentGroup.addGroup(layerNode.name())
-                projectParentGroup.setItemVisibilityChecked(layerNode.itemVisibilityChecked())
+                existingTreeElement.setItemVisibilityChecked(layerNode.itemVisibilityChecked())
                 existingTreeElement.setExpanded(layerNode.isExpanded())
             self.do_add_group_recursive(existingTreeElement, layerNode)
 
