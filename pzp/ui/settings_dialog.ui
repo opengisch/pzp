@@ -30,7 +30,16 @@
    <item row="0" column="0">
     <widget class="QLabel" name="mergeFormFactorLabel">
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fusiona le geometrie con superficie inferiore a 10m2 se rispondono al fattore di forma.&lt;/p&gt;&lt;p&gt;Ad esempio con un fattore di 0.1 le geometrie di 1x10m o più allungate verranno fuse.&lt;/p&gt;&lt;p&gt;Un fattore di 0 o negativo viene ignorato.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;Fusiona i poligoni con superficie inferiore a 10m2 se rispondono al fattore di forma. Per fattore di forma si intende il rapporto tra altezza e larghezza della bounding box minima di un poligono.&lt;/p&gt;
+&lt;p&gt;Ad esempio:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Fattore 0: nessun poligono verrà fuso .&lt;/li&gt;
+  &lt;li&gt;Fattore 0.1: i poligoni di 1x10m, o più allungati verranno fusi.&lt;/li&gt;
+  &lt;li&gt;Fattore 0.4: i poligoni di 2x5m, o più allungati verranno fusi.&lt;/li&gt;
+  &lt;li&gt;Fattore 1: tutti i poligoni sotto i 10m2 verranno fusi.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Fattore di forma per fondi geometrie:</string>
