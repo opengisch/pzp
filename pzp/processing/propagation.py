@@ -3,6 +3,7 @@ from qgis.core import (
     Qgis,
     QgsFeature,
     QgsField,
+    QgsGeometry,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSink,
@@ -238,6 +239,13 @@ class Propagation(QgsProcessingAlgorithm):
         return {self.OUTPUT: dest_id}
 
     def left_of_line(self, poly, line):
+        # Extend the line at the beginning and at the end,
+        # so that the single-sided buffer is wider, making
+        # it more probable to find corresponding polygons
+        const_line = line.geometry().constGet()
+        cloned_line = QgsGeometry(const_line.clone())
+        extended_line = cloned_line.extendLine(100, 100)
+
         # Expand the line on the left side and check if a point in the polygon is inside the buffer
-        buf = line.geometry().singleSidedBuffer(1000000, 4, Qgis.BufferSide.Left)
+        buf = extended_line.singleSidedBuffer(1000000, 4, Qgis.BufferSide.Left)
         return buf.contains(poly.geometry().pointOnSurface())
