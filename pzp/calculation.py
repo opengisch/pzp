@@ -122,48 +122,61 @@ class PropagationTool:
         print(f"{layer_propagation=}")
         print(f"{layer_breaking=}")
 
-        result_01 = processing.run(
-            "pzp_utils:propagation",
-            {
-                "BREAKING_LAYER": layer_breaking.id(),
-                "BREAKING_FIELD": "prob_rottura",
-                "SOURCE_FIELD": "fonte_proc",
-                "PROPAGATION_LAYER": layer_propagation.id(),
-                "PROPAGATION_FIELD": "prob_propagazione",
-                "BREAKING_FIELD_PROP": "prob_rottura",
-                "SOURCE_FIELD_PROP": "fonte_proc",
-                "OUTPUT": "TEMPORARY_OUTPUT",
-            },
-        )
-        result_02 = processing.run(
-            "native:extractbyexpression",
-            {
-                "INPUT": result_01["OUTPUT"],
-                "EXPRESSION": f'"proc_parz" = {process_type}',
-                "OUTPUT": "TEMPORARY_OUTPUT",
-            },
-        )
+        try:
+            result_01 = processing.run(
+                "pzp_utils:propagation",
+                {
+                    "BREAKING_LAYER": layer_breaking.id(),
+                    "BREAKING_FIELD": "prob_rottura",
+                    "SOURCE_FIELD": "fonte_proc",
+                    "PROPAGATION_LAYER": layer_propagation.id(),
+                    "PROPAGATION_FIELD": "prob_propagazione",
+                    "BREAKING_FIELD_PROP": "prob_rottura",
+                    "SOURCE_FIELD_PROP": "fonte_proc",
+                    "OUTPUT": "TEMPORARY_OUTPUT",
+                },
+            )
+        except (QgsProcessingException, Exception) as e:
+            raise QgsProcessingException("The algorithm pzp_utils:propagation failed! " + str(e))
+
+        try:
+            result_02 = processing.run(
+                "native:extractbyexpression",
+                {
+                    "INPUT": result_01["OUTPUT"],
+                    "EXPRESSION": f'"proc_parz" = {process_type}',
+                    "OUTPUT": "TEMPORARY_OUTPUT",
+                },
+            )
+        except (QgsProcessingException, Exception) as e:
+            raise QgsProcessingException("The algorithm native:extractbyexpression failed! " + str(e))
 
         # Clippa per periodo di ritorno
-        result_03 = processing.run(
-            "pzp_utils:remove_overlappings",
-            {
-                "INPUT": result_02["OUTPUT"],
-                "INTENSITY_FIELD": "classe_intensita",
-                "PERIOD_FIELD": "periodo_ritorno",
-                "SOURCE_FIELD": "fonte_proc",
-                "OUTPUT": "TEMPORARY_OUTPUT",
-            },
-        )
+        try:
+            result_03 = processing.run(
+                "pzp_utils:remove_overlappings",
+                {
+                    "INPUT": result_02["OUTPUT"],
+                    "INTENSITY_FIELD": "classe_intensita",
+                    "PERIOD_FIELD": "periodo_ritorno",
+                    "SOURCE_FIELD": "fonte_proc",
+                    "OUTPUT": "TEMPORARY_OUTPUT",
+                },
+            )
+        except (QgsProcessingException, Exception) as e:
+            raise QgsProcessingException("The algorithm pzp_utils:remove_overlappings failed! " + str(e))
 
-        result = processing.run(
-            "native:deletecolumn",
-            {
-                "INPUT": result_03["OUTPUT"],
-                "COLUMN": ["fid"],
-                "OUTPUT": "TEMPORARY_OUTPUT",
-            },
-        )
+        try:
+            result = processing.run(
+                "native:deletecolumn",
+                {
+                    "INPUT": result_03["OUTPUT"],
+                    "COLUMN": ["fid"],
+                    "OUTPUT": "TEMPORARY_OUTPUT",
+                },
+            )
+        except (QgsProcessingException, Exception) as e:
+            raise QgsProcessingException("The algorithm native:deletecolumn failed! " + str(e))
 
         return result["OUTPUT"]
 
