@@ -4,11 +4,14 @@ from qgis.core import (
     QgsFeature,
     QgsField,
     QgsGeometry,
+    QgsLineString,
+    QgsPoint,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
+    QgsVertexId,
 )
 from qgis.PyQt.QtCore import QVariant
 
@@ -240,12 +243,48 @@ class Propagation(QgsProcessingAlgorithm):
 
     def left_of_line(self, poly, line):
         # Extend the line at the beginning and at the end,
-        # so that the single-sided buffer is wider, making
-        # it more probable to find corresponding polygons
-        const_line = line.geometry().constGet()
-        cloned_line = QgsGeometry(const_line.clone())
-        extended_line = cloned_line.extendLine(100, 100)
+        # in the direction given by the segment created from
+        # start and end vertices.
+        # In this way, the line is less prone to be concave,
+        # which could create single-sided buffer disconnected
+        # from it (i.e., not even touching the line), making
+        # it impossible to find corresponding polygons.
+        geometry = line.geometry()
+        extended_line = self.extend_line(geometry)
 
         # Expand the line on the left side and check if a point in the polygon is inside the buffer
         buf = extended_line.singleSidedBuffer(1000000, 4, Qgis.BufferSide.Left)
         return buf.contains(poly.geometry().pointOnSurface())
+
+    def extend_line(self, line):
+        """
+        This function does not modify the original line.
+        It works on a copy of it.
+
+        The input line must be of type QgsGeometry.
+        The output line is of type QgsGeometry.
+        """
+        if not line.isGeosValid():
+            print("Original line is not a valid geometry!")
+
+        # Create segment start-end
+        vertices = line.asPolyline()
+        start_vertex = QgsPoint(vertices[0])
+        end_vertex = QgsPoint(vertices[-1])
+        segment = QgsLineString([start_vertex, end_vertex])
+
+        # Extend the segment to get new start-end vertices
+        segment.extend(10, 10)
+
+        # Add those new start-end vertices to the original line
+        extended_start = segment.startPoint()
+        extended_end = segment.endPoint()
+
+        abs_line = line.get()
+        end_pos = QgsVertexId(0, 0, len(vertices))
+        abs_line.insertVertex(end_pos, extended_end)
+
+        start_pos = QgsVertexId(0, 0, 0)
+        abs_line.insertVertex(start_pos, extended_start)
+
+        return QgsGeometry(abs_line.clone())
