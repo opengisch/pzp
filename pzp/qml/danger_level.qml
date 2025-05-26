@@ -1061,7 +1061,7 @@
     <default field="prob_rottura" expression="" applyOnUpdate="0"/>
     <default field="classe_intensita" expression="" applyOnUpdate="0"/>
     <default field="fonte_proc" expression="" applyOnUpdate="0"/>
-    <default field="proc_parz" expression="" applyOnUpdate="0"/>
+    <default field="proc_parz" expression="@pzp_process" applyOnUpdate="0"/>
     <default field="commento" expression="" applyOnUpdate="0"/>
     <default field="area" expression="" applyOnUpdate="0"/>
     <default field="periodo_ritorno" expression="" applyOnUpdate="0"/>
