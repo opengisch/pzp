@@ -5,7 +5,7 @@ from qgis.core import QgsExpressionContextUtils, QgsLayerTreeLayer, QgsProject
 from qgis.testing import start_app
 from qgis.testing.mocked import get_iface
 
-from pzp.add_process import add_process
+from pzp.add_process import AddProcessDialog
 
 start_app()
 
@@ -58,7 +58,7 @@ def test_add_process_caduta_sassi(plugin_instance, gpkg_dir_path, project):
     print(" [INFO] Validating add process Caduta sassi...")
     process_type = 3000
 
-    add_process(process_type, gpkg_dir_path)
+    AddProcessDialog.add_process(process_type, gpkg_dir_path)
 
     # Test expected root group
     assert len(project.layerTreeRoot().children()) == 1  # Root group
