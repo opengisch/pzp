@@ -864,7 +864,31 @@
           <Option type="Map">
             <Option type="List" name="map">
               <Option type="Map">
+                <Option value="1110" type="QString" name="Alluvionamento corso d'acqua minore"/>
+              </Option>
+              <Option type="Map">
+                <Option value="1120" type="QString" name="Alluvionamento corso d'acqua principale"/>
+              </Option>
+              <Option type="Map">
+                <Option value="1200" type="QString" name="Flusso detrito"/>
+              </Option>
+              <Option type="Map">
+                <Option value="1400" type="QString" name="Ruscellamento superficiale"/>
+              </Option>
+              <Option type="Map">
+                <Option value="2001" type="QString" name="Scivolamento spontaneo"/>
+              </Option>
+              <Option type="Map">
+                <Option value="2002" type="QString" name="Colata detritica di versante"/>
+              </Option>
+              <Option type="Map">
                 <Option value="3000" type="QString" name="Caduta sassi o blocchi"/>
+              </Option>
+              <Option type="Map">
+                <Option value="4100" type="QString" name="Valanga radente"/>
+              </Option>
+              <Option type="Map">
+                <Option value="4200" type="QString" name="Valanga polverosa"/>
               </Option>
             </Option>
           </Option>
