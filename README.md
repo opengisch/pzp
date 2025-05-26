@@ -20,7 +20,7 @@ docker run --rm -e PYTHONPATH=/usr/share/qgis/python/plugins -v $PWD:/usr/src -w
 
 ### Layer Style definitions (.QML)
 
-When exporting .QML files for integration in the plugin select this categories:
+When exporting .QML files for integration in the plugin select these categories:
 
 - LayerConfiguration
 - Symbology
