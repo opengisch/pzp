@@ -3,7 +3,7 @@ from datetime import datetime
 
 from qgis.core import QgsExpressionContextUtils, QgsProject
 from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QMessageBox
+from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QMessageBox
 
 from pzp.processing import domains
 from pzp.utils import utils
@@ -21,15 +21,23 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         for process in domains.PROCESS_TYPES.items():
             self.process_cbox.addItem(process[1], process[0])
 
-        self.file_widget.setFilter("*.gpkg;;*.GPKG")
+        self.directory_toolButton.clicked.connect(self.select_directory_clicked)
+
+    def select_directory_clicked(self):
+        directory = QFileDialog.getExistingDirectory(self, "Seleziona cartella")
+
+        if directory:
+            self.directory_lineEdit.setText(directory)
 
     def button_box_clicked(self, button):
         if self.buttonBox.buttonRole(button) == QDialogButtonBox.RejectRole:
             self.close()
             return
 
+        selected_directory = self.directory_lineEdit.text()
+
         # check if selected dir exists
-        if not self.file_widget.filePath() or not os.path.exists(self.file_widget.filePath()):
+        if not selected_directory or not os.path.exists(selected_directory):
             QMessageBox.critical(
                 self,
                 "Errore",
@@ -39,7 +47,7 @@ class AddProcessDialog(QDialog, FORM_CLASS):
 
         process_type = self.process_cbox.currentData()
         try:
-            self.add_process(process_type, self.file_widget.filePath())
+            self.add_process(process_type, selected_directory)
         except Exception as exception:
             QMessageBox.critical(
                 self,
