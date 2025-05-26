@@ -3,7 +3,7 @@ from datetime import datetime
 
 from qgis.core import QgsExpressionContextUtils, QgsProject
 from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QMessageBox
+from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QMessageBox
 
 from pzp.processing import domains
 from pzp.utils import utils
@@ -21,20 +21,12 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         for process in domains.PROCESS_TYPES.items():
             self.process_cbox.addItem(process[1], process[0])
 
-        self.directory_toolButton.clicked.connect(self.select_directory_clicked)
-
-    def select_directory_clicked(self):
-        directory = QFileDialog.getExistingDirectory(self, "Seleziona cartella")
-
-        if directory:
-            self.directory_lineEdit.setText(directory)
-
     def button_box_clicked(self, button):
         if self.buttonBox.buttonRole(button) == QDialogButtonBox.RejectRole:
             self.close()
             return
 
-        selected_directory = self.directory_lineEdit.text()
+        selected_directory = self.file_widget.filePath()
 
         # check if selected dir exists
         if not selected_directory or not os.path.exists(selected_directory):
@@ -54,9 +46,6 @@ class AddProcessDialog(QDialog, FORM_CLASS):
                 "Errore",
                 f"Si è verificato un errore durante l'aggiunta del processo: {exception}",
             )
-            return
-
-        if self.buttonBox.buttonRole(button) == QDialogButtonBox.ApplyRole:
             return
 
         self.close()
@@ -166,7 +155,7 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         group_intensity_filtered = utils.create_group("Intensità (con filtri x visualizzazione scenari)", group)
         group_intensity_filtered.setExpanded(True)
 
-        if process_type in [2001, 2002, 3000, 4100, 4200]:
+        if process_type in [2001, 2002, 4100, 4200]:
             filter_params = [
                 ("\"periodo_ritorno\"='30'", "T 30"),
                 ("\"periodo_ritorno\"='100'", "T 100"),
