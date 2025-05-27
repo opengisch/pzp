@@ -412,7 +412,10 @@ class CalculationTool:
         # Load layer from gpkg
         new_layer = QgsVectorLayer(gpkg_path + "|layername=" + layer_name, "MultiPolygon", "ogr")
 
-        utils.set_qml_style(new_layer, "danger_level")
+        if process_type == 3000:  # Caduta sassi
+            utils.set_qml_style(new_layer, "danger_level_caduta_sassi")
+        else:
+            utils.set_qml_style(new_layer, "danger_level")
 
         project = QgsProject.instance()
 
@@ -443,7 +446,10 @@ class CalculationTool:
                     param[0],
                     param[1],
                 )
-                utils.set_qml_style(gpkg_layer, "danger_level")
+                if process_type == 3000:  # Caduta sassi
+                    utils.set_qml_style(new_layer, "danger_level_caduta_sassi")
+                else:
+                    utils.set_qml_style(new_layer, "danger_level")
 
                 project.addMapLayer(gpkg_layer, False)
                 group_danger_filtered.addLayer(gpkg_layer)
