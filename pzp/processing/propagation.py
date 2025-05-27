@@ -264,9 +264,6 @@ class Propagation(QgsProcessingAlgorithm):
         The input line must be of type QgsGeometry.
         The output line is of type QgsGeometry.
         """
-        if not line.isGeosValid():
-            print("Original line is not a valid geometry!")
-
         # Create segment start-end
         vertices = line.asPolyline()
         start_vertex = QgsPoint(vertices[0])
