@@ -20,7 +20,10 @@ def initialize_processing():
 @pytest.fixture(scope="module")
 def qgis_projects_to_test():
     print("\nINFO: Get layer copy")
-    return [str(get_data_path("caduta_sassi_vigne.qgz", "caduta_sassi"))]
+    return [
+        str(get_data_path("caduta_sassi_semplice.qgz", "caduta_sassi")),
+        str(get_data_path("caduta_sassi_vigne.qgz", "caduta_sassi")),
+    ]
 
 
 @pytest.fixture(scope="module")
@@ -45,6 +48,7 @@ def test_calcola_propagazione(plugin_instance, qgis_projects_to_test):
 
     # Test each project given
     for project_path in qgis_projects_to_test:
+        print(f" [INFO] Testing project {project_path}...")
         project = QgsProject.instance()
         project.read(project_path)
 
@@ -75,6 +79,7 @@ def test_calcola_propagazione(plugin_instance, qgis_projects_to_test):
         # Compare obtained and expected layers
         obtained_periodo_di_ritorno = [feature["periodo_ritorno"] for feature in obtained_layer.layer().getFeatures()]
         expected_periodo_di_ritorno = [feature["periodo_ritorno"] for feature in expected_layer.getFeatures()]
+        print(f" [INFO] Obtained periodo di retorno: {obtained_periodo_di_ritorno}")
 
         assert obtained_periodo_di_ritorno == expected_periodo_di_ritorno
 
