@@ -271,7 +271,8 @@ class Propagation(QgsProcessingAlgorithm):
         segment = QgsLineString([start_vertex, end_vertex])
 
         # Extend the segment to get new start-end vertices
-        segment.extend(10, 10)
+        distance = int(segment.length() / 2)  # Use half of the length as extend distance
+        segment.extend(distance, distance)
 
         # Add those new start-end vertices to the original line
         extended_start = segment.startPoint()
