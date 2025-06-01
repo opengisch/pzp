@@ -3,7 +3,17 @@ exclude: |
       pzp/data/.*
   )$
 
-repos:
+repos: # XML canonicalize
+  - repo: local
+    hooks:
+      - id: canonicalize-xml
+        name: Canonicalize XML
+        entry: scripts/canonicalize_xml.py
+        language: python
+        files: '\.(xml|qlr|qml|qgs)$'
+        pass_filenames: true
+        additional_dependencies: ["lxml"]
+
   # Fix end of files
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
