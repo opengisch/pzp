@@ -3,7 +3,8 @@ exclude: |
       pzp/data/.*
   )$
 
-repos: # XML canonicalize
+repos:
+  # XML canonicalize
   - repo: local
     hooks:
       - id: canonicalize-xml

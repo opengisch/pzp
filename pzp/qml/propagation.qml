@@ -1,4 +1,4 @@
-<qgis labelsEnabled="1" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Forms" version="3.43.0-Master">
+<qgis labelsEnabled="1" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms" version="3.40.3-Bratislava">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
@@ -635,7 +635,7 @@
           <Option name="drawToAllParts" type="bool" value="false"></Option>
           <Option name="enabled" type="QString" value="0"></Option>
           <Option name="labelAnchorPoint" type="QString" value="point_on_exterior"></Option>
-          <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; type=&quot;line&quot; frame_rate=&quot;10&quot; alpha=&quot;1&quot; is_animated=&quot;0&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot;>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; type=&quot;QString&quot; name=&quot;name&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; type=&quot;QString&quot; name=&quot;type&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;layer id=&quot;{a5e7a18b-ef3c-456c-87d8-06764edc77c8}&quot; pass=&quot;0&quot; class=&quot;SimpleLine&quot; enabled=&quot;1&quot; locked=&quot;0&quot;>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;align_dash_pattern&quot;/>&lt;Option value=&quot;square&quot; type=&quot;QString&quot; name=&quot;capstyle&quot;/>&lt;Option value=&quot;5;2&quot; type=&quot;QString&quot; name=&quot;customdash&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; type=&quot;QString&quot; name=&quot;customdash_map_unit_scale&quot;/>&lt;Option value=&quot;MM&quot; type=&quot;QString&quot; name=&quot;customdash_unit&quot;/>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;dash_pattern_offset&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; type=&quot;QString&quot; name=&quot;dash_pattern_offset_map_unit_scale&quot;/>&lt;Option value=&quot;MM&quot; type=&quot;QString&quot; name=&quot;dash_pattern_offset_unit&quot;/>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;draw_inside_polygon&quot;/>&lt;Option value=&quot;bevel&quot; type=&quot;QString&quot; name=&quot;joinstyle&quot;/>&lt;Option value=&quot;60,60,60,255,rgb:0.23529411764705882,0.23529411764705882,0.23529411764705882,1&quot; type=&quot;QString&quot; name=&quot;line_color&quot;/>&lt;Option value=&quot;solid&quot; type=&quot;QString&quot; name=&quot;line_style&quot;/>&lt;Option value=&quot;0.3&quot; type=&quot;QString&quot; name=&quot;line_width&quot;/>&lt;Option value=&quot;MM&quot; type=&quot;QString&quot; name=&quot;line_width_unit&quot;/>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;offset&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; type=&quot;QString&quot; name=&quot;offset_map_unit_scale&quot;/>&lt;Option value=&quot;MM&quot; type=&quot;QString&quot; name=&quot;offset_unit&quot;/>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;ring_filter&quot;/>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;trim_distance_end&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; type=&quot;QString&quot; name=&quot;trim_distance_end_map_unit_scale&quot;/>&lt;Option value=&quot;MM&quot; type=&quot;QString&quot; name=&quot;trim_distance_end_unit&quot;/>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;trim_distance_start&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; type=&quot;QString&quot; name=&quot;trim_distance_start_map_unit_scale&quot;/>&lt;Option value=&quot;MM&quot; type=&quot;QString&quot; name=&quot;trim_distance_start_unit&quot;/>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;tweak_dash_pattern_on_corners&quot;/>&lt;Option value=&quot;0&quot; type=&quot;QString&quot; name=&quot;use_custom_dash&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; type=&quot;QString&quot; name=&quot;width_map_unit_scale&quot;/>&lt;/Option>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; type=&quot;QString&quot; name=&quot;name&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; type=&quot;QString&quot; name=&quot;type&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+          <Option name="lineSymbol" type="QString" value="&lt;symbol is_animated=&quot;0&quot; name=&quot;symbol&quot; frame_rate=&quot;10&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot; clip_to_extent=&quot;1&quot; type=&quot;line&quot;>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;layer locked=&quot;0&quot; class=&quot;SimpleLine&quot; pass=&quot;0&quot; enabled=&quot;1&quot; id=&quot;{a5e7a18b-ef3c-456c-87d8-06764edc77c8}&quot;>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;0&quot; name=&quot;align_dash_pattern&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;square&quot; name=&quot;capstyle&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;5;2&quot; name=&quot;customdash&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; name=&quot;customdash_map_unit_scale&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;MM&quot; name=&quot;customdash_unit&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0&quot; name=&quot;dash_pattern_offset&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; name=&quot;dash_pattern_offset_map_unit_scale&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;MM&quot; name=&quot;dash_pattern_offset_unit&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0&quot; name=&quot;draw_inside_polygon&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;bevel&quot; name=&quot;joinstyle&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;60,60,60,255,rgb:0.23529411764705882,0.23529411764705882,0.23529411764705882,1&quot; name=&quot;line_color&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;solid&quot; name=&quot;line_style&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0.3&quot; name=&quot;line_width&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;MM&quot; name=&quot;line_width_unit&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0&quot; name=&quot;offset&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; name=&quot;offset_map_unit_scale&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;MM&quot; name=&quot;offset_unit&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0&quot; name=&quot;ring_filter&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0&quot; name=&quot;trim_distance_end&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; name=&quot;trim_distance_end_map_unit_scale&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;MM&quot; name=&quot;trim_distance_end_unit&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0&quot; name=&quot;trim_distance_start&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; name=&quot;trim_distance_start_map_unit_scale&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;MM&quot; name=&quot;trim_distance_start_unit&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0&quot; name=&quot;tweak_dash_pattern_on_corners&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;0&quot; name=&quot;use_custom_dash&quot; type=&quot;QString&quot;/>&lt;Option value=&quot;3x:0,0,0,0,0,0&quot; name=&quot;width_map_unit_scale&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
           <Option name="minLength" type="double" value="0"></Option>
           <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
           <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -652,17 +652,14 @@
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <fieldConfiguration>
-    <field name="fid">
+    <field configurationFlags="NoFlag" name="fid">
       <editWidget type="TextEdit">
         <config>
-          <Option type="Map">
-            <Option name="IsMultiline" type="bool" value="false"></Option>
-            <Option name="UseHtml" type="bool" value="false"></Option>
-          </Option>
+          <Option></Option>
         </config>
       </editWidget>
     </field>
-    <field name="prob_propagazione">
+    <field configurationFlags="NoFlag" name="prob_propagazione">
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
@@ -684,7 +681,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="fonte_proc">
+    <field configurationFlags="NoFlag" name="fonte_proc">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
@@ -705,7 +702,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="prob_rottura">
+    <field configurationFlags="NoFlag" name="prob_rottura">
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
@@ -730,7 +727,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="proc_parz">
+    <field configurationFlags="NoFlag" name="proc_parz">
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
@@ -749,7 +746,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="lunghezza">
+    <field configurationFlags="NoFlag" name="lunghezza">
       <editWidget type="Range">
         <config>
           <Option type="Map">
@@ -764,6 +761,57 @@
       </editWidget>
     </field>
   </fieldConfiguration>
+  <aliases>
+    <alias field="fid" index="0" name="Identificativo (automatico)"></alias>
+    <alias field="prob_propagazione" index="1" name="Limite probabilità di propagazione"></alias>
+    <alias field="fonte_proc" index="2" name="Zona sorgente (fonte processo)"></alias>
+    <alias field="prob_rottura" index="3" name="Probabilità di rottura (scenario)"></alias>
+    <alias field="proc_parz" index="4" name="Processo rappresentato TI"></alias>
+    <alias field="lunghezza" index="5" name="Lunghezza in metri"></alias>
+  </aliases>
+  <splitPolicies>
+    <policy field="fid" policy="Duplicate"></policy>
+    <policy field="prob_propagazione" policy="Duplicate"></policy>
+    <policy field="fonte_proc" policy="Duplicate"></policy>
+    <policy field="prob_rottura" policy="Duplicate"></policy>
+    <policy field="proc_parz" policy="Duplicate"></policy>
+    <policy field="lunghezza" policy="Duplicate"></policy>
+  </splitPolicies>
+  <duplicatePolicies>
+    <policy field="fid" policy="Duplicate"></policy>
+    <policy field="prob_propagazione" policy="Duplicate"></policy>
+    <policy field="fonte_proc" policy="Duplicate"></policy>
+    <policy field="prob_rottura" policy="Duplicate"></policy>
+    <policy field="proc_parz" policy="Duplicate"></policy>
+    <policy field="lunghezza" policy="Duplicate"></policy>
+  </duplicatePolicies>
+  <defaults>
+    <default applyOnUpdate="0" expression="" field="fid"></default>
+    <default applyOnUpdate="0" expression="" field="prob_propagazione"></default>
+    <default applyOnUpdate="0" expression="" field="fonte_proc"></default>
+    <default applyOnUpdate="0" expression="" field="prob_rottura"></default>
+    <default applyOnUpdate="0" expression="@pzp_process" field="proc_parz"></default>
+    <default applyOnUpdate="0" expression="" field="lunghezza"></default>
+  </defaults>
+  <constraints>
+    <constraint constraints="3" exp_strength="0" field="fid" notnull_strength="1" unique_strength="1"></constraint>
+    <constraint constraints="1" exp_strength="0" field="prob_propagazione" notnull_strength="2" unique_strength="0"></constraint>
+    <constraint constraints="1" exp_strength="0" field="fonte_proc" notnull_strength="1" unique_strength="0"></constraint>
+    <constraint constraints="1" exp_strength="0" field="prob_rottura" notnull_strength="2" unique_strength="0"></constraint>
+    <constraint constraints="0" exp_strength="0" field="proc_parz" notnull_strength="0" unique_strength="0"></constraint>
+    <constraint constraints="0" exp_strength="0" field="lunghezza" notnull_strength="0" unique_strength="0"></constraint>
+  </constraints>
+  <constraintExpressions>
+    <constraint desc="" exp="" field="fid"></constraint>
+    <constraint desc="" exp="" field="prob_propagazione"></constraint>
+    <constraint desc="" exp="" field="fonte_proc"></constraint>
+    <constraint desc="" exp="" field="prob_rottura"></constraint>
+    <constraint desc="" exp="" field="proc_parz"></constraint>
+    <constraint desc="" exp="" field="lunghezza"></constraint>
+  </constraintExpressions>
+  <expressionfields>
+    <field comment="" expression="$length" length="0" name="lunghezza" precision="0" subType="0" type="6" typeName=""></field>
+  </expressionfields>
   <editform tolerant="1"></editform>
   <editforminit></editforminit>
   <editforminitcodesource>0</editforminitcodesource>
