@@ -318,17 +318,14 @@
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <fieldConfiguration>
-    <field name="fid">
+    <field configurationFlags="NoFlag" name="fid">
       <editWidget type="TextEdit">
         <config>
-          <Option type="Map">
-            <Option name="IsMultiline" type="bool" value="false"></Option>
-            <Option name="UseHtml" type="bool" value="false"></Option>
-          </Option>
+          <Option></Option>
         </config>
       </editWidget>
     </field>
-    <field name="prob_rottura">
+    <field configurationFlags="NoFlag" name="prob_rottura">
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
@@ -353,7 +350,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="classe_intensita">
+    <field configurationFlags="NoFlag" name="classe_intensita">
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
@@ -375,20 +372,27 @@
         </config>
       </editWidget>
     </field>
-    <field name="fonte_proc">
+    <field configurationFlags="NoFlag" name="fonte_proc">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
             <Option name="AllowMulti" type="bool" value="false"></Option>
             <Option name="AllowNull" type="bool" value="false"></Option>
+            <Option name="CompleterMatchFlags" type="int" value="2"></Option>
             <Option name="Description" type="QString" value="Case&#xD;&#xA;&#x9;when &quot;scenario&quot;  = 0 then 'Sconosciuto'&#xD;&#xA;&#x9;when &quot;scenario&quot;  = 1001 then 'Scenario puntuale'&#xD;&#xA;&#x9;when &quot;scenario&quot;  = 1000 then 'Scenario diffuso'&#xD;&#xA;&#x9;else '_'&#xD;&#xA;End"></Option>
-            <Option name="FilterExpression" type="invalid"></Option>
+            <Option name="DisplayGroupName" type="bool" value="false"></Option>
+            <Option name="FilterExpression" type="QString" value=""></Option>
+            <Option name="Group" type="QString" value=""></Option>
             <Option name="Key" type="QString" value="fonte_proc"></Option>
             <Option name="Layer" type="QString" value="Zone_instabilita_1ed06e0b_ac25_48cb_a1ae_d42c8a2f4097"></Option>
             <Option name="LayerName" type="QString" value="Zona sorgente (fonte processo)"></Option>
             <Option name="LayerProviderName" type="QString" value="ogr"></Option>
             <Option name="LayerSource" type="QString" value="F:/UPIP/06_StrumentiGis/02_Progetti base/09_Plugin QGIS/01_Test QGIS/Mod.proc.CadutaSassi2024/data_3000_19092023_145610.gpkg|layername=Zone_instabilita"></Option>
             <Option name="NofColumns" type="int" value="1"></Option>
+            <Option name="OrderByDescending" type="bool" value="false"></Option>
+            <Option name="OrderByField" type="bool" value="false"></Option>
+            <Option name="OrderByFieldName" type="QString" value=""></Option>
+            <Option name="OrderByKey" type="bool" value="true"></Option>
             <Option name="OrderByValue" type="bool" value="false"></Option>
             <Option name="UseCompleter" type="bool" value="false"></Option>
             <Option name="Value" type="QString" value="fonte_proc"></Option>
@@ -422,21 +426,31 @@
         </config>
       </editWidget>
     </field>
-    <field name="area">
-      <editWidget type="Range">
-        <config>
-          <Option type="Map">
-            <Option name="AllowNull" type="bool" value="true"></Option>
-            <Option name="Max" type="double" value="1.7976931348623157e+308"></Option>
-            <Option name="Min" type="double" value="-1.7976931348623157e+308"></Option>
-            <Option name="Precision" type="int" value="1"></Option>
-            <Option name="Step" type="double" value="1"></Option>
-            <Option name="Style" type="QString" value="SpinBox"></Option>
-          </Option>
-        </config>
-      </editWidget>
-    </field>
   </fieldConfiguration>
+  <defaults>
+    <default applyOnUpdate="0" expression="" field="fid"></default>
+    <default applyOnUpdate="0" expression="" field="prob_rottura"></default>
+    <default applyOnUpdate="0" expression="" field="classe_intensita"></default>
+    <default applyOnUpdate="0" expression="" field="fonte_proc"></default>
+    <default applyOnUpdate="0" expression="@pzp_process" field="proc_parz"></default>
+    <default applyOnUpdate="0" expression="" field="commento"></default>
+  </defaults>
+  <constraints>
+    <constraint constraints="3" exp_strength="0" field="fid" notnull_strength="1" unique_strength="1"></constraint>
+    <constraint constraints="1" exp_strength="0" field="prob_rottura" notnull_strength="2" unique_strength="0"></constraint>
+    <constraint constraints="1" exp_strength="0" field="classe_intensita" notnull_strength="2" unique_strength="0"></constraint>
+    <constraint constraints="1" exp_strength="0" field="fonte_proc" notnull_strength="1" unique_strength="0"></constraint>
+    <constraint constraints="0" exp_strength="0" field="proc_parz" notnull_strength="0" unique_strength="0"></constraint>
+    <constraint constraints="0" exp_strength="0" field="commento" notnull_strength="0" unique_strength="0"></constraint>
+  </constraints>
+  <constraintExpressions>
+    <constraint desc="" exp="" field="fid"></constraint>
+    <constraint desc="" exp="" field="prob_rottura"></constraint>
+    <constraint desc="" exp="" field="classe_intensita"></constraint>
+    <constraint desc="" exp="" field="fonte_proc"></constraint>
+    <constraint desc="" exp="" field="proc_parz"></constraint>
+    <constraint desc="" exp="" field="commento"></constraint>
+  </constraintExpressions>
   <editform tolerant="1"></editform>
   <editforminit></editforminit>
   <editforminitcodesource>0</editforminitcodesource>
