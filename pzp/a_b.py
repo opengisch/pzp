@@ -2,9 +2,7 @@ from qgis.core import QgsExpressionContextUtils, edit
 
 
 def a_b(layer):
-    process_type = int(
-        QgsExpressionContextUtils.layerScope(layer).variable("pzp_process")
-    )
+    process_type = int(QgsExpressionContextUtils.layerScope(layer).variable("pzp_process"))
     selection = layer.selectedFeatures()
 
     if not selection:
@@ -38,9 +36,7 @@ def a_b(layer):
 
 
 def b_a(layer):
-    process_type = int(
-        QgsExpressionContextUtils.layerScope(layer).variable("pzp_process")
-    )
+    process_type = int(QgsExpressionContextUtils.layerScope(layer).variable("pzp_process"))
     selection = layer.selectedFeatures()
 
     if not selection:

@@ -1,32 +1,27 @@
-from qgis import processing
 from qgis.core import (
+    QgsFeature,
+    QgsFeatureSink,
     QgsField,
     QgsFields,
-    QgsFeature,
-    QgsWkbTypes,
-    QgsFeatureSink,
     QgsProcessing,
     QgsProcessingAlgorithm,
-    QgsProcessingException,
     QgsProcessingParameterCrs,
-    QgsProcessingParameterFeatureSource,
+    QgsProcessingParameterFeatureSink,
     QgsProcessingParameterField,
     QgsProcessingParameterNumber,
     QgsProcessingParameterVectorLayer,
-    QgsProcessingParameterVectorDestination,
-    QgsProcessingParameterFeatureSink,
+    QgsWkbTypes,
 )
 from qgis.PyQt.QtCore import QVariant
 
 
 class MergeIntensityLayers(QgsProcessingAlgorithm):
-
     NUM_OF_LAYERS = 5
     LAYERS = [f"LAYER{i}" for i in range(NUM_OF_LAYERS)]
     INTENSITY_FIELDS = [f"INTENSITY_FIELD{i}" for i in range(NUM_OF_LAYERS)]
     PERIODS = [f"PERIOD{i}" for i in range(NUM_OF_LAYERS)]
 
-    CRS = 'CRS'
+    CRS = "CRS"
     OUTPUT = "OUTPUT"
 
     def createInstance(self):
@@ -48,7 +43,6 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
         return "Algoritmo per fondere layer con intensità separati per periodo di ritorno"
 
     def initAlgorithm(self, config=None):
-
         for i in range(self.NUM_OF_LAYERS):
             self.addParameter(
                 QgsProcessingParameterVectorLayer(
@@ -78,25 +72,16 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
                 )
             )
 
-        self.addParameter(QgsProcessingParameterCrs(
-            self.CRS, "CRS", defaultValue = "EPSG:2056")
-        )
+        self.addParameter(QgsProcessingParameterCrs(self.CRS, "CRS", defaultValue="EPSG:2056"))
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Intensità completo")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Intensità completo"))
 
     def processAlgorithm(self, parameters, context, feedback):
-
         fields = QgsFields()
         fields.append(QgsField("intensity", QVariant.Int))
         fields.append(QgsField("period", QVariant.Int))
 
-        crs = self.parameterAsCrs(
-            parameters,
-            self.CRS,
-            context
-        )
+        crs = self.parameterAsCrs(parameters, self.CRS, context)
 
         (sink, dest_id) = self.parameterAsSink(
             parameters,
@@ -110,11 +95,7 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
         new_features = []
 
         for i in range(self.NUM_OF_LAYERS):
-            layer = self.parameterAsSource(
-                parameters,
-                self.LAYERS[i],
-                context
-            )
+            layer = self.parameterAsSource(parameters, self.LAYERS[i], context)
             if not layer:
                 continue
 

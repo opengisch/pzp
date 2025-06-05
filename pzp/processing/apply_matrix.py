@@ -1,25 +1,21 @@
-from collections import OrderedDict
-
 from qgis.core import (
-    QgsFeature,
     QgsFeatureSink,
     QgsField,
-    QgsFields,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
+    QgsProcessingParameterEnum,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterField,
     QgsProcessingParameterMatrix,
-    QgsProcessingParameterEnum,
 )
 from qgis.PyQt.QtCore import QVariant
 
 from . import domains
 
-class ApplyMatrix(QgsProcessingAlgorithm):
 
+class ApplyMatrix(QgsProcessingAlgorithm):
     INPUT = "INPUT"
     PERIOD_FIELD = "PERIOD_FIELD"
     INTENSITY_FIELD = "INTENSITY_FIELD"
@@ -27,9 +23,7 @@ class ApplyMatrix(QgsProcessingAlgorithm):
     PREDEFINED_MATRIX = "PREDEFINED_MATRIX"
     OUTPUT = "OUTPUT"
 
-    PREDEFINED_MATRIX_CHOICES = list(
-        domains.PROCESS_TYPES.values()
-    )
+    PREDEFINED_MATRIX_CHOICES = list(domains.PROCESS_TYPES.values())
     PREDEFINED_MATRIX_CHOICES.insert(0, "Inserimento manuale")
 
     def createInstance(self):
@@ -82,8 +76,9 @@ class ApplyMatrix(QgsProcessingAlgorithm):
                 self.PREDEFINED_MATRIX,
                 "Matrice predefinita",
                 self.PREDEFINED_MATRIX_CHOICES,
-                defaultValue = 0,
-        ))
+                defaultValue=0,
+            )
+        )
 
         self.addParameter(
             QgsProcessingParameterMatrix(
@@ -147,18 +142,13 @@ class ApplyMatrix(QgsProcessingAlgorithm):
             )
         )
 
-
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Matrice applicata")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Matrice applicata"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
 
         if source is None:
-            raise QgsProcessingException(
-                self.invalidSourceError(parameters, self.INPUT)
-            )
+            raise QgsProcessingException(self.invalidSourceError(parameters, self.INPUT))
 
         fields = source.fields()
         fields.append(QgsField("grado_pericolo", QVariant.Int))
@@ -254,7 +244,6 @@ class ApplyMatrix(QgsProcessingAlgorithm):
         return result
 
     def get_matrix_value(self, processed_matrix, intensity, return_years):
-
         inner_dict = processed_matrix[intensity]
 
         # Smallest key in matrix greater than or equal to return years
