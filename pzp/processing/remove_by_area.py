@@ -17,7 +17,6 @@ Derived from:
 ***************************************************************************
 """
 
-
 import os
 
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
