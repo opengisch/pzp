@@ -32,7 +32,7 @@ repos:
       - id: prettier
 
   # Remove unused imports/variables
-  - repo: git@github.com:myint/autoflake.git
+  - repo: https://github.com/myint/autoflake
     rev: v2.3.1
     hooks:
       - id: autoflake
