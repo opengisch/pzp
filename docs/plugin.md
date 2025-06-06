@@ -1,12 +1,11 @@
 # Plugin
 
-
 ## Installazione
 
 Per installare il plugin in QGIS è necessario aggiungere un nuovo
 repository dei plugin in QGIS:
 
-È possibile aggiungere il repository andando nel menu *Plugins -> Gestisci ed Installa Plugin...*
+È possibile aggiungere il repository andando nel menu _Plugins -> Gestisci ed Installa Plugin..._
 
 ![Aggiungere repository](./assets/repository_plugin.png)
 
@@ -17,8 +16,7 @@ https://download.opengis.ch/repos/ticino/plugins.xml
 A questo punto è possibile installare il plugin chiamato `pzp`.
 
 !!! Nota
-    Richiede QGIS 3.28 Firenze (LTR), non testato per versioni superiori.
-
+Richiede QGIS 3.28 Firenze (LTR), non testato per versioni superiori.
 
 ## Funzionalità
 
@@ -86,7 +84,7 @@ Questo layer permette di digitalizzare le linee che definiscono le probabilità 
 - probabilità di rottura (a cui la linea si riferisce)
 
 !!! Nota
-    Questo layer è presente solamente per il processo "Caduta sassi/blocchi/massi"
+Questo layer è presente solamente per il processo "Caduta sassi/blocchi/massi"
 
 #### Probabilità di rottura
 
@@ -97,7 +95,7 @@ Questo layer permette di digitalizzare le geometrie che definiscono le probabili
 - fonte del processo
 
 !!! Nota
-    Questo layer è presente solamente per il processo "Caduta sassi/blocchi/massi"
+Questo layer è presente solamente per il processo "Caduta sassi/blocchi/massi"
 
 ### Calcolo delle zone di nessun impatto
 
@@ -111,7 +109,7 @@ dell'area di studio non coperta da altre geometrie della fonte di
 proceso in questione.
 
 !!! Nota
-    Per poter utilizzare questo pulsante occorre selezionare il gruppo contentente il processo nel pannello dei layer di QGIS
+Per poter utilizzare questo pulsante occorre selezionare il gruppo contentente il processo nel pannello dei layer di QGIS
 
 ### Generazione delle intensità tramite le linee di propagazione
 
@@ -136,7 +134,7 @@ l'ora di creazione. Il layer viene salvato nello stesso geopackage
 utilizzato dal processo in questione.
 
 !!! Nota
-    Per poter utilizzare questo pulsante occorre selezionare il gruppo contentente il processo nel pannello dei layer di QGIS
+Per poter utilizzare questo pulsante occorre selezionare il gruppo contentente il processo nel pannello dei layer di QGIS
 
 ### Modifica delle zone con possibilità multiple
 
@@ -144,7 +142,7 @@ utilizzato dal processo in questione.
 
 Questo strumento permette di modificare il colore delle zone di
 pericolo che secondo la matrice possono avere più possibilità. Ad
-esempio per la matrice del *Flusso di detrito*, il pericolo 4 può
+esempio per la matrice del _Flusso di detrito_, il pericolo 4 può
 essere giallo (4a) o blu (4b).
 
 Premendo il pulsante "A->B", tutte le geometrie selezionate nel layer
@@ -153,8 +151,9 @@ che hanno più possibilità diventeranno "B" e premendo il pulsante
 layer, l'operazione viene eseguita su tutte le geometrie del layer con possibilità multipla.
 
 !!! Nota
-    Per poter utilizzare questo pulsante occorre selezionare il layer con le zone di pericolo sul quale si vuole eseguire l'operazione
+Per poter utilizzare questo pulsante occorre selezionare il layer con le zone di pericolo sul quale si vuole eseguire l'operazione
 
 ### Ottenere informazioni Alla pagina https://opengisch.github.io/pzp/
+
 è presente la documentazione aggiornata. La pagina è accessibile
 tramite il pulsante "Aiuto" nel plugin.

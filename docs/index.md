@@ -4,9 +4,9 @@ Questa è la documentazione del plugin per QGIS per la creazione dei Piani delle
 
 La documentazione è divisa in più sezioni:
 
-  - Nella sezione [Plugin](plugin.md), vengono descritte le funzionalità del plugin per QGIS.
-  - Nella sezione [Algoritmi](algorithms.md), vengono descritti gli algoritmi (processing algorithms) utilizzati dal plugin.
-  - La sezione [Riferimento tecnico](reference.md), contiene informazioni tecniche ad esempio sulle matrici utilizzate per il calcolo delle zone di pericolo
+- Nella sezione [Plugin](plugin.md), vengono descritte le funzionalità del plugin per QGIS.
+- Nella sezione [Algoritmi](algorithms.md), vengono descritti gli algoritmi (processing algorithms) utilizzati dal plugin.
+- La sezione [Riferimento tecnico](reference.md), contiene informazioni tecniche ad esempio sulle matrici utilizzate per il calcolo delle zone di pericolo
 
 ## Maggiori informazioni, domande e segnalazioni
 

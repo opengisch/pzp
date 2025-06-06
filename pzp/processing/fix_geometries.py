@@ -41,7 +41,6 @@ class FixGeometries(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer"))
 
     def processAlgorithm(self, parameters, context, feedback):
-
         result = processing.run(
             "native:fixgeometries",
             {"INPUT": parameters[self.INPUT], "OUTPUT": "memory:"},

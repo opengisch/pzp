@@ -2,10 +2,10 @@ name: Documentation
 on:
   push:
     branches:
-      - 'main'
+      - "main"
     paths:
-      - 'docs/**'
-      - '.github/workflows/documentation.yml'
+      - "docs/**"
+      - ".github/workflows/documentation.yml"
 
 jobs:
   mkdocs:
