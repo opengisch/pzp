@@ -1,4 +1,4 @@
-<qgis labelsEnabled="1" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms" version="3.42.2-Münster">
+<qgis labelsEnabled="1" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms" version="3.40.3-Bratislava">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
@@ -658,7 +658,7 @@
             <Option name="AllowMulti" type="bool" value="false"></Option>
             <Option name="AllowNull" type="bool" value="false"></Option>
             <Option name="CompleterMatchFlags" type="int" value="2"></Option>
-            <Option name="Description" type="QString" value="Case&#xD;&#xA;&#x9;when &quot;scenario&quot;  = 0 then 'Sconosciuto'&#xD;&#xA;&#x9;when &quot;scenario&quot;  = 1001 then 'Scenario puntuale'&#xD;&#xA;&#x9;when &quot;scenario&quot;  = 1000 then 'Scenario diffuso'&#xD;&#xA;&#x9;else '_'&#xD;&#xA;End"></Option>
+            <Option name="Description" type="QString" value=""></Option>
             <Option name="DisplayGroupName" type="bool" value="false"></Option>
             <Option name="FilterExpression" type="QString" value=""></Option>
             <Option name="Group" type="QString" value=""></Option>
