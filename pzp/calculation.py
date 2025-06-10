@@ -447,9 +447,9 @@ class CalculationTool:
                     param[1],
                 )
                 if process_type == 3000:  # Caduta sassi
-                    utils.set_qml_style(new_layer, "danger_level_caduta_sassi")
+                    utils.set_qml_style(gpkg_layer, "danger_level_caduta_sassi")
                 else:
-                    utils.set_qml_style(new_layer, "danger_level")
+                    utils.set_qml_style(gpkg_layer, "danger_level")
 
                 project.addMapLayer(gpkg_layer, False)
                 group_danger_filtered.addLayer(gpkg_layer)
