@@ -276,7 +276,7 @@ class CalculationTool:
 
         check_ok = False
         if not force:
-            check_ok = utils.check_inputs(self._tool_name, layer_intensity, self.run)
+            check_ok = utils.check_inputs(self._tool_name, layer_intensity, self.run, check_overlaps=True)
 
         if force or check_ok:
             self.run_with_parameters(process_type, layer_intensity)
