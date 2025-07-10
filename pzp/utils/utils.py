@@ -16,6 +16,7 @@ from qgis.core import (
     QgsFieldConstraints,
     QgsLayerDefinition,
     QgsMessageLog,
+    QgsProcessingException,
     QgsProject,
     QgsVectorLayer,
 )
@@ -131,20 +132,29 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback, check_overlaps
         if not pk_name:
             log_error(f"Unable to check overlaps in layer '{input.name()}'. The layer has no unique field!")
         else:
-            parameters = {
-                "INPUT": input.id(),
-                "UNIQUE_ID": pk_name,  # fid
-                "ERRORS": "TEMPORARY_OUTPUT",  # Point layer
-                "OUTPUT": "TEMPORARY_OUTPUT",  # Polygon layer
-                "MIN_OVERLAP_AREA": 0,
-                "TOLERANCE": 8,
-            }
-            results_overlaps = processing.run("native:checkgeometryoverlap", parameters)
+            overlap_ran_with_exceptions = False
+            try:
+                parameters = {
+                    "INPUT": input.id(),
+                    "UNIQUE_ID": pk_name,  # fid
+                    "ERRORS": "TEMPORARY_OUTPUT",  # Point layer
+                    "OUTPUT": "TEMPORARY_OUTPUT",  # Polygon layer
+                    "MIN_OVERLAP_AREA": 0,
+                    "TOLERANCE": 8,
+                }
+                results_overlaps = processing.run("native:checkgeometryoverlap", parameters)
+            except (QgsProcessingException, Exception) as e:
+                # There is an exception here, which means some nasty geometry issues
+                # were detected in the qgis:checkvalidity alg. and will be shown to users.
+                # We leave the overlap check out, log the issue, and continue, so
+                # that original geometry issues can still be shown to users.
+                log_error("Checking overlaps failed! First fix the next issue(s), and then run again. " + str(e))
+                overlap_ran_with_exceptions = True
+            else:
+                error_overlaps_output = results_overlaps["ERRORS"]
+                check_overlaps_ok = error_overlaps_output.featureCount() == 0
 
-            error_overlaps_output = results_overlaps["ERRORS"]
-            check_overlaps_ok = error_overlaps_output.featureCount() == 0
-
-            if not check_overlaps_ok:
+            if not overlap_ran_with_exceptions and not check_overlaps_ok:
                 # Get pairs of overlapping feature pks (fids)
                 request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
                 overlapping_feature_field = f"gc_overlap_feature_{pk_name}"
@@ -197,7 +207,7 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback, check_overlaps
                             new_feature = QgsFeature(error_output.fields())
                             new_feature.setGeometry(geometry)
                             new_feature["message"] = "Overlapping features"
-                            new_feature["fid"] = pk_1
+                            new_feature[pk_name] = pk_1
                             new_feature[overlapping_feature_field] = pk_2
                             new_feature["fonte_proc"] = mapping_pk_data[pk_1]["source"]
                             new_feature["periodo_ritorno"] = mapping_pk_data[pk_1]["scenario"]
