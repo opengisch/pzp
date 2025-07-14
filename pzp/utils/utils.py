@@ -449,3 +449,7 @@ def get_icon(filename):
 
 def get_plugin_path() -> Path:
     return Path(__file__).parent.parent
+
+
+def set_layer_opacity(layer: QgsVectorLayer, opacity: int) -> None:
+    layer.setOpacity(opacity / 100.0)  # Convert percentage to a value between 0 and 1

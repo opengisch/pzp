@@ -342,6 +342,9 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         utils.set_qml_style(breaking_layer, "breaking")
         utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
 
+        # Set layer rendering opacity to 70% for better visibility
+        utils.set_layer_opacity(breaking_layer, 70)
+
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
         project.addMapLayer(breaking_gpkg_layer, False)
