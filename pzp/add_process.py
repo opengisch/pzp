@@ -198,6 +198,9 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         utils.set_value_map_to_field(source_zones_layer, "scenario", domains.SOURCE_ZONES)
 
         utils.set_qml_style(source_zones_layer, "source_zones")
+
+        utils.remove_unique_constraint_to_field(source_zones_layer, "scenario")
+
         utils.add_layer_to_gpkg(source_zones_layer, gpkg_path)
         source_zones_gpkg_layer = utils.load_gpkg_layer(source_zones_layer.name(), gpkg_path)
         project.addMapLayer(source_zones_gpkg_layer, False)
