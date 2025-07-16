@@ -357,7 +357,7 @@
     <constraint constraints="3" exp_strength="0" field="fid" notnull_strength="1" unique_strength="1"></constraint>
     <constraint constraints="0" exp_strength="0" field="commento" notnull_strength="0" unique_strength="0"></constraint>
     <constraint constraints="7" exp_strength="1" field="fonte_proc" notnull_strength="1" unique_strength="2"></constraint>
-    <constraint constraints="7" exp_strength="1" field="scenario" notnull_strength="1" unique_strength="0"></constraint>
+    <constraint constraints="1" exp_strength="1" field="scenario" notnull_strength="1" unique_strength="0"></constraint>
   </constraints>
   <constraintExpressions>
     <constraint desc="" exp="" field="fid"></constraint>

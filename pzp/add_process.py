@@ -198,6 +198,9 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         utils.set_value_map_to_field(source_zones_layer, "scenario", domains.SOURCE_ZONES)
 
         utils.set_qml_style(source_zones_layer, "source_zones")
+
+        utils.remove_unique_constraint_to_field(source_zones_layer, "scenario")
+
         utils.add_layer_to_gpkg(source_zones_layer, gpkg_path)
         source_zones_gpkg_layer = utils.load_gpkg_layer(source_zones_layer.name(), gpkg_path)
         project.addMapLayer(source_zones_gpkg_layer, False)
@@ -245,6 +248,8 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         utils.set_default_value_to_field(propagation_layer, "proc_parz", "@pzp_process")
         utils.set_not_null_constraint_to_field(propagation_layer, "fonte_proc")
         utils.remove_unique_constraint_to_field(propagation_layer, "fonte_proc")
+        utils.remove_unique_constraint_to_field(propagation_layer, "prob_propagazione")
+        utils.remove_unique_constraint_to_field(propagation_layer, "prob_rottura")
 
         utils.add_layer_to_gpkg(propagation_layer, gpkg_path)
         propagation_gpkg_layer = utils.load_gpkg_layer(propagation_layer.name(), gpkg_path)
@@ -341,6 +346,12 @@ class AddProcessDialog(QDialog, FORM_CLASS):
 
         utils.set_qml_style(breaking_layer, "breaking")
         utils.set_default_value_to_field(breaking_layer, "proc_parz", "@pzp_process")
+        utils.remove_unique_constraint_to_field(breaking_layer, "fonte_proc")
+        utils.remove_unique_constraint_to_field(breaking_layer, "prob_rottura")
+        utils.remove_unique_constraint_to_field(breaking_layer, "classe_intensita")
+
+        # Set layer rendering opacity to 70% for better visibility
+        utils.set_layer_opacity(breaking_layer, 70)
 
         utils.add_layer_to_gpkg(breaking_layer, gpkg_path)
         breaking_gpkg_layer = utils.load_gpkg_layer(breaking_layer.name(), gpkg_path)
