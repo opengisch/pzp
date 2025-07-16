@@ -62,7 +62,9 @@ def _show_error_dialog(title, subtitle="", description="", traceback=""):
     dlg.exec_()
 
 
-def check_inputs(tool_name: str, input: QgsVectorLayer, callback, check_overlaps: bool = False) -> bool:
+def check_inputs(
+    tool_name: str, input: QgsVectorLayer, callback, check_overlaps: bool = False, show_error_message: bool = True
+) -> bool:
     pks_idxs = input.primaryKeyAttributes()
     pk_idx = pks_idxs[0] if len(pks_idxs) == 1 else -1
     pk_name = input.fields().field(pk_idx).name() if len(pks_idxs) == 1 else ""
@@ -133,15 +135,15 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback, check_overlaps
             log_error(f"Unable to check overlaps in layer '{input.name()}'. The layer has no unique field!")
         else:
             overlap_ran_with_exceptions = False
+            parameters = {
+                "INPUT": input.id(),
+                "UNIQUE_ID": pk_name,  # fid
+                "ERRORS": "TEMPORARY_OUTPUT",  # Point layer
+                "OUTPUT": "TEMPORARY_OUTPUT",  # Polygon layer
+                "MIN_OVERLAP_AREA": 0,
+                "TOLERANCE": 8,
+            }
             try:
-                parameters = {
-                    "INPUT": input.id(),
-                    "UNIQUE_ID": pk_name,  # fid
-                    "ERRORS": "TEMPORARY_OUTPUT",  # Point layer
-                    "OUTPUT": "TEMPORARY_OUTPUT",  # Polygon layer
-                    "MIN_OVERLAP_AREA": 0,
-                    "TOLERANCE": 8,
-                }
                 results_overlaps = processing.run("native:checkgeometryoverlap", parameters)
             except (QgsProcessingException, Exception) as e:
                 # There is an exception here, which means some nasty geometry issues
@@ -231,9 +233,10 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback, check_overlaps
         # Show message bar with two options:
         # 1) See errors
         # 2) Run with errors
-        _push_input_error_report(tool_name, input.name(), error_output.featureCount(), error_output, callback)
+        if show_error_message:
+            _push_input_error_report(tool_name, input.name(), error_output.featureCount(), error_output, callback)
 
-    return check_ok and check_overlaps_ok
+    return check_ok and check_overlaps_ok, error_output
 
 
 def _push_input_error_report(

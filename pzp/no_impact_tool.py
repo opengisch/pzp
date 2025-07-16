@@ -49,7 +49,7 @@ class ToolNessunImpatto:
 
         check_ok = False
         if not force:
-            check_ok = utils.check_inputs(self._tool_name, layer_intensity, self.run, check_overlaps=True)
+            check_ok, _ = utils.check_inputs(self._tool_name, layer_intensity, self.run, check_overlaps=True)
 
         if force or check_ok:
             self.run_with_params(process_type, layer_intensity, layer_area)
