@@ -9,15 +9,18 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsDefaultValue,
     QgsEditorWidgetSetup,
+    QgsExpression,
+    QgsFeature,
     QgsFeatureRequest,
     QgsField,
     QgsFieldConstraints,
     QgsLayerDefinition,
     QgsMessageLog,
+    QgsProcessingException,
     QgsProject,
     QgsVectorLayer,
 )
-from qgis.PyQt.QtCore import Qt, QVariant
+from qgis.PyQt.QtCore import QMetaType, Qt, QVariant
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QPushButton
 from qgis.PyQt.uic import loadUiType
@@ -59,7 +62,17 @@ def _show_error_dialog(title, subtitle="", description="", traceback=""):
     dlg.exec_()
 
 
-def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
+def check_inputs(
+    tool_name: str, input: QgsVectorLayer, callback, check_overlaps: bool = False, show_error_message: bool = True
+) -> bool:
+    pks_idxs = input.primaryKeyAttributes()
+    pk_idx = pks_idxs[0] if len(pks_idxs) == 1 else -1
+    pk_name = input.fields().field(pk_idx).name() if len(pks_idxs) == 1 else ""
+
+    def _add_fields(layer: QgsVectorLayer, fields: list[QgsField]):
+        layer.dataProvider().addAttributes(fields)
+        layer.updateFields()
+
     parameters = {
         "INPUT_LAYER": input.id(),
         "METHOD": 1,  # 1: QGIS, 2: GEOS
@@ -87,14 +100,13 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
 
     if not check_ok:
         # Add feature id to each error in the Error Output layer
-        pks_idxs = input.primaryKeyAttributes()
 
-        if len(pks_idxs) == 1:
-            pk_idx = pks_idxs[0]
-
+        if pk_idx != -1:
             # Get mappings from input and error layers, so that we can then
             # perform a join to bring input's pk into error output layer.
             # Note that _errors from a single feature in input layer are separated by '\n'.
+            # Note also that PKs are in the Invalid output layer, we need to get them
+            # from there and then complete data in Error Output layer (point layer).
             request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
             mapping_pk_msgs = {
                 feature[pk_idx]: feature["_errors"].split("\n")
@@ -103,9 +115,8 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
             mapping_error_msg = {feature["message"]: feature.id() for feature in error_output.getFeatures(request)}
 
             # Add field to output_layer
-            error_output.dataProvider().addAttributes([input.fields().field(pk_idx)])
-            error_output.updateFields()
-            error_pk_idx = error_output.fields().indexOf(input.fields().field(pk_idx).name())
+            _add_fields(error_output, [input.fields().field(pk_idx)])
+            error_pk_idx = error_output.fields().indexOf(pk_name)
             attrs = {}  # fid: {error_pk_idx: pk}
 
             for pk, msgs in mapping_pk_msgs.items():
@@ -117,11 +128,104 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
             if attrs:
                 error_output.dataProvider().changeAttributeValues(attrs)
 
-        elif len(pks_idxs) > 1:
+    # Check for overlaps
+    check_overlaps_ok = True
+    if check_overlaps and Qgis.QGIS_VERSION_INT >= 34400:
+        if not pk_name:
+            log_error(f"Unable to check overlaps in layer '{input.name()}'. The layer has no unique field!")
+        else:
+            overlap_ran_with_exceptions = False
+            parameters = {
+                "INPUT": input.id(),
+                "UNIQUE_ID": pk_name,  # fid
+                "ERRORS": "TEMPORARY_OUTPUT",  # Point layer
+                "OUTPUT": "TEMPORARY_OUTPUT",  # Polygon layer
+                "MIN_OVERLAP_AREA": 0,
+                "TOLERANCE": 8,
+            }
+            try:
+                results_overlaps = processing.run("native:checkgeometryoverlap", parameters)
+            except (QgsProcessingException, Exception) as e:
+                # There is an exception here, which means some nasty geometry issues
+                # were detected in the qgis:checkvalidity alg. and will be shown to users.
+                # We leave the overlap check out, log the issue, and continue, so
+                # that original geometry issues can still be shown to users.
+                log_error("Checking overlaps failed! First fix the next issue(s), and then run again. " + str(e))
+                overlap_ran_with_exceptions = True
+            else:
+                error_overlaps_output = results_overlaps["ERRORS"]
+                check_overlaps_ok = error_overlaps_output.featureCount() == 0
+
+            if not overlap_ran_with_exceptions and not check_overlaps_ok:
+                # Get pairs of overlapping feature pks (fids)
+                request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
+                overlapping_feature_field = f"gc_overlap_feature_{pk_name}"
+                overlapping_pk_pairs = [
+                    (feature[pk_name], feature[overlapping_feature_field])
+                    for feature in error_overlaps_output.getFeatures(request)
+                ]
+                overlapping_pk_pairs = set(overlapping_pk_pairs)  # Get rid of duplicate pairs
+
+                # Prepare cached data from input layer
+                mapping_pk_data = {
+                    feature[pk_idx]: {"source": feature["fonte_proc"], "scenario": feature["periodo_ritorno"]}
+                    for feature in input.getFeatures(request)
+                }
+
+                # Filter overlap errors between the same source/scenario
+                overlapping_errors = []
+                for pk_1, pk_2 in overlapping_pk_pairs:
+                    data_1 = mapping_pk_data[pk_1]
+                    data_2 = mapping_pk_data[pk_2]
+                    if data_1["source"] != data_2["source"]:
+                        # Polygons from different source may overlap
+                        continue
+
+                    if data_1["scenario"] != data_2["scenario"]:
+                        # Polygons from different scenarios may overlap
+                        continue
+
+                    overlapping_errors.append((pk_1, pk_2))
+
+                # And finally, copy filtered overlap errors to the main error_output layer
+                check_overlaps_ok = len(overlapping_errors) == 0
+                if overlapping_errors:
+                    new_fields = [
+                        error_overlaps_output.fields().field(overlapping_feature_field),
+                        QgsField("fonte_proc", QMetaType.Type.QString),
+                        QgsField("periodo_ritorno", QMetaType.Type.QString),
+                        QgsField("overlapped_area", QMetaType.Type.Double),
+                    ]
+                    if error_output.fields().indexOf(pk_name) == -1:
+                        new_fields = [input.fields().field(pk_idx)] + new_fields
+                    _add_fields(error_output, new_fields)
+
+                    new_features = []
+                    for pk_1, pk_2 in overlapping_errors:
+                        expression = QgsExpression(f"{pk_name} = {pk_1} and {overlapping_feature_field} = {pk_2}")
+                        request = QgsFeatureRequest(expression)
+                        for feature in error_overlaps_output.getFeatures(request):
+                            geometry = feature.geometry()
+                            new_feature = QgsFeature(error_output.fields())
+                            new_feature.setGeometry(geometry)
+                            new_feature["message"] = "Overlapping features"
+                            new_feature[pk_name] = pk_1
+                            new_feature[overlapping_feature_field] = pk_2
+                            new_feature["fonte_proc"] = mapping_pk_data[pk_1]["source"]
+                            new_feature["periodo_ritorno"] = mapping_pk_data[pk_1]["scenario"]
+                            new_feature["overlapped_area"] = feature["gc_error"]
+
+                            new_features.append(new_feature)
+
+                    if new_features:
+                        error_output.dataProvider().addFeatures(new_features)
+
+    if not (check_ok and check_overlaps_ok):
+        if len(pks_idxs) > 1:
             log_warning(
                 f"Feature ids won't be shown in Error Output layer: multiple PK fields found in layer '{input.name()}'!"
             )
-        else:
+        elif len(pks_idxs) == 0:
             log_warning(
                 f"Feature ids won't be shown in Error Output layer: PK field not found in layer '{input.name()}'!"
             )
@@ -129,9 +233,10 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
         # Show message bar with two options:
         # 1) See errors
         # 2) Run with errors
-        _push_input_error_report(tool_name, input.name(), error_output.featureCount(), error_output, callback)
+        if show_error_message:
+            _push_input_error_report(tool_name, input.name(), error_output.featureCount(), error_output, callback)
 
-    return check_ok
+    return check_ok and check_overlaps_ok, error_output
 
 
 def _push_input_error_report(
