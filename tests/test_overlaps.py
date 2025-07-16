@@ -40,13 +40,28 @@ def layers_to_test():
                 "ogr",
             ),
             "expected_data": {
-                "check_ok": False,
-                "overlap_count": 1069,
-                "error_count": 2,
-                "pzp_overlap_count": 2,
-                "pzp_overlapping_fids": ((1317, 1316), (488, 487)),
+                "check_ok": False,  # Whether the check passes without errors or not
+                "overlap_count": 1069,  # Number of errors found by native:checkgeometryoverlap
+                "error_count": 2,  # Number of total errors found by the PZP check
+                "pzp_overlap_count": 2,  # Number of total overlaps found by the PZP check
+                "pzp_overlapping_fids": ((1317, 1316), (488, 487)),  # Pairs of fids that overlap
             },
-        }
+        },
+        {
+            "layer": QgsVectorLayer(
+                str(get_copy_path(get_data_path("caduta_sassi_overlaps.gpkg", "caduta_sassi")))
+                + "|layername=Intensità completa",
+                "layer",
+                "ogr",
+            ),
+            "expected_data": {
+                "check_ok": False,
+                "overlap_count": 45,
+                "error_count": 1,
+                "pzp_overlap_count": 1,
+                "pzp_overlapping_fids": ((14, 4),),
+            },
+        },
     ]
 
 
@@ -75,6 +90,7 @@ def test_overlaps(layers_to_test, project):
     for layer_to_test in layers_to_test:
         layer = layer_to_test["layer"]
         expected = layer_to_test["expected_data"]
+        print(f" [INFO] Testing overlaps in layer '{layer.source()}'")
 
         # Add layer to project so that Processing can find it and use it
         project.addMapLayer(layer)
