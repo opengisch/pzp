@@ -20,17 +20,17 @@
               <Option></Option>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer checked="Qt::Checked" expanded="1" id="_AC_017_3__Fenomeni_di_crollo_da_pareti_rocciose___suscettibilit__presente_cd4df940_c062_48a3_a5c1_5f4306938006" legend_exp="" legend_split_behavior="0" name="Suscettibilità da pareti rocciose - presente" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_crollo_da_pareti_rocciose_presente&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="1" id="_AC_017_3__Fenomeni_di_crollo_da_pareti_rocciose___suscettibilit__presente_cd4df940_c062_48a3_a5c1_5f4306938006" legend_exp="" legend_split_behavior="0" name="Suscettibilità da pareti rocciose - presente" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_crollo_da_pareti_rocciose_presente&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_crollo_da_rimobilizzazione_rocciose___suscettibilit__pi__probabile_f5829183_80ca_45bb_bf1b_fbb6bec6672f" legend_exp="" legend_split_behavior="0" name="Suscettibilità per rimobilizzazione rocciose - più probabile" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_crollo_per_rimobilizzazione_piu_probabile&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_crollo_da_rimobilizzazione_rocciose___suscettibilit__pi__probabile_f5829183_80ca_45bb_bf1b_fbb6bec6672f" legend_exp="" legend_split_behavior="0" name="Suscettibilità per rimobilizzazione rocciose - più probabile" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_crollo_per_rimobilizzazione_piu_probabile&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_crollo_per_rimobilizzazione___suscettibilit__presente_e641fd13_73cc_43c2_ac47_f36faabe0dfe" legend_exp="" legend_split_behavior="0" name="Suscettibilità per rimobilizzazione - presente" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_crollo_per_rimobilizzazione_presente&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_crollo_per_rimobilizzazione___suscettibilit__presente_e641fd13_73cc_43c2_ac47_f36faabe0dfe" legend_exp="" legend_split_behavior="0" name="Suscettibilità per rimobilizzazione - presente" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_crollo_per_rimobilizzazione_presente&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
@@ -40,22 +40,22 @@
           <customproperties>
             <Option></Option>
           </customproperties>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_scivolamento__distacco____suscettibilit__alta_b12a9c10_1564_4907_ab47_49de483b6ebb" legend_exp="" legend_split_behavior="0" name="Suscettibilità scivolamento - alta" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_scivolamento_distacco_alta&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_scivolamento__distacco____suscettibilit__alta_b12a9c10_1564_4907_ab47_49de483b6ebb" legend_exp="" legend_split_behavior="0" name="Suscettibilità scivolamento - alta" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_scivolamento_distacco_alta&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_scivolamento__distacco____suscettibilit__media_3fbbb9b3_3e42_430d_8783_fb03a4a062e9" legend_exp="" legend_split_behavior="0" name="Suscettibilità scivolamento - media" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_scivolamento_distacco_media&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_scivolamento__distacco____suscettibilit__media_3fbbb9b3_3e42_430d_8783_fb03a4a062e9" legend_exp="" legend_split_behavior="0" name="Suscettibilità scivolamento - media" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_scivolamento_distacco_media&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_scivolamento__distacco____suscettibilit__bassa_f5e87eb3_ba18_417c_887e_b66a1a3c6a80" legend_exp="" legend_split_behavior="0" name="Suscettibilità scivolamento - bassa" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_scivolamento_distacco_bassa&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_scivolamento__distacco____suscettibilit__bassa_f5e87eb3_ba18_417c_887e_b66a1a3c6a80" legend_exp="" legend_split_behavior="0" name="Suscettibilità scivolamento - bassa" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_scivolamento_distacco_bassa&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_scivolamento__distacco____suscettibilit__presente_106fd071_901a_4327_9670_e909c30faa5e" legend_exp="" legend_split_behavior="0" name="Suscettibilità scivolamento - presente" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_scivolamento_distacco_presente&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_scivolamento__distacco____suscettibilit__presente_106fd071_901a_4327_9670_e909c30faa5e" legend_exp="" legend_split_behavior="0" name="Suscettibilità scivolamento - presente" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_scivolamento_distacco_presente&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
@@ -65,17 +65,17 @@
           <customproperties>
             <Option></Option>
           </customproperties>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_flusso_detrito___suscettibilit__alta_f434f7f3_6ea6_460d_b908_a9e736818c47" legend_exp="" legend_split_behavior="0" name="Suscettibilità flusso detrito - alta" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_flusso_detrito_alta&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_flusso_detrito___suscettibilit__alta_f434f7f3_6ea6_460d_b908_a9e736818c47" legend_exp="" legend_split_behavior="0" name="Suscettibilità flusso detrito - alta" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_flusso_detrito_alta&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_flusso_detrito___suscettibilit__bassa_126dc4fe_b28f_401d_a800_eaa3c8c0021d" legend_exp="" legend_split_behavior="0" name="Suscettibilità flusso detrito - bassa" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_flusso_detrito_bassa&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_flusso_detrito___suscettibilit__bassa_126dc4fe_b28f_401d_a800_eaa3c8c0021d" legend_exp="" legend_split_behavior="0" name="Suscettibilità flusso detrito - bassa" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_flusso_detrito_bassa&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_flusso_detrito_torrenti__area_sorgente___2kmq__053fd05d_f11e_41f6_98b0_b8356e7d4fc2" legend_exp="" legend_split_behavior="0" name="Suscettibilità torrenti (area sorgente > 2kmq)" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_flusso_detrito_torrenti_area_sorgente_2kmq&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_017_3__Fenomeni_di_flusso_detrito_torrenti__area_sorgente___2kmq__053fd05d_f11e_41f6_98b0_b8356e7d4fc2" legend_exp="" legend_split_behavior="0" name="Suscettibilità torrenti (area sorgente > 2kmq)" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_flusso_detrito_torrenti_area_sorgente_2kmq&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
@@ -85,7 +85,7 @@
           <customproperties>
             <Option></Option>
           </customproperties>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_5b6cd540_5cce_4056_91e6_7dab2e30a5c3" legend_exp="" legend_split_behavior="0" name="Suscettibilità bassa" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_valanga_bassa&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_5b6cd540_5cce_4056_91e6_7dab2e30a5c3" legend_exp="" legend_split_behavior="0" name="Suscettibilità bassa" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_017_3_v1_0_carta_suscettibilita_valanga_bassa&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
@@ -120,7 +120,7 @@
           <customproperties>
             <Option></Option>
           </customproperties>
-          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_062_1__TerraSAR_X_2011_2021___Arbedo_ascendente__2014_2019__f718617f_63b4_4d54_8597_d6442ba4b088" legend_exp="" legend_split_behavior="0" name="Arbedo ascendente (2014-2019)" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:4326&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_062_1_v1_0_insar_terrasar_x_2011_2021_arbedo_ascendente&amp;styles&amp;url=https://wms.geo.ti.ch/service">
+          <layer-tree-layer checked="Qt::Checked" expanded="0" id="_AC_062_1__TerraSAR_X_2011_2021___Arbedo_ascendente__2014_2019__f718617f_63b4_4d54_8597_d6442ba4b088" legend_exp="" legend_split_behavior="0" name="Arbedo ascendente (2014-2019)" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:2056&amp;dpiMode=7&amp;format=image/png&amp;layers=ac_062_1_v1_0_insar_terrasar_x_2011_2021_arbedo_ascendente&amp;styles&amp;url=https://wms.geo.ti.ch/service">
             <customproperties>
               <Option></Option>
             </customproperties>
