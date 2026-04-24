@@ -49,7 +49,7 @@ class ApplyMatrix(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Layer con le geometrie (intensità)",
-                [QgsProcessing.TypeVectorPolygon],
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 
@@ -58,7 +58,7 @@ class ApplyMatrix(QgsProcessingAlgorithm):
                 name=self.PERIOD_FIELD,
                 description="Campo contenente il periodo di ritorno",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -67,7 +67,7 @@ class ApplyMatrix(QgsProcessingAlgorithm):
                 name=self.INTENSITY_FIELD,
                 description="Campo contenente l'intensità",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -222,7 +222,7 @@ class ApplyMatrix(QgsProcessingAlgorithm):
 
             new_features.append(feature)
 
-        sink.addFeatures(new_features, QgsFeatureSink.FastInsert)
+        sink.addFeatures(new_features, QgsFeatureSink.Flag.FastInsert)
         return {self.OUTPUT: dest_id}
 
     def process_matrix_param(self, matrix):

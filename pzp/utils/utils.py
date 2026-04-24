@@ -27,17 +27,23 @@ from pzp.utils.override_cursor import OverrideCursor
 
 
 def push_info(message, time=0, showMore=""):
-    args = [message, showMore, Qgis.Info, time] if showMore else [message, Qgis.Info, time]
+    args = [message, showMore, Qgis.MessageLevel.Info, time] if showMore else [message, Qgis.MessageLevel.Info, time]
     _get_iface().messageBar().pushMessage("pzp", *args)
 
 
 def push_warning(message, time=0, showMore=""):
-    args = [message, showMore, Qgis.Warning, time] if showMore else [message, Qgis.Warning, time]
+    args = (
+        [message, showMore, Qgis.MessageLevel.Warning, time] if showMore else [message, Qgis.MessageLevel.Warning, time]
+    )
     _get_iface().messageBar().pushMessage("pzp", *args)
 
 
 def push_error(message, time=0, showMore=""):
-    args = [message, showMore, Qgis.Critical, time] if showMore else [message, Qgis.Critical, time]
+    args = (
+        [message, showMore, Qgis.MessageLevel.Critical, time]
+        if showMore
+        else [message, Qgis.MessageLevel.Critical, time]
+    )
     _get_iface().messageBar().pushMessage("pzp", *args)
 
 
@@ -49,14 +55,14 @@ def push_error_report(title, subtitle="", description="", traceback=""):
     button.pressed.connect(partial(_show_error_dialog, title, subtitle, description, traceback))
     widget.layout().addWidget(button)
 
-    iface.messageBar().pushWidget(widget, Qgis.Critical, 0)
+    iface.messageBar().pushWidget(widget, Qgis.MessageLevel.Critical, 0)
 
 
 def _show_error_dialog(title, subtitle="", description="", traceback=""):
     from pzp.gui.error_dialog import ErrorDialog
 
     dlg = ErrorDialog(title, subtitle, description, traceback)
-    dlg.exec_()
+    dlg.exec()
 
 
 def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
@@ -95,7 +101,7 @@ def check_inputs(tool_name: str, input: QgsVectorLayer, callback) -> bool:
             # Get mappings from input and error layers, so that we can then
             # perform a join to bring input's pk into error output layer.
             # Note that _errors from a single feature in input layer are separated by '\n'.
-            request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
+            request = QgsFeatureRequest().setFlags(QgsFeatureRequest.Flag.NoGeometry)
             mapping_pk_msgs = {
                 feature[pk_idx]: feature["_errors"].split("\n")
                 for feature in results["INVALID_OUTPUT"].getFeatures(request)
@@ -157,7 +163,9 @@ def _push_input_error_report(
 
         # Inform users about what just happened to QGIS GUI
         iface.messageBar().clearWidgets()
-        iface.messageBar().pushMessage(tool_name, f"Showing errors in input layer '{input_name}'", Qgis.Info, 0)
+        iface.messageBar().pushMessage(
+            tool_name, f"Showing errors in input layer '{input_name}'", Qgis.MessageLevel.Info, 0
+        )
 
     button = QPushButton(widget)
     button.setText("Ispeziona gli errori...")
@@ -170,7 +178,7 @@ def _push_input_error_report(
         )
         iface.messageBar().clearWidgets()
         # QCoreApplication.processEvents()  # Uncomment to see the messagebar closed
-        with OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.CursorShape.WaitCursor):
             callback(True)  # force=True
 
     button = QPushButton(widget)
@@ -178,7 +186,7 @@ def _push_input_error_report(
     button.pressed.connect(partial(_run_with_errors, callback, tool_name, input_layer_name, error_count))
     widget.layout().addWidget(button)
 
-    iface.messageBar().pushWidget(widget, Qgis.Critical, 0)
+    iface.messageBar().pushWidget(widget, Qgis.MessageLevel.Critical, 0)
 
 
 def _get_iface():
@@ -192,15 +200,15 @@ def _get_iface():
 
 
 def log_info(message):
-    QgsMessageLog.logMessage(message, "pzp", Qgis.Info)
+    QgsMessageLog.logMessage(message, "pzp", Qgis.MessageLevel.Info)
 
 
 def log_warning(message):
-    QgsMessageLog.logMessage(message, "pzp", Qgis.Warning)
+    QgsMessageLog.logMessage(message, "pzp", Qgis.MessageLevel.Warning)
 
 
 def log_error(message):
-    QgsMessageLog.logMessage(message, "pzp", Qgis.Critical)
+    QgsMessageLog.logMessage(message, "pzp", Qgis.MessageLevel.Critical)
 
 
 def write_project_metadata(keyword, value):
@@ -297,34 +305,34 @@ def set_default_value_to_field(layer, field_name, expression):
 def set_not_null_constraint_to_field(layer, field_name, enforce=True):
     index = layer.fields().indexOf(field_name)
 
-    constraint = QgsFieldConstraints.ConstraintNotNull
-    strength = QgsFieldConstraints.ConstraintStrengthHard
+    constraint = QgsFieldConstraints.Constraint.ConstraintNotNull
+    strength = QgsFieldConstraints.ConstraintStrength.ConstraintStrengthHard
     if not enforce:
-        strength = QgsFieldConstraints.ConstraintStrengthSoft
+        strength = QgsFieldConstraints.ConstraintStrength.ConstraintStrengthSoft
     layer.setFieldConstraint(index, constraint, strength)
 
 
 def remove_not_null_constraint_to_field(layer, field_name):
     index = layer.fields().indexOf(field_name)
 
-    constraint = QgsFieldConstraints.ConstraintNotNull
+    constraint = QgsFieldConstraints.Constraint.ConstraintNotNull
     layer.removeFieldConstraint(index, constraint)
 
 
 def set_unique_constraint_to_field(layer, field_name, enforce=True):
     index = layer.fields().indexOf(field_name)
 
-    constraint = QgsFieldConstraints.ConstraintUnique
-    strength = QgsFieldConstraints.ConstraintStrengthHard
+    constraint = QgsFieldConstraints.Constraint.ConstraintUnique
+    strength = QgsFieldConstraints.ConstraintStrength.ConstraintStrengthHard
     if not enforce:
-        strength = QgsFieldConstraints.ConstraintStrengthSoft
+        strength = QgsFieldConstraints.ConstraintStrength.ConstraintStrengthSoft
     layer.setFieldConstraint(index, constraint, strength)
 
 
 def remove_unique_constraint_to_field(layer, field_name):
     index = layer.fields().indexOf(field_name)
 
-    constraint = QgsFieldConstraints.ConstraintUnique
+    constraint = QgsFieldConstraints.Constraint.ConstraintUnique
     layer.removeFieldConstraint(index, constraint)
 
 

@@ -48,7 +48,7 @@ class SimplifyIntensity(QgsProcessingAlgorithm):
                 name=self.INTENSITY_FIELD,
                 description="Campo contenente l'intensità",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 

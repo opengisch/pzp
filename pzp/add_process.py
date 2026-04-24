@@ -22,7 +22,7 @@ class AddProcessDialog(QDialog, FORM_CLASS):
             self.process_cbox.addItem(process[1], process[0])
 
     def button_box_clicked(self, button):
-        if self.buttonBox.buttonRole(button) == QDialogButtonBox.RejectRole:
+        if self.buttonBox.buttonRole(button) == QDialogButtonBox.ButtonRole.RejectRole:
             self.close()
             return
 

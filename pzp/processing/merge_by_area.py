@@ -60,7 +60,9 @@ class MergeByArea(QgisAlgorithm):
         self.modes = [self.tr("Largest Area"), self.tr("Smallest Area"), self.tr("Largest Common Boundary")]
 
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.INPUT, self.tr("Input layer"), [QgsProcessing.TypeVectorPolygon])
+            QgsProcessingParameterFeatureSource(
+                self.INPUT, self.tr("Input layer"), [QgsProcessing.SourceType.TypeVectorPolygon]
+            )
         )
 
         self.addParameter(
@@ -70,7 +72,9 @@ class MergeByArea(QgisAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr("Eliminated"), QgsProcessing.TypeVectorPolygon)
+            QgsProcessingParameterFeatureSink(
+                self.OUTPUT, self.tr("Eliminated"), QgsProcessing.SourceType.TypeVectorPolygon
+            )
         )
 
     def name(self):
@@ -99,7 +103,7 @@ class MergeByArea(QgisAlgorithm):
                 featToEliminate.append(feature)
             else:
                 # write the others to output
-                sink.addFeature(feature, QgsFeatureSink.FastInsert)
+                sink.addFeature(feature, QgsFeatureSink.Flag.FastInsert)
         del sink
 
         # Delete all features to eliminate in processLayer
@@ -218,6 +222,6 @@ class MergeByArea(QgisAlgorithm):
 
             feedback.reportError("Could not merge feature: {}".format(feature.id()))
 
-            processLayer.dataProvider().addFeature(feature, QgsFeatureSink.FastInsert)
+            processLayer.dataProvider().addFeature(feature, QgsFeatureSink.Flag.FastInsert)
 
         return {self.OUTPUT: dest_id}

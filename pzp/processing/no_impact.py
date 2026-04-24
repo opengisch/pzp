@@ -40,7 +40,7 @@ class NoImpact(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.AREA_LAYER,
                 "Layer con l'area di studio",
-                [QgsProcessing.TypeVectorPolygon],
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 
@@ -49,7 +49,7 @@ class NoImpact(QgsProcessingAlgorithm):
                 name=self.AREA_PROCESS_SOURCE_FIELD,
                 description="Campo contenente la fonte del processo",
                 parentLayerParameterName=self.AREA_LAYER,
-                type=QgsProcessingParameterField.String,
+                type=QgsProcessingParameterField.DataType.String,
             )
         )
 
@@ -57,7 +57,7 @@ class NoImpact(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INTENSITY_LAYER,
                 "Layer con l'intensità",
-                [QgsProcessing.TypeVectorPolygon],
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 
@@ -66,7 +66,7 @@ class NoImpact(QgsProcessingAlgorithm):
                 name=self.PERIOD_FIELD,
                 description="Campo contenente il periodo di ritorno",
                 parentLayerParameterName=self.INTENSITY_LAYER,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -75,7 +75,7 @@ class NoImpact(QgsProcessingAlgorithm):
                 name=self.INTENSITY_FIELD,
                 description="Campo contenente l'intensità",
                 parentLayerParameterName=self.INTENSITY_LAYER,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -84,7 +84,7 @@ class NoImpact(QgsProcessingAlgorithm):
                 name=self.INTENSITY_PROCESS_SOURCE_FIELD,
                 description="Campo contenente la fonte del processo",
                 parentLayerParameterName=self.INTENSITY_LAYER,
-                type=QgsProcessingParameterField.String,
+                type=QgsProcessingParameterField.DataType.String,
             )
         )
 

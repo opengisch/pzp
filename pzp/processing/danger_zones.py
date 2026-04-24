@@ -44,7 +44,7 @@ class DangerZones(QgsProcessingAlgorithm):
 
     def initAlgorithm(self, config=None):
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.INPUT, "Input layer", [QgsProcessing.TypeVectorPolygon])
+            QgsProcessingParameterFeatureSource(self.INPUT, "Input layer", [QgsProcessing.SourceType.TypeVectorPolygon])
         )
 
         self.addParameter(
@@ -52,7 +52,7 @@ class DangerZones(QgsProcessingAlgorithm):
                 name=self.MATRIX_FIELD,
                 description="Campo contenente il valore della matrice",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -61,7 +61,7 @@ class DangerZones(QgsProcessingAlgorithm):
                 name=self.PROCESS_SOURCE_FIELD,
                 description="Campo contenente la fonte del processo",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.String,
+                type=QgsProcessingParameterField.DataType.String,
             )
         )
 
@@ -69,7 +69,7 @@ class DangerZones(QgsProcessingAlgorithm):
         if Qgis.QGIS_VERSION_INT >= 33600:
             type = Qgis.ProcessingNumberParameterType.Double
         else:
-            type = QgsProcessingParameterNumber.Double
+            type = QgsProcessingParameterNumber.Type.Double
         self.addParameter(
             QgsProcessingParameterNumber(
                 name=self.MERGE_FORM_FACTOR,

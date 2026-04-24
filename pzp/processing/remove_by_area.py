@@ -46,11 +46,15 @@ class RemoveByArea(QgisAlgorithm):
 
     def initAlgorithm(self, config=None):
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.INPUT, self.tr("Input layer"), [QgsProcessing.TypeVectorPolygon])
+            QgsProcessingParameterFeatureSource(
+                self.INPUT, self.tr("Input layer"), [QgsProcessing.SourceType.TypeVectorPolygon]
+            )
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr("Eliminated"), QgsProcessing.TypeVectorPolygon)
+            QgsProcessingParameterFeatureSink(
+                self.OUTPUT, self.tr("Eliminated"), QgsProcessing.SourceType.TypeVectorPolygon
+            )
         )
 
     def name(self):
@@ -77,7 +81,7 @@ class RemoveByArea(QgisAlgorithm):
                 continue
 
             # write the others to output
-            sink.addFeature(feature, QgsFeatureSink.FastInsert)
+            sink.addFeature(feature, QgsFeatureSink.Flag.FastInsert)
 
         del sink
 

@@ -36,7 +36,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
 
     def initAlgorithm(self, config=None):
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.INPUT, "Input layer", [QgsProcessing.TypeVectorPolygon])
+            QgsProcessingParameterFeatureSource(self.INPUT, "Input layer", [QgsProcessing.SourceType.TypeVectorPolygon])
         )
 
         self.addParameter(
@@ -44,7 +44,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
                 name=self.INTENSITY_FIELD,
                 description="Campo contenente l'intensità",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -53,7 +53,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
                 name=self.PERIOD_FIELD,
                 description="Campo contenente il periodo di ritorno",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -62,7 +62,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
                 name=self.SOURCE_FIELD,
                 description="Campo contenente la fonte del processo",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.String,
+                type=QgsProcessingParameterField.DataType.String,
             )
         )
 
