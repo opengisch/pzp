@@ -12,6 +12,11 @@ env:
   QGIS_TEST_VERSION: latest
 
 jobs:
+  pyqt6-check:
+    uses: opengisch/qgis-plugin-ci/.github/workflows/pyqt6_test.yml@master
+    with:
+      plugin_path: pzp
+
   test:
     runs-on: ubuntu-latest
     strategy:
