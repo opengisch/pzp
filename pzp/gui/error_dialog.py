@@ -23,7 +23,7 @@ class ErrorDialog(QDialog, FORM_CLASS):
         self.txt_traceback.setText(traceback)
 
         size = QSize(64, 64)
-        pixmap = QApplication.style().standardIcon(QStyle.SP_MessageBoxCritical).pixmap(size)
+        pixmap = QApplication.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical).pixmap(size)
         self.lbl_icon.setPixmap(pixmap)
 
         self.btn_copy.setIcon(QgsApplication.getThemeIcon("/mActionEditCopy.svg"))

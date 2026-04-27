@@ -48,7 +48,7 @@ class SimplifyIntensity(QgsProcessingAlgorithm):
                 name=self.INTENSITY_FIELD,
                 description="Campo contenente l'intensità",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -77,7 +77,7 @@ class SimplifyIntensity(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer"))
 
     def processAlgorithm(self, parameters, context, feedback):
-        intensity_field = self.parameterAsFields(parameters, self.INTENSITY_FIELD, context)[0]
+        intensity_field = self.parameterAsString(parameters, self.INTENSITY_FIELD, context)
         min_area_to_keep = self.parameterAsInt(parameters, self.MIN_AREA_TO_KEEP, context)
         delete_holes_area = self.parameterAsInt(parameters, self.DELETE_HOLES_AREA, context)
         chaiken_threshold = self.parameterAsInt(parameters, self.CHAIKEN_THRESHOLD, context)

@@ -32,10 +32,10 @@ class CheckResultsDock(QDockWidget, FORM_CLASS):
         headers = ["Nome", "Descrizione", "Esegui", "Risultato"]
         self.table.setHorizontalHeaderLabels(headers)
 
-        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
-        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Interactive)
-        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Interactive)
-        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
+        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Interactive)
+        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
+        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Interactive)
+        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
 
     def populate_table(self):
         for name in ["Poligoni dupplicati", "Sovrapposizioni"]:
@@ -49,17 +49,17 @@ class CheckResultsDock(QDockWidget, FORM_CLASS):
         row_position = self.table.rowCount()
         self.table.insertRow(row_position)
         item = QTableWidgetItem(row[0])
-        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         self.table.setItem(row_position, 0, item)
         item = QTableWidgetItem(row[1])
-        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         self.table.setItem(row_position, 1, item)
         button = QPushButton(QIcon(utils.get_icon("play.png")), "")
         button.setObjectName(row[0])
         button.clicked.connect(partial(self.on_button_clicked, row[0]))
         self.table.setCellWidget(row_position, 2, button)
         item = QTableWidgetItem("")
-        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         self.table.setItem(row_position, 3, item)
 
     def run_all_checks(self):
@@ -79,7 +79,7 @@ class CheckResultsDock(QDockWidget, FORM_CLASS):
 
     def add_result(self, name, is_correct, message):
         """Add a parent result"""
-        found_item = self.table.findItems(name, Qt.MatchExactly)[0]
+        found_item = self.table.findItems(name, Qt.MatchFlag.MatchExactly)[0]
         result_item = self.table.item(found_item.row(), 3)
         if is_correct:
             result_item.setText("OK")

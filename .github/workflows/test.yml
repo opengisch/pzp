@@ -12,12 +12,17 @@ env:
   QGIS_TEST_VERSION: latest
 
 jobs:
+  pyqt6-check:
+    uses: opengisch/qgis-plugin-ci/.github/workflows/pyqt6_test.yml@master
+    with:
+      plugin_path: pzp
+
   test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        qgis_version: [latest, 3.34.14-noble, final-3_28_15] # QGIS 3.28, 3.34.x and latest
+        qgis_version: [4.0-questing, 3.44-questing, final-3_28_15]
     env:
       QGIS_TEST_VERSION: ${{ matrix.qgis_version }}
 
@@ -27,10 +32,14 @@ jobs:
           submodules: true
 
       - name: Unit tests
-        run:
-          >- # The pip install instruction was only added to support QGIS 3.28.x. It can be removed when removing that QGIS version.
-          docker run
-          -e PYTHONPATH=/usr/share/qgis/python/plugins
-          -v $(pwd):/usr/src
-          -w /usr/src qgis/qgis:${QGIS_TEST_VERSION}
-          sh -c 'pip3 install -r requirements.txt || pip3 install -r requirements.txt --break-system-packages;xvfb-run pytest'
+        run: |
+          docker run \
+            -v $(pwd):/usr/src \
+            -w /usr/src \
+            qgis/qgis:${QGIS_TEST_VERSION} \
+            sh -c '
+              pip3 install -r requirements.txt || pip3 install -r requirements.txt --break-system-packages
+              PYVER=$(python3 -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")")
+              export PYTHONPATH=/usr/share/qgis/python:/usr/share/qgis/python/plugins:/usr/lib/python3/dist-packages:/usr/lib/python${PYVER}/dist-packages
+              xvfb-run pytest
+            '

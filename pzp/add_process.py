@@ -3,7 +3,7 @@ from datetime import datetime
 
 from qgis.core import QgsExpressionContextUtils, QgsProject
 from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QMessageBox
+from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QMessageBox
 
 from pzp.processing import domains
 from pzp.utils import utils
@@ -18,11 +18,13 @@ class AddProcessDialog(QDialog, FORM_CLASS):
         self.buttonBox.accepted.disconnect()
         self.buttonBox.clicked.connect(self.button_box_clicked)
 
+        self.file_widget.setOptions(QFileDialog.Option.ShowDirsOnly)
+
         for process in domains.PROCESS_TYPES.items():
             self.process_cbox.addItem(process[1], process[0])
 
     def button_box_clicked(self, button):
-        if self.buttonBox.buttonRole(button) == QDialogButtonBox.RejectRole:
+        if self.buttonBox.buttonRole(button) == QDialogButtonBox.ButtonRole.RejectRole:
             self.close()
             return
 

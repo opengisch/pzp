@@ -86,7 +86,7 @@ class PZP(QObject):
         toolButton = QToolButton()
         toolButton.setDefaultAction(a_b_action)
         toolButton.setMenu(a_b_menu)
-        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        toolButton.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
         settings_action = self.create_action("gear.png", "Impostazioni", self.do_settings)
@@ -130,7 +130,7 @@ class PZP(QObject):
         toolButton = QToolButton()
         toolButton.setDefaultAction(add_basemaps_action)
         toolButton.setMenu(geodata_menu)
-        toolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        toolButton.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
         self.toolbar.addWidget(toolButton)
 
     def init_geodata_menu_qlr(self, qlr_filename, icon_name, menu_name):
@@ -194,22 +194,22 @@ class PZP(QObject):
 
     def do_add_process(self):
         dlg = AddProcessDialog(self.iface)
-        dlg.exec_()
+        dlg.exec()
 
     def do_add_basemaps(self):
-        with OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.CursorShape.WaitCursor):
             utils.load_qlr_layer(self.QLR_FILENAME_MAPPE_BASE)
 
     def do_add_base_data_wms(self):
-        with OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.CursorShape.WaitCursor):
             utils.load_qlr_layer(self.QLR_FILENAME_DATI_BASE_WMS)
 
     def do_add_base_data_wfs(self):
-        with OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.CursorShape.WaitCursor):
             utils.load_qlr_layer(self.QLR_FILENAME_DATI_BASE_WFS)
 
     def do_add_layer_node(self):
-        with OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.CursorShape.WaitCursor):
             action = self.sender()
             layerNode = action.property(self.PROPERTY_LAYER_NODE)
 
@@ -219,7 +219,7 @@ class PZP(QObject):
                 parentGroups.insert(0, parentGroup)
                 parentGroup = parentGroup.parent()
 
-            if layerNode.nodeType() == QgsLayerTreeNode.NodeGroup:
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeType.NodeGroup:
                 parentGroups.append(layerNode)
 
             projectParentGroup = QgsProject.instance().layerTreeRoot()
@@ -238,7 +238,7 @@ class PZP(QObject):
 
             # We reached the inserting group -> add all subgroups and layers
             # For group types...
-            if layerNode.nodeType() == QgsLayerTreeNode.NodeGroup:
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeType.NodeGroup:
                 self.do_add_group_recursive(projectParentGroup, layerNode)
 
             # ... and for layer types
@@ -264,7 +264,7 @@ class PZP(QObject):
                     break
 
             # Sublayer
-            if layerNode.nodeType() == QgsLayerTreeNode.NodeLayer and existingTreeElement is None:
+            if layerNode.nodeType() == QgsLayerTreeNode.NodeType.NodeLayer and existingTreeElement is None:
                 newLayer = layerNode.layer().clone()
                 newLayerNode = projectParentGroup.addLayer(newLayer)
                 newLayerNode.setItemVisibilityChecked(layerNode.itemVisibilityChecked())
@@ -283,7 +283,7 @@ class PZP(QObject):
         self.checks_dock = CheckResultsDock(self.iface)
 
         self.checks_dock.setObjectName("CheckResultsDock")
-        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.checks_dock)
+        self.iface.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.checks_dock)
         self.checks_dock.setVisible(True)
         self.checks_dock.show()
 
@@ -292,7 +292,7 @@ class PZP(QObject):
         current_node = self.iface.layerTreeView().currentNode()
         if isinstance(current_node, QgsLayerTreeGroup):
             tool = PropagationTool(self.iface, current_node)
-            with OverrideCursor(Qt.WaitCursor):
+            with OverrideCursor(Qt.CursorShape.WaitCursor):
                 tool.run()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
@@ -302,7 +302,7 @@ class PZP(QObject):
         current_node = self.iface.layerTreeView().currentNode()
         if isinstance(current_node, QgsLayerTreeGroup):
             tool = CalculationTool(self.iface, current_node)
-            with OverrideCursor(Qt.WaitCursor):
+            with OverrideCursor(Qt.CursorShape.WaitCursor):
                 tool.run()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
@@ -312,7 +312,7 @@ class PZP(QObject):
         current_node = self.iface.layerTreeView().currentNode()
         if isinstance(current_node, QgsLayerTreeGroup):
             tool = ToolNessunImpatto(current_node)
-            with OverrideCursor(Qt.WaitCursor):
+            with OverrideCursor(Qt.CursorShape.WaitCursor):
                 tool.run()
         else:
             utils.push_error("Selezionare il gruppo che contiene il processo", 3)
@@ -337,7 +337,7 @@ class PZP(QObject):
 
     def do_settings(self):
         settingsDialog = SettingsDialog()
-        settingsDialog.exec_()
+        settingsDialog.exec()
 
     def do_help(self):
         webbrowser.open("https://opengisch.github.io/pzp/")
@@ -360,7 +360,7 @@ class PZP(QObject):
         if project is not None:
             return
 
-        with OverrideCursor(Qt.WaitCursor):
+        with OverrideCursor(Qt.CursorShape.WaitCursor):
             current_dir = os.path.dirname(os.path.abspath(__file__))
             qlr_file_path = os.path.join(current_dir, "qlr", f"{qlr_filename}.qlr")
 

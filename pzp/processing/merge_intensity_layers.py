@@ -48,7 +48,7 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
                 QgsProcessingParameterVectorLayer(
                     name=self.LAYERS[i],
                     description=f"Input layer {i}",
-                    types=[QgsProcessing.TypeVectorPolygon],
+                    types=[QgsProcessing.SourceType.TypeVectorPolygon],
                     optional=True,
                 )
             )
@@ -58,7 +58,7 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
                     name=self.INTENSITY_FIELDS[i],
                     description="Campo contenente le intensità",
                     parentLayerParameterName=self.LAYERS[i],
-                    type=QgsProcessingParameterField.Numeric,
+                    type=QgsProcessingParameterField.DataType.Numeric,
                     optional=True,
                 )
             )
@@ -67,7 +67,7 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
                 QgsProcessingParameterNumber(
                     name=self.PERIODS[i],
                     description="Periodo di ritorno",
-                    type=QgsProcessingParameterNumber.Integer,
+                    type=QgsProcessingParameterNumber.Type.Integer,
                     optional=True,
                 )
             )
@@ -88,7 +88,7 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
             self.OUTPUT,
             context,
             fields,
-            QgsWkbTypes.MultiPolygon,
+            QgsWkbTypes.Type.MultiPolygon,
             crs,
         )
 
@@ -99,11 +99,11 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
             if not layer:
                 continue
 
-            intensity_field = self.parameterAsFields(
+            intensity_field = self.parameterAsString(
                 parameters,
                 self.INTENSITY_FIELDS[i],
                 context,
-            )[0]
+            )
 
             period = self.parameterAsInt(
                 parameters,
@@ -117,5 +117,5 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
                 new_feature.setAttributes([feature[intensity_field], period])
                 new_features.append(new_feature)
 
-        sink.addFeatures(new_features, QgsFeatureSink.FastInsert)
+        sink.addFeatures(new_features, QgsFeatureSink.Flag.FastInsert)
         return {self.OUTPUT: dest_id}

@@ -51,7 +51,7 @@ class Propagation(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.BREAKING_LAYER,
                 "Layer con le probabilità di rottura",
-                [QgsProcessing.TypeVectorPolygon],
+                [QgsProcessing.SourceType.TypeVectorPolygon],
             )
         )
 
@@ -60,7 +60,7 @@ class Propagation(QgsProcessingAlgorithm):
                 name=self.BREAKING_FIELD,
                 description="Campo contenente la probabilità di rottura",
                 parentLayerParameterName=self.BREAKING_LAYER,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -69,7 +69,7 @@ class Propagation(QgsProcessingAlgorithm):
                 name=self.SOURCE_FIELD,
                 description="Campo contenente la fonte del processo",
                 parentLayerParameterName=self.BREAKING_LAYER,
-                type=QgsProcessingParameterField.String,
+                type=QgsProcessingParameterField.DataType.String,
             )
         )
 
@@ -77,7 +77,7 @@ class Propagation(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.PROPAGATION_LAYER,
                 "Layer con le linee di propagazione",
-                [QgsProcessing.TypeVectorLine],
+                [QgsProcessing.SourceType.TypeVectorLine],
             )
         )
 
@@ -86,7 +86,7 @@ class Propagation(QgsProcessingAlgorithm):
                 name=self.PROPAGATION_FIELD,
                 description="Campo contenente la probabilità di propagazione",
                 parentLayerParameterName=self.PROPAGATION_LAYER,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -95,7 +95,7 @@ class Propagation(QgsProcessingAlgorithm):
                 name=self.BREAKING_FIELD_PROP,
                 description="Campo contenente la probabilità di rottura",
                 parentLayerParameterName=self.PROPAGATION_LAYER,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -104,7 +104,7 @@ class Propagation(QgsProcessingAlgorithm):
                 name=self.SOURCE_FIELD_PROP,
                 description="Campo contenente la fonte del processo",
                 parentLayerParameterName=self.PROPAGATION_LAYER,
-                type=QgsProcessingParameterField.String,
+                type=QgsProcessingParameterField.DataType.String,
             )
         )
 
@@ -112,33 +112,33 @@ class Propagation(QgsProcessingAlgorithm):
 
     def processAlgorithm(self, parameters, context, feedback):
         breaking_layer = self.parameterAsVectorLayer(parameters, self.BREAKING_LAYER, context)
-        breaking_field = self.parameterAsFields(
+        breaking_field = self.parameterAsString(
             parameters,
             self.BREAKING_FIELD,
             context,
-        )[0]
-        source_field = self.parameterAsFields(
+        )
+        source_field = self.parameterAsString(
             parameters,
             self.SOURCE_FIELD,
             context,
-        )[0]
+        )
 
         propagation_layer = self.parameterAsVectorLayer(parameters, self.PROPAGATION_LAYER, context)
-        propagation_field = self.parameterAsFields(
+        propagation_field = self.parameterAsString(
             parameters,
             self.PROPAGATION_FIELD,
             context,
-        )[0]
-        breaking_field_prop = self.parameterAsFields(
+        )
+        breaking_field_prop = self.parameterAsString(
             parameters,
             self.BREAKING_FIELD_PROP,
             context,
-        )[0]
-        source_field_prop = self.parameterAsFields(
+        )
+        source_field_prop = self.parameterAsString(
             parameters,
             self.SOURCE_FIELD_PROP,
             context,
-        )[0]
+        )
 
         breaking_field_idx = -1
         one_feature = next(breaking_layer.getFeatures()) if breaking_layer.featureCount() > 0 else None

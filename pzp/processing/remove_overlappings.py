@@ -36,7 +36,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
 
     def initAlgorithm(self, config=None):
         self.addParameter(
-            QgsProcessingParameterFeatureSource(self.INPUT, "Input layer", [QgsProcessing.TypeVectorPolygon])
+            QgsProcessingParameterFeatureSource(self.INPUT, "Input layer", [QgsProcessing.SourceType.TypeVectorPolygon])
         )
 
         self.addParameter(
@@ -44,7 +44,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
                 name=self.INTENSITY_FIELD,
                 description="Campo contenente l'intensità",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -53,7 +53,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
                 name=self.PERIOD_FIELD,
                 description="Campo contenente il periodo di ritorno",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
+                type=QgsProcessingParameterField.DataType.Numeric,
             )
         )
 
@@ -62,7 +62,7 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
                 name=self.SOURCE_FIELD,
                 description="Campo contenente la fonte del processo",
                 parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.String,
+                type=QgsProcessingParameterField.DataType.String,
             )
         )
 
@@ -74,23 +74,23 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
         if source is None:
             raise QgsProcessingException(self.invalidSourceError(parameters, self.INPUT))
 
-        intensity_field = self.parameterAsFields(
+        intensity_field = self.parameterAsString(
             parameters,
             self.INTENSITY_FIELD,
             context,
-        )[0]
+        )
 
-        period_field = self.parameterAsFields(
+        period_field = self.parameterAsString(
             parameters,
             self.PERIOD_FIELD,
             context,
-        )[0]
+        )
 
-        source_field = self.parameterAsFields(
+        source_field = self.parameterAsString(
             parameters,
             self.SOURCE_FIELD,
             context,
-        )[0]
+        )
 
         intensities = set()
         periods = set()
