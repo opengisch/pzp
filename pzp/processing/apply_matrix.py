@@ -1,4 +1,5 @@
 from qgis.core import (
+    QgsFeature,
     QgsFeatureSink,
     QgsField,
     QgsProcessing,
@@ -211,6 +212,22 @@ class ApplyMatrix(QgsProcessingAlgorithm):
 
             attributes = feature.attributes()
 
+            if intensity is None:
+                feedback.pushWarning(f"La feature {feature.id()} ha il campo intensità NULL — ignorata.")
+                attributes.append(None)
+                attributes.append(None)
+                new_feat = QgsFeature()
+                new_feat.setGeometry(feature.geometry())
+                new_feat.setAttributes(attributes)
+                new_features.append(new_feat)
+                continue
+
+            if period is None:
+                feedback.pushWarning(
+                    f"La feature {feature.id()} ha il campo periodo di ritorno NULL — viene usato 0 (periodo minimo disponibile)."
+                )
+                period = 0
+
             matrice, grado_pericolo = self.get_matrix_value(processed_matrix, intensity, period)
             # grado_pericolo
             attributes.append(grado_pericolo)
@@ -244,9 +261,22 @@ class ApplyMatrix(QgsProcessingAlgorithm):
         return result
 
     def get_matrix_value(self, processed_matrix, intensity, return_years):
-        inner_dict = processed_matrix[intensity]
+        if intensity is None or return_years is None:
+            raise QgsProcessingException(
+                f"Impossibile calcolare il valore della matrice: intensità={intensity}, periodo_ritorno={return_years} — valore NULL nel campo."
+            )
 
-        # Smallest key in matrix greater than or equal to return years
-        min_key = min(i for i in inner_dict.keys() if i >= return_years)
+        inner_dict = processed_matrix.get(intensity)
+        if inner_dict is None:
+            raise QgsProcessingException(
+                f"Il valore di intensità {intensity} non è presente nella matrice. Valori disponibili: {list(processed_matrix.keys())}"
+            )
+
+        candidates = [i for i in inner_dict.keys() if i >= return_years]
+        if not candidates:
+            raise QgsProcessingException(
+                f"Nessuna voce nella matrice per periodo_ritorno={return_years} (intensità={intensity}). Periodi disponibili: {sorted(inner_dict.keys())}"
+            )
+        min_key = min(candidates)
 
         return inner_dict[min_key]
