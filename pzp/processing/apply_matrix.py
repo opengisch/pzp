@@ -169,17 +169,17 @@ class ApplyMatrix(QgsProcessingAlgorithm):
         if sink is None:
             raise QgsProcessingException(self.invalidSinkError(parameters, self.OUTPUT))
 
-        intensity_field = self.parameterAsFields(
+        intensity_field = self.parameterAsString(
             parameters,
             self.INTENSITY_FIELD,
             context,
-        )[0]
+        )
 
-        period_field = self.parameterAsFields(
+        period_field = self.parameterAsString(
             parameters,
             self.PERIOD_FIELD,
             context,
-        )[0]
+        )
 
         predefined_matrix_idx = self.parameterAsInt(
             parameters,

@@ -74,23 +74,23 @@ class RemoveOverlappings(QgsProcessingAlgorithm):
         if source is None:
             raise QgsProcessingException(self.invalidSourceError(parameters, self.INPUT))
 
-        intensity_field = self.parameterAsFields(
+        intensity_field = self.parameterAsString(
             parameters,
             self.INTENSITY_FIELD,
             context,
-        )[0]
+        )
 
-        period_field = self.parameterAsFields(
+        period_field = self.parameterAsString(
             parameters,
             self.PERIOD_FIELD,
             context,
-        )[0]
+        )
 
-        source_field = self.parameterAsFields(
+        source_field = self.parameterAsString(
             parameters,
             self.SOURCE_FIELD,
             context,
-        )[0]
+        )
 
         intensities = set()
         periods = set()

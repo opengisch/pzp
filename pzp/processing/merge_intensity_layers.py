@@ -99,11 +99,11 @@ class MergeIntensityLayers(QgsProcessingAlgorithm):
             if not layer:
                 continue
 
-            intensity_field = self.parameterAsFields(
+            intensity_field = self.parameterAsString(
                 parameters,
                 self.INTENSITY_FIELDS[i],
                 context,
-            )[0]
+            )
 
             period = self.parameterAsInt(
                 parameters,

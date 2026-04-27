@@ -91,17 +91,17 @@ class DangerZones(QgsProcessingAlgorithm):
         fields = QgsFields()
         fields.append(QgsField("Grado di pericolo", QVariant.Int))
 
-        matrix_field = self.parameterAsFields(
+        matrix_field = self.parameterAsString(
             parameters,
             self.MATRIX_FIELD,
             context,
-        )[0]
+        )
 
-        process_source_field = self.parameterAsFields(
+        process_source_field = self.parameterAsString(
             parameters,
             self.PROCESS_SOURCE_FIELD,
             context,
-        )[0]
+        )
 
         merge_form_factor = self.parameterAsDouble(parameters, self.MERGE_FORM_FACTOR, context)
 

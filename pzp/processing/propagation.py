@@ -112,33 +112,33 @@ class Propagation(QgsProcessingAlgorithm):
 
     def processAlgorithm(self, parameters, context, feedback):
         breaking_layer = self.parameterAsVectorLayer(parameters, self.BREAKING_LAYER, context)
-        breaking_field = self.parameterAsFields(
+        breaking_field = self.parameterAsString(
             parameters,
             self.BREAKING_FIELD,
             context,
-        )[0]
-        source_field = self.parameterAsFields(
+        )
+        source_field = self.parameterAsString(
             parameters,
             self.SOURCE_FIELD,
             context,
-        )[0]
+        )
 
         propagation_layer = self.parameterAsVectorLayer(parameters, self.PROPAGATION_LAYER, context)
-        propagation_field = self.parameterAsFields(
+        propagation_field = self.parameterAsString(
             parameters,
             self.PROPAGATION_FIELD,
             context,
-        )[0]
-        breaking_field_prop = self.parameterAsFields(
+        )
+        breaking_field_prop = self.parameterAsString(
             parameters,
             self.BREAKING_FIELD_PROP,
             context,
-        )[0]
-        source_field_prop = self.parameterAsFields(
+        )
+        source_field_prop = self.parameterAsString(
             parameters,
             self.SOURCE_FIELD_PROP,
             context,
-        )[0]
+        )
 
         breaking_field_idx = -1
         one_feature = next(breaking_layer.getFeatures()) if breaking_layer.featureCount() > 0 else None

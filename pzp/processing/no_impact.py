@@ -93,29 +93,29 @@ class NoImpact(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INTENSITY_LAYER, context)
         self.parameterAsVectorLayer(parameters, self.INTENSITY_LAYER, context)
-        period_field = self.parameterAsFields(
+        period_field = self.parameterAsString(
             parameters,
             self.PERIOD_FIELD,
             context,
-        )[0]
+        )
 
-        intensity_field = self.parameterAsFields(
+        intensity_field = self.parameterAsString(
             parameters,
             self.INTENSITY_FIELD,
             context,
-        )[0]
+        )
 
-        area_process_source_field = self.parameterAsFields(
+        area_process_source_field = self.parameterAsString(
             parameters,
             self.AREA_PROCESS_SOURCE_FIELD,
             context,
-        )[0]
+        )
 
-        intensity_process_source_field = self.parameterAsFields(
+        intensity_process_source_field = self.parameterAsString(
             parameters,
             self.INTENSITY_PROCESS_SOURCE_FIELD,
             context,
-        )[0]
+        )
 
         used_periods = set()
         process_sources = set()
