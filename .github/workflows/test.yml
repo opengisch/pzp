@@ -32,10 +32,14 @@ jobs:
           submodules: true
 
       - name: Unit tests
-        run:
-          >- # The pip install instruction was only added to support QGIS 3.28.x. It can be removed when removing that QGIS version.
-          docker run
-          -e PYTHONPATH=/usr/share/qgis/python/plugins
-          -v $(pwd):/usr/src
-          -w /usr/src qgis/qgis:${QGIS_TEST_VERSION}
-          sh -c 'pip3 install -r requirements.txt || pip3 install -r requirements.txt --break-system-packages;xvfb-run pytest'
+        run: |
+          docker run \
+            -v $(pwd):/usr/src \
+            -w /usr/src \
+            qgis/qgis:${QGIS_TEST_VERSION} \
+            sh -c '
+              pip3 install -r requirements.txt || pip3 install -r requirements.txt --break-system-packages
+              PYVER=$(python3 -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")")
+              export PYTHONPATH=/usr/share/qgis/python:/usr/share/qgis/python/plugins:/usr/lib/python3/dist-packages:/usr/lib/python${PYVER}/dist-packages
+              xvfb-run pytest
+            '
