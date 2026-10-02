@@ -86,7 +86,7 @@ def test_keep_polygonal_parts():
     assert result.area() == pytest.approx(100)
 
     # Non-collections are returned untouched
-    assert keep_polygonal_parts(square).equals(square)
+    assert keep_polygonal_parts(square).isGeosEqual(square)
 
 
 @pytest.mark.basic
