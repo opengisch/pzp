@@ -33,6 +33,8 @@ from qgis.core import (
     QgsProcessingUtils,
 )
 
+from pzp.utils.utils import keep_polygonal_parts
+
 pluginPath = os.path.split(os.path.split(os.path.dirname(__file__))[0])[0]
 
 
@@ -98,6 +100,11 @@ class MergeByArea(QgisAlgorithm):
         for feature in inLayer.getFeatures():
             if feedback.isCanceled():
                 break
+
+            if feature.geometry().area() == 0:
+                # Collapsed geometry (e.g. a sliver reduced to a line), nothing to merge
+                feedback.pushInfo(f"Remove collapsed feature: {feature.attributes()}")
+                continue
 
             if feature.geometry().area() <= 1:
                 featToEliminate.append(feature)
@@ -196,7 +203,7 @@ class MergeByArea(QgisAlgorithm):
                     continue
 
                 # A successful candidate
-                newGeom = mergeWithGeom.combine(geom2Eliminate)
+                newGeom = keep_polygonal_parts(mergeWithGeom.combine(geom2Eliminate))
 
                 if processLayer.changeGeometry(mergeWithFid, newGeom):
                     madeProgress = True

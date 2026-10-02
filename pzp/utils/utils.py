@@ -12,10 +12,12 @@ from qgis.core import (
     QgsFeatureRequest,
     QgsField,
     QgsFieldConstraints,
+    QgsGeometry,
     QgsLayerDefinition,
     QgsMessageLog,
     QgsProject,
     QgsVectorLayer,
+    QgsWkbTypes,
 )
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtGui import QIcon
@@ -461,3 +463,20 @@ def get_plugin_path() -> Path:
 
 def set_layer_opacity(layer: QgsVectorLayer, opacity: int) -> None:
     layer.setOpacity(opacity / 100.0)  # Convert percentage to a value between 0 and 1
+
+
+def keep_polygonal_parts(geometry: QgsGeometry) -> QgsGeometry:
+    """
+    Since GEOS 3.15, combining polygons may return a GeometryCollection that also
+    contains collapsed parts (e.g. slivers) as LineStrings.
+    Only the polygonal parts are relevant for the zones, so drop all the others.
+    """
+    if Qgis.QGIS_VERSION_INT >= 33000:
+        polygon_type = Qgis.GeometryType.Polygon
+    else:
+        polygon_type = QgsWkbTypes.PolygonGeometry
+
+    if geometry.type() != polygon_type:
+        geometry = QgsGeometry(geometry)
+        geometry.convertGeometryCollectionToSubclass(polygon_type)  # Converts in place
+    return geometry
