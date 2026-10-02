@@ -3,9 +3,11 @@ from qgis.core import (
     Qgis,
     QgsApplication,
     QgsFeature,
+    QgsFeatureRequest,
     QgsGeometry,
     QgsProcessingContext,
     QgsVectorLayer,
+    QgsWkbTypes,
 )
 from qgis.testing import start_app
 
@@ -20,6 +22,16 @@ import processing
 SQUARE = "POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))"
 SMALL = "POLYGON((10 0, 10.5 0, 10.5 1, 10 1, 10 0))"  # 0.5 m2, to be merged into SQUARE
 COLLAPSED = "POLYGON((0 0, 0 -10, 0 0))"  # Zero-area polygon touching SQUARE
+
+if Qgis.QGIS_VERSION_INT >= 33000:
+    POLYGON_TYPE = Qgis.GeometryType.Polygon
+else:
+    POLYGON_TYPE = QgsWkbTypes.GeometryType.PolygonGeometry
+
+if Qgis.QGIS_VERSION_INT >= 33600:
+    NO_GEOMETRY_CHECK = Qgis.InvalidGeometryCheck.NoCheck
+else:
+    NO_GEOMETRY_CHECK = QgsFeatureRequest.InvalidGeometryCheck.GeometryNoCheck
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -52,13 +64,13 @@ def _create_layer(wkts):
 def _context():
     # The collapsed input geometry is invalid on purpose
     context = QgsProcessingContext()
-    context.setInvalidGeometryCheck(Qgis.InvalidGeometryCheck.NoCheck)
+    context.setInvalidGeometryCheck(NO_GEOMETRY_CHECK)
     return context
 
 
 def _assert_only_polygons(layer):
     for feature in layer.getFeatures():
-        assert feature.geometry().type() == Qgis.GeometryType.Polygon
+        assert feature.geometry().type() == POLYGON_TYPE
         assert feature.geometry().area() > 0
 
 
@@ -70,7 +82,7 @@ def test_keep_polygonal_parts():
     combined = square.combine(QgsGeometry.fromWkt(COLLAPSED))
 
     result = keep_polygonal_parts(combined)
-    assert result.type() == Qgis.GeometryType.Polygon
+    assert result.type() == POLYGON_TYPE
     assert result.area() == pytest.approx(100)
 
     # Non-collections are returned untouched

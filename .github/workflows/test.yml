@@ -13,7 +13,7 @@ env:
 
 jobs:
   pyqt6-check:
-    uses: opengisch/qgis-plugin-ci/.github/workflows/pyqt6_test.yml@master
+    uses: qgis/qgis-plugin-ci/.github/workflows/pyqt6_test.yml@master
     with:
       plugin_path: pzp
 
@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        qgis_version: [4.0-questing, 3.44-questing, final-3_28_15]
+        qgis_version: [4.2-questing, 3.44-questing, final-3_28_15]
     env:
       QGIS_TEST_VERSION: ${{ matrix.qgis_version }}
 

@@ -474,7 +474,7 @@ def keep_polygonal_parts(geometry: QgsGeometry) -> QgsGeometry:
     if Qgis.QGIS_VERSION_INT >= 33000:
         polygon_type = Qgis.GeometryType.Polygon
     else:
-        polygon_type = QgsWkbTypes.PolygonGeometry
+        polygon_type = QgsWkbTypes.GeometryType.PolygonGeometry
 
     if geometry.type() != polygon_type:
         geometry = QgsGeometry(geometry)
