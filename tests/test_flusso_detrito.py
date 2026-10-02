@@ -9,6 +9,49 @@ from tests.utils import get_copy_path, get_data_path
 start_app()
 import processing
 
+COMPARED_ATTRIBUTES = [
+    # 'fid',
+    "commento",
+    "periodo_ritorno",
+    "classe_intensita",
+    "proc_parz",
+    "fonte_proc",
+    "grado_pericolo",
+    "matrice",
+    # 'layer',
+]
+
+# Same threshold under which the plugin considers geometries negligible (see merge_by_area)
+MAX_AREA_DIFFERENCE = 1  # m2
+
+
+def _match_changed_features(expected_layer, obtained_layer, attributes, max_area_difference):
+    """
+    Pairs each expected feature with an obtained feature having the same attributes and
+    the smallest area of symmetric difference. Returns the list of area differences.
+    """
+    obtained_features = list(obtained_layer.getFeatures())
+    assert len(obtained_features) == expected_layer.featureCount()
+
+    differences = []
+    for expected in expected_layer.getFeatures():
+        candidates = [
+            (expected.geometry().symDifference(obtained.geometry()).area(), i)
+            for i, obtained in enumerate(obtained_features)
+            if all(expected[attribute] == obtained[attribute] for attribute in attributes)
+        ]
+        assert candidates, f"No obtained feature with the attributes of expected feature {expected.attributes()}"
+
+        difference, index = min(candidates)
+        assert (
+            difference <= max_area_difference
+        ), f"Area difference of {difference} m2 for feature {expected.attributes()}"
+
+        differences.append(round(difference, 6))
+        obtained_features.pop(index)
+
+    return differences
+
 
 @pytest.fixture(scope="module", autouse=True)
 def initialize_processing():
@@ -126,17 +169,7 @@ def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_ex
         {
             "ORIGINAL": flusso_detrito_expected_layer,
             "REVISED": pericolo_layer,
-            "COMPARE_ATTRIBUTES": [  # To test only geometries, pass empty list here
-                # 'fid',
-                "commento",
-                "periodo_ritorno",
-                "classe_intensita",
-                "proc_parz",
-                "fonte_proc",
-                "grado_pericolo",
-                "matrice",
-                # 'layer',
-            ],
+            "COMPARE_ATTRIBUTES": COMPARED_ATTRIBUTES,  # To test only geometries, pass empty list here
             "MATCH_TYPE": 1,  # 0: Exact match, 1: Tolerant match
             "UNCHANGED": "TEMPORARY_OUTPUT",
             "ADDED": "TEMPORARY_OUTPUT",
@@ -147,9 +180,14 @@ def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_ex
     assert isinstance(layer_comparison["ADDED"], QgsMapLayer)
     assert isinstance(layer_comparison["DELETED"], QgsMapLayer)
 
-    assert layer_comparison["UNCHANGED"].featureCount() == 101  # THe obtained layer matches the expected one
-    assert layer_comparison["ADDED"].featureCount() == 0
-    assert layer_comparison["DELETED"].featureCount() == 0
+    # Different GEOS versions produce slightly different geometries (e.g. vertices or slivers),
+    # so features that are not topologically equal are matched by attributes and area difference
+    unchanged = layer_comparison["UNCHANGED"].featureCount()
+    differences = _match_changed_features(
+        layer_comparison["DELETED"], layer_comparison["ADDED"], COMPARED_ATTRIBUTES, MAX_AREA_DIFFERENCE
+    )
+    print(f" [INFO] {unchanged} unchanged features, area differences of changed features: {differences}")
+    assert unchanged + len(differences) == 101
 
     # Test expected groups
     assert len(project.layerTreeRoot().children()) == 2  # Group + layer intensity
