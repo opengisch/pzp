@@ -14,7 +14,7 @@ from qgis.testing import start_app
 from pzp.processing.merge_by_area import MergeByArea
 from pzp.processing.merge_by_form_factor import MergeByFormFactor
 from pzp.processing.provider import Provider
-from pzp.utils.utils import keep_polygonal_parts
+from pzp.utils.utils import is_collapsed, keep_polygonal_parts
 
 start_app()
 import processing
@@ -22,6 +22,12 @@ import processing
 SQUARE = "POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))"
 SMALL = "POLYGON((10 0, 10.5 0, 10.5 1, 10 1, 10 0))"  # 0.5 m2, to be merged into SQUARE
 COLLAPSED = "POLYGON((0 0, 0 -10, 0 0))"  # Zero-area polygon touching SQUARE
+
+# From real data (Valanga radente): collapsed, but with floating point noise area (~1e-9 m2)
+NEARLY_COLLAPSED = (
+    "MULTIPOLYGON(((2715902.764114 1154306.339648, 2715891.839909 1154310.282207, "
+    "2715902.764114 1154306.339648, 2715902.764114 1154306.339648)))"
+)
 
 if Qgis.QGIS_VERSION_INT >= 33000:
     POLYGON_TYPE = Qgis.GeometryType.Polygon
@@ -78,7 +84,7 @@ def _assert_only_polygons(layer):
 def test_keep_polygonal_parts():
     square = QgsGeometry.fromWkt(SQUARE)
 
-    # With GEOS >= 3.15 this is a GeometryCollection containing a LineString
+    # This is a GeometryCollection containing a LineString
     combined = square.combine(QgsGeometry.fromWkt(COLLAPSED))
 
     result = keep_polygonal_parts(combined)
@@ -87,6 +93,16 @@ def test_keep_polygonal_parts():
 
     # Non-collections are returned untouched
     assert keep_polygonal_parts(square).isGeosEqual(square)
+
+
+@pytest.mark.basic
+def test_is_collapsed():
+    nearly_collapsed = QgsGeometry.fromWkt(NEARLY_COLLAPSED)
+    assert nearly_collapsed.area() > 0  # Not exactly 0, that's why a threshold is needed
+    assert is_collapsed(nearly_collapsed)
+
+    assert is_collapsed(QgsGeometry.fromWkt(COLLAPSED))
+    assert not is_collapsed(QgsGeometry.fromWkt(SMALL))
 
 
 @pytest.mark.basic

@@ -465,11 +465,20 @@ def set_layer_opacity(layer: QgsVectorLayer, opacity: int) -> None:
     layer.setOpacity(opacity / 100.0)  # Convert percentage to a value between 0 and 1
 
 
+# Below 1 mm2 a polygon is just floating point noise of a collapsed geometry (e.g. a sliver
+# reduced to a line), consistently with the 0.001 m precision used for the zones
+COLLAPSED_AREA_THRESHOLD = 1e-6  # m2
+
+
+def is_collapsed(geometry: QgsGeometry) -> bool:
+    return geometry.area() < COLLAPSED_AREA_THRESHOLD
+
+
 def keep_polygonal_parts(geometry: QgsGeometry) -> QgsGeometry:
     """
-    Since GEOS 3.15, combining polygons may return a GeometryCollection that also
-    contains collapsed parts (e.g. slivers) as LineStrings.
-    Only the polygonal parts are relevant for the zones, so drop all the others.
+    Combining polygons with (nearly) collapsed ones may return a GeometryCollection
+    that also contains LineStrings. Only the polygonal parts are relevant for the zones,
+    so drop the lines (and points).
     """
     if Qgis.QGIS_VERSION_INT >= 33000:
         polygon_type = Qgis.GeometryType.Polygon
