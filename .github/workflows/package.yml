@@ -1,11 +1,16 @@
-name: Release
+name: Package
 on:
+  pull_request:
+    branches:
+      - main
   release:
     types: published
 
 jobs:
-  deploy:
+  package:
     runs-on: ubuntu-latest
+    env:
+      PLUGIN_VERSION: ${{ github.event_name == 'release' && github.ref_name || format('0.0.0-pr{0}', github.event.pull_request.number) }}
 
     steps:
       - uses: actions/checkout@v2
@@ -19,19 +24,29 @@ jobs:
         run: pip3 install qgis-plugin-ci
 
       - name: Install qgis-plugin-repo
+        if: github.event_name == 'release'
         run: pip3 install qgis-plugin-repo==0.3.0
 
       - name: Package plugin
         run: |
-          qgis-plugin-ci package $GITHUB_REF_NAME -u http://download.opengis.ch/repos/ticino/plugins/pzp/
+          qgis-plugin-ci package $PLUGIN_VERSION -u http://download.opengis.ch/repos/ticino/plugins/pzp/
           ls -lh
           cat plugins.xml
 
+      - name: Upload plugin artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pzp.${{ env.PLUGIN_VERSION }}
+          path: pzp.${{ env.PLUGIN_VERSION }}.zip
+
       - name: Download remote plugins.xml file
+        if: github.event_name == 'release'
         run: curl http://download.opengis.ch/repos/ticino/plugins.xml -o plugins_remote.xml
 
       # I use directly the python code in qgis-plugin-repo because something in the cli is broken for local files
       - name: Merge plugins.xml
+        if: github.event_name == 'release'
         uses: jannekem/run-python-script-action@v1
         with:
           script: |
@@ -43,22 +58,25 @@ jobs:
             merger.merge()
 
       - name: Rename plugins output
+        if: github.event_name == 'release'
         run: |
           ls -lh
           mv plugins_remote.xml plugins.xml
           cat plugins.xml
 
       - name: Deploy plugin
+        if: github.event_name == 'release'
         uses: ilCollez/ssh-scp-deploy@v1.1.0
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           password: ${{ secrets.REMOTE_PASSWORD }}
           files: |
-            ${{ format('{0}.{1}.{2}', 'pzp', github.ref_name , 'zip') }}
+            ${{ format('{0}.{1}.{2}', 'pzp', env.PLUGIN_VERSION, 'zip') }}
           remote-path: "/home/opengis_download/download.opengis.ch/repos/ticino/plugins/pzp/"
 
       - name: Deploy plugins.xml
+        if: github.event_name == 'release'
         uses: ilCollez/ssh-scp-deploy@v1.1.0
         with:
           host: ${{ secrets.REMOTE_HOST }}

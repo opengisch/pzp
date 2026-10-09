@@ -15,6 +15,8 @@ from qgis.core import (
     QgsProcessingUtils,
 )
 
+from pzp.utils.utils import is_collapsed, keep_polygonal_parts
+
 pluginPath = os.path.split(os.path.split(os.path.dirname(__file__))[0])[0]
 
 
@@ -90,6 +92,11 @@ class MergeByFormFactor(QgisAlgorithm):
         for feature in inLayer.getFeatures():
             if feedback.isCanceled():
                 break
+
+            if is_collapsed(feature.geometry()):
+                # Collapsed geometry (e.g. a sliver reduced to a line), nothing to merge
+                feedback.pushInfo(f"Remove collapsed feature: {feature.attributes()}")
+                continue
 
             # Check area treshold and form factor
             if self._checkArea(feature.geometry(), areaThreshold) and self._checkFormFactor(
@@ -191,7 +198,7 @@ class MergeByFormFactor(QgisAlgorithm):
                     continue
 
                 # A successful candidate
-                newGeom = mergeWithGeom.combine(geom2Eliminate)
+                newGeom = keep_polygonal_parts(mergeWithGeom.combine(geom2Eliminate))
 
                 if processLayer.changeGeometry(mergeWithFid, newGeom):
                     madeProgress = True
