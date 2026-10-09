@@ -180,8 +180,6 @@ def test_flusso_detrito(plugin_instance, flusso_detrito_layer, flusso_detrito_ex
     assert isinstance(layer_comparison["ADDED"], QgsMapLayer)
     assert isinstance(layer_comparison["DELETED"], QgsMapLayer)
 
-    # Different GEOS versions produce slightly different geometries (e.g. vertices or slivers),
-    # so features that are not topologically equal are matched by attributes and area difference
     unchanged = layer_comparison["UNCHANGED"].featureCount()
     differences = _match_changed_features(
         layer_comparison["DELETED"], layer_comparison["ADDED"], COMPARED_ATTRIBUTES, MAX_AREA_DIFFERENCE
